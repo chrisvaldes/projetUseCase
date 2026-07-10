@@ -1,0 +1,16 @@
+@if (Visible)
+{
+    <div class="toast-container">
+        <div class="toast @CssClass">
+            <div class="toast-header">
+                <strong>
+                @ToastModel.Title
+                </strong>
+                <button class="btn-close" @onclick="Close"></button>
+            </div>
+            <div class="toast-body">
+            @ToastModel.Message
+            </div>
+        </div>
+    </div>
+}

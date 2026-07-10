@@ -1,0 +1,41 @@
+﻿@inherits LayoutComponentBase
+@using Use_Case_Carte.Components.Skeletor
+<div class="page">
+    <header class="app-header sticky sticky-pin" id="header">
+        <Header />
+    </header>
+    <!-- /app-header -->
+    <!-- Start::app-sidebar -->
+    <aside class="app-sidebar sticky sticky-pin" id="sidebar">
+        <Aside />
+    </aside>
+    <!-- End::app-sidebar -->
+    <!-- Start::app-content -->
+    <div class="main-content app-content">
+        <div class="container-fluid">
+            <!-- Loader local -->
+            <div id="loaderOverlay" class="loader-overlay">
+                <div class="loader-container ">
+                    <div class="align-content-center">
+                        <div class="spinner "></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Contenu -->
+            <div id="pageContent">
+                <main role="main" class="pb-3">
+                    @Body
+                </main>
+            </div>
+        </div>
+    </div>
+    <!-- End::app-content -->
+    <!-- Footer -->
+    <footer class="app-footer">
+        <Footer />
+    </footer>
+</div>
+<!-- Modal de suppression -->
+<ModalSuppression />
+<!-- Toast de notification -->
+<Toast />

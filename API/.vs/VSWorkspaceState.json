@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\API",
+    "\\API\\Modules",
+    "\\API\\Modules\\Users",
+    "\\API\\Modules\\Users\\Application",
+    "\\API\\Modules\\Users\\Application\\Interfaces",
+    "\\API\\Modules\\Users\\Controllers",
+    "\\API\\Modules\\Users\\DependencyInjection",
+    "\\API\\Modules\\Users\\Domain",
+    "\\API\\Modules\\Users\\Domain\\Entities",
+    "\\API\\Properties"
+  ],
+  "SelectedNode": "\\API\\appsettings.json",
+  "PreviewInSolutionExplorer": false
+}
