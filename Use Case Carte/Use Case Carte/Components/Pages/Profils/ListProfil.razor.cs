@@ -35,6 +35,7 @@ public partial class ListProfil : ComponentBase
     private async Task LoadProfils()
     {
         profils = await ProfilService.GetAllProfils();
+    
         StateHasChanged();
     }
 

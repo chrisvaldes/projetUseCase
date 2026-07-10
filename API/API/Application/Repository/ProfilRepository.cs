@@ -108,10 +108,12 @@ namespace API.Application.Repository
             try
             {
                 await _dbContext.SaveChangesAsync();
+                Console.WriteLine($"message {profil.Email}");
                 return profil;
             }
-            catch (DbUpdateConcurrencyException)
+            catch (DbUpdateConcurrencyException ex)
             {
+                Console.WriteLine($"message {ex.Message}");
                 throw new Exception("Erreur de mise-à-jour du profil");
             }
         }

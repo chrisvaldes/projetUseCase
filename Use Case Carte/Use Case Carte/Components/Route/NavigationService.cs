@@ -38,9 +38,14 @@ public class NavigationService
         _navigation.NavigateTo(Route.Dashboard);
     }
 
-    public void GestionMAG()
+    public void GoGestionMAG()
     {
         _navigation.NavigateTo(Route.GestionMAG);
+    }
+
+    public void GoNouveauMAG()
+    {
+        _navigation.NavigateTo(Route.NouveauMag);
     }
 
     public void DetailFacturation()

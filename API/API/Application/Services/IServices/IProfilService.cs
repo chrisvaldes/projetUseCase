@@ -7,7 +7,7 @@ namespace API.Application.Services.IServices
     {
         Task<Profil> CreateProfilAsync(Profil profil);
 
-        //Task<ServiceResult<ProfilDto>> UpdateAsync(ProfilDto profilDto);
+        Task<Profil> UpdateAsync(Guid Id, Profil profil);
         //Task<bool> DeleteAsync(Guid id);
         //Task<ServiceResult<Profil>> GetByIdAsync(Guid id);
         Task<Profil> GetProfilById(Guid id);

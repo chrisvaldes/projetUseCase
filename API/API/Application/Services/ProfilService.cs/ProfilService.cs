@@ -79,5 +79,21 @@ namespace API.Application.Service.ProfilService
                 throw new Exception("Erreur : " + ex.Message);
             }
         }
+
+        public async Task<Profil> UpdateAsync(Guid id, Profil profil)
+        {
+            try
+            {
+                Profil profilResult = await _profilRepository.UpdateProfilAsync(id, profil);
+                if(profilResult == null)
+                {
+                    return null;
+                }
+                return profilResult;
+            }catch(Exception ex)
+            {
+                throw new Exception($"Le profil n'existe pas {ex.Message}");
+            }
+        }
     }
 }

@@ -11,5 +11,6 @@ public static class Route
     public const string Dashboard = "/dashboard";
     public const string Profils = "/profil";
     public const string GestionMAG = "/gestion-mag";
-    public const string DetailFacturation = "detail-facturation";
+    public const string NouveauMag = "/nouveau-mag";
+    public const string DetailFacturation = "/detail-facturation";
 }

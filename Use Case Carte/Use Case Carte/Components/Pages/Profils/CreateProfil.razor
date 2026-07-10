@@ -11,7 +11,7 @@
                 <div class="card-title">Create NFT</div>
             </div>
             <div class="card-body">
-                <EditForm Model="@profilModel" FormName="SaveProfil">
+                <EditForm Model="@profilModel" FormName="OnSaveProfil">
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="row gy-3">
@@ -82,7 +82,7 @@
                 <button
                     type="button"
                     class="btn btn-primary btn-wave waves-effect waves-light  me-2"
-                    @onclick="onCancel">
+                    @onclick="() => OnCancel()">
                     Annuler
                 </button>
                 <button
@@ -91,7 +91,7 @@
                     type="
                     submit
                     class="btn btn-success"
-                    @onclick="onSaveProfil">
+                    @onclick="OnSaveProfil">
                     Enregistrer
                 </button>
             </div>

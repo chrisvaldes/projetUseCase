@@ -10,7 +10,7 @@ namespace Use_Case_Carte.Services
     {
         public event Action<ToastModel>? OnShow;
 
-        public void ShowSuccess(string message, string title = "Succès")
+        public void ShowSuccess(string message, string title = "Succes")
         {
             Console.WriteLine("affichage du toast de succès");
             Show(message, title, ToastType.Success);
@@ -36,7 +36,7 @@ namespace Use_Case_Carte.Services
 
         private void Show(string message, string title, ToastType type)
         {
-            
+            Console.WriteLine("toast in the ");
             OnShow?.Invoke(new ToastModel
             {
                 Message = message,

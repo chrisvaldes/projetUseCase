@@ -65,7 +65,7 @@ namespace Use_Case_Carte.Services
         {
             await AddAuthHeader();
 
-            var response = await _http.GetAsync("api/profil");
+            var response = await _http.GetAsync("api/profils");
 
             if (response.IsSuccessStatusCode)
             {
@@ -78,6 +78,28 @@ namespace Use_Case_Carte.Services
             {
                 throw new Exception("Erreur lors de la récupération des profils.");
             }
+        }
+
+        public async Task<ApiResponse<ProfilModel>?> UpdateProfil(Guid id, ProfilModel profilModel)
+        {
+            await AddAuthHeader();
+
+            var response = await _http.PutAsJsonAsync($"api/profil/{id}", profilModel);
+
+            Console.WriteLine($"response {response.IsSuccessStatusCode}");
+
+            if (  response.IsSuccessStatusCode)
+            { 
+                
+                return await response.Content.ReadFromJsonAsync<ApiResponse<ProfilModel>>();;
+            }
+
+            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+            {
+                return null;
+            }
+
+            throw new Exception("Erreur lors de la Modification du profil.");
         }
 
         public async Task<ProfilModel?> GetById(Guid id)

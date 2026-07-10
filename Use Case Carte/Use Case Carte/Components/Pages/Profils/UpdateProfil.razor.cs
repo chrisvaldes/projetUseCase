@@ -10,7 +10,8 @@ public partial class UpdateProfil
 {
     [Inject]
     public ProfilService ProfilService { get; set; } = default!;
-
+    [Inject]
+    public ToastService ToastService { get; set; } = default!;
     [Inject]
     public NavigationService NavigationService { get; set; } = default!;
 
@@ -33,7 +34,7 @@ public partial class UpdateProfil
             Console.WriteLine($"Id reçu : {Id}");
 
             var profil = await ProfilService.GetById(Id);
- 
+
             if (profil != null)
             {
                 profilModel = profil;
@@ -42,19 +43,29 @@ public partial class UpdateProfil
         }
     }
 
-    private async Task SaveProfil()
+    private async Task OnUpdateProfil(Guid id, ProfilModel profilModel)
     {
-        var resp = await ProfilService.Save(profilModel);
+        await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
 
-        if (resp?.Success == true)
+        var resp = await ProfilService.UpdateProfil(id, profilModel);
+
+        if (resp!.Success)
         {
-            profilModel = new ProfilModel();
-
-            // retour liste si besoin
+            ToastService.ShowSuccess(resp.Message);
+            await Task.Delay(1500);
+            Console.WriteLine($"message {resp.Message}");
+            await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
+            NavigationService.GoProfil();
+        }
+        else
+        {
+            ToastService.ShowError(resp.Message);
+            await Task.Delay(1500);
+            await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
         }
     }
 
-    private void onCancel()
+    private void OnCancel()
     {
         NavigationService.GoProfil();
     }

@@ -11,7 +11,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace API.Controllers
 {
     [ApiController]
-    [Route("api/profil")]
+    [Route("api")]
     public class ProfilController : ControllerBase
     {
         private readonly IProfilService _profilService;
@@ -24,7 +24,7 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpPost("save")]
+        [HttpPost("profil/save")]
         public async Task<IActionResult> SaveProfil([FromBody] Profil profil)
         {
             if (ModelState.IsValid)
@@ -41,7 +41,7 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("profils")]
         public async Task<IActionResult> GetAllProfils()
         {
             var profils = await _profilService.GetAll();
@@ -58,7 +58,21 @@ namespace API.Controllers
         }
 
         [Authorize]
-        [HttpGet("{id}")]
+        [HttpPut("profil/{id}")]
+        public async Task<IActionResult> UpdateProfil(Guid id, Profil profil)
+        {
+            var profilResult = await _profilService.UpdateAsync(id, profil);
+            
+            if(profilResult != null)
+            {
+                return Ok(ApiResponse<Profil>.SuccessResponse(profil, "Profil modifié."));
+            }
+            return Ok(ApiResponse<Profil>.Fail("Aucun profil trouvé."));
+            
+        }
+
+        [Authorize]
+        [HttpGet("profil/{id}")]
         public async Task<IActionResult> GetProfilById(Guid id)
         {
             var profil = await _profilService.GetProfilById(id);

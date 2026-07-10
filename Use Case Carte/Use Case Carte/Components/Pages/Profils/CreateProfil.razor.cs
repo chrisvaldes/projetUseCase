@@ -52,18 +52,21 @@ public partial class CreateProfil : ComponentBase
     }
 
     // Handler conseillé : reçoit EditContext, retourne Task
-    private async Task onSaveProfil()
+    private async Task OnSaveProfil()
     {
-        Console.WriteLine("sopt");
+
+        await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
+
         var resp = await ProfilService.Save(profilModel);
 
         if (resp?.Success == true)
         {
-            await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
-            ToastService.ShowSuccess("Enregistrement effectué");
 
-            profilModel = new ProfilModel(); 
+            profilModel = new ProfilModel();
             NavigationService.GoProfil();
+            ToastService.ShowSuccess(resp.Message);
+            await Task.Delay(1500);
+            await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
             await OnSaved.InvokeAsync();
         }
         else
@@ -72,7 +75,7 @@ public partial class CreateProfil : ComponentBase
         }
     }
 
-    private void onCancel()
+    private void OnCancel()
     {
         NavigationService.GoProfil();
     }
