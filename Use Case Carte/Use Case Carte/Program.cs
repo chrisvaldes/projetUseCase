@@ -27,6 +27,13 @@ builder
     .AddInteractiveServerComponents(options =>
     {
         options.DetailedErrors = true;
+    })
+    .AddHubOptions(options =>
+    {
+        options.ClientTimeoutInterval = TimeSpan.FromMinutes(5);
+        options.HandshakeTimeout = TimeSpan.FromMinutes(2);
+        options.MaximumReceiveMessageSize = 500 * 1024 * 1024;
+        options.KeepAliveInterval = TimeSpan.FromSeconds(15);
     });
 
 var app = builder.Build();

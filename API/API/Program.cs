@@ -23,6 +23,7 @@ using API.Application.Repository;
 using API.Application.Services.IServices;
 using API.Application.Services;
 using API.Application.Service.ProfilService;
+using SYSGES_MAGs.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -42,7 +43,18 @@ builder.Services.AddScoped<ILoginTrackingService, LoginTrackingService>();
 builder.Services.AddScoped<ILdapService, LdapService>();
 builder.Services.AddScoped<ISettingService, SettingService>();
 builder.Services.AddScoped<IProfilService, ProfilService>();
-builder.Services.AddScoped<IProfilRepository, ProfilRepository>();
+builder.Services.AddScoped<IProfilRepository, ProfilRepository>(); 
+builder.Services.AddScoped<IAuthService, AuthService>();  
+builder.Services.AddScoped<IMagProcessingService, MagProcessingService>(); 
+builder.Services.AddScoped<IBkmvtiRepository, BkmvtiRepository>();
+builder.Services.AddScoped<ITypeMagRepository, TypeMagRepository>(); 
+builder.Services.AddScoped<IBkmvtiService, BkmvtiService>();
+builder.Services.AddScoped<IEmailService, EmailService>();
+builder.Services.AddScoped<IComptesOuvertRepository, ComptesOuvertRepository>();
+builder.Services.AddScoped<IComptesOuvertService, ComptesOuvertService>();
+builder.Services.AddScoped<ICompteDebiteRedevCarteService, CompteDebiteRedevCarteService>();
+builder.Services.AddScoped<IComptesDebiteRedevCarteRepository, ComptesDebiteRedevCarteRepository>();
+builder.Services.AddScoped<MagProcessingHelper>();
 
 
 builder.Services.AddCors(options =>

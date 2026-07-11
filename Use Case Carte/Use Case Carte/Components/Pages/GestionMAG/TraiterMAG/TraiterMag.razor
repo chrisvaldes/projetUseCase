@@ -13,7 +13,7 @@
             </div>
             <div class=" card-body ">
 
-                <EditForm FormName="typeMagForm" Model="@inputModel" enctype="multipart/form-data"
+                <EditForm FormName="typeMagForm" Model="@inputModel" 
                           OnValidSubmit="Traiter" >
 
                     <div class="row gy-3">
@@ -53,7 +53,7 @@
                                 Fichier Apprint <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile class="form-control" />
+                            <InputFile   OnChange="@(e => OnFileSelected(e, nameof(inputModel.Apprint)))" class="form-control" />
                         </div>
 
                         <!-- Comptes -->
@@ -62,7 +62,7 @@
                                 Fichier compte ouvert <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.OpenAccount)))" class="form-control" />
                         </div>
 
                         <div class="col-md-6">
@@ -70,7 +70,7 @@
                                 Fichier compte actif <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile class="form-control" />
+                            <InputFile  OnChange="@(e => OnFileSelected(e, nameof(inputModel.ActiveAccount)))" class="form-control" />
                         </div>
 
                         <!-- Package -->
@@ -79,7 +79,7 @@
                                 Package actif <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.ActivePackage)))" class="form-control" />
                         </div>
 
                         <!-- Contentieux -->
@@ -88,7 +88,7 @@
                                 Comptes en contentieux <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.CtxAccount)))" class="form-control" />
                         </div>
 
                         <div class="col-md-6">
@@ -97,7 +97,7 @@
                                 <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.DateLastSouPackEchu)))" class="form-control" />
                         </div>
 
                         <!-- Redevance -->
@@ -107,7 +107,7 @@
                                 <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.AccountHisDebiteByRedevCard)))" class="form-control" />
                         </div>
 
                     </div>
