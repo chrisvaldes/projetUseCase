@@ -20,9 +20,6 @@ public partial class Home : ComponentBase
     [Inject]
     private IJSRuntime JS { get; set; } = default!;
 
-    [Inject]
-    public ToastService ToastService { get; set; } = default;
-
     protected LoginRequest loginRequest = new();
 
     private bool IsLoading = false;
@@ -32,16 +29,20 @@ public partial class Home : ComponentBase
     {
         try
         {
-            await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
-            await Task.Delay(1500);
+            IsLoading = true;
+            Console.WriteLine($"LoginRequest : {loginRequest.Username}, {loginRequest.Password}");
+
             var result = await AuthService.Login(loginRequest);
-            ToastService.ShowSuccess(result.Message);
+
             Console.WriteLine("---------->> Response success? : " + result.Success);
 
             if (result.Success)
             {
-                await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
                 NavigationService.GoProfil();
+
+                // Quick fix : forcer un rechargement complet pour réinitialiser les scripts client (sidebar, simplebar, defaultmenu...)
+                // Remarque : remplacez par une réinitialisation JS propre si vous implémentez la fonction reinitUi (recommandé ci‑dessous).
+                await JS.InvokeVoidAsync("eval", "setTimeout(function(){ location.reload(); }, 10);");
             }
             else
             {

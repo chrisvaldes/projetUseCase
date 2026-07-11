@@ -27,6 +27,10 @@ namespace Infrastructure.Persistence
         public DbSet<Permission> Permissions { get; set; }
         public DbSet<Profil> Profils { get; set; }
 
+        public DbSet<ComptesOuvert> ComptesOuvert { get; set; }
+        public DbSet<CompteDebiteRedevCarte> ComptesDebiteRedevCartes { get; set; }
+        public DbSet<Bkmvti> Bkmvtis { get; set; }
+        public DbSet<TypeMag> TypeMags { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

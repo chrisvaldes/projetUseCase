@@ -61,6 +61,8 @@ function showToast(message, type) {
     }
 }
 
+
+
 function toggleOnLoaderAndToast() {
     const loaderOverlay = document.getElementById("loaderOverlay");
     if (loaderOverlay) loaderOverlay.classList.add("show");

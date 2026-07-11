@@ -22,6 +22,158 @@ namespace API.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("API.Domain.Entities.Bkmvti", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<bool>("Basculer")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Carte")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("CleBeneficiaire")
+                        .HasColumnType("int");
+
+                    b.Property<string>("CodeAgence")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeCarte")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeDevise")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeEmetteur")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeIN")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeOperation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("CodeTarif")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("DateCreationCarte")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("DatePrelevement")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("DateValiditeCarte")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("DesignationCarte")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("EndPeriod")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("EstActif")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("IndicateurDomiciliation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("LibelleCarte")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NomClient")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("NumeroCompte")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long?>("PrixUnitCarte")
+                        .HasColumnType("bigint");
+
+                    b.Property<int>("ReferenceBeneficiaire")
+                        .HasColumnType("int");
+
+                    b.Property<string>("ReferenceOperation")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Sequence")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset?>("StartPeriod")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TypeBeneficiaire")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<Guid>("TypeMag")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Bkmvtis");
+                });
+
+            modelBuilder.Entity("API.Domain.Entities.CompteDebiteRedevCarte", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Dco")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Lib")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<long>("Mon")
+                        .HasColumnType("bigint");
+
+                    b.Property<string>("Ncp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ComptesDebiteRedevCartes");
+                });
+
+            modelBuilder.Entity("API.Domain.Entities.ComptesOuvert", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("Age")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Cfe")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Cha")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Clc")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Inti")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Ncp")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("ComptesOuvert");
+                });
+
             modelBuilder.Entity("API.Domain.Entities.Profil", b =>
                 {
                     b.Property<Guid>("Id")
@@ -55,6 +207,41 @@ namespace API.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Profils");
+                });
+
+            modelBuilder.Entity("API.Domain.Entities.TypeMag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("PeriodeDebut")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<DateTimeOffset>("PeriodeFin")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("TypeMags")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<bool>("isAlreadyDownload")
+                        .HasColumnType("bit");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TypeMags");
                 });
 
             modelBuilder.Entity("Auth.Domain.Entities.LoginHistory", b =>

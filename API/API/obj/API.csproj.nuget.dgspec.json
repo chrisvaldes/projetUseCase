@@ -52,6 +52,18 @@
           "framework": "net10.0",
           "targetAlias": "net10.0",
           "dependencies": {
+            "EFCore.BulkExtensions": {
+              "target": "Package",
+              "version": "[10.0.1, )"
+            },
+            "EPPlus": {
+              "target": "Package",
+              "version": "[8.5.0, )"
+            },
+            "EPPlus.Interfaces": {
+              "target": "Package",
+              "version": "[8.4.0, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[10.0.9, )"
@@ -80,7 +92,7 @@
             },
             "Npgsql.EntityFrameworkCore.PostgreSQL": {
               "target": "Package",
-              "version": "[10.0.2, )"
+              "version": "[10.0.3, )"
             },
             "System.DirectoryServices": {
               "target": "Package",
