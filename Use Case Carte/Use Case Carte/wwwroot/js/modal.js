@@ -10,9 +10,7 @@ const mapProfil = {
 };
 
 function showToast(message, type) {
-    try {
-        alert("message "+ message);
-        alert("type : "+ type)
+    try { 
         const modal = document.getElementById("createProfileModal");
         if (modal) hideModal(modal);
 

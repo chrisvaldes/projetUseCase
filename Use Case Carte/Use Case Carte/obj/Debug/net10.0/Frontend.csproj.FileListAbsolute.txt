@@ -699,8 +699,6 @@ C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case 
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\ng7cue9vpk-{0}-ne14ti1q68-ne14ti1q68.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\pv7nliz1t3-{0}-ig5xotzpx5-ig5xotzpx5.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\ueotsgx0a8-{0}-umbmiwqpcs-umbmiwqpcs.gz
-C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\58vwizni16-{0}-51dy0d2m6n-51dy0d2m6n.gz
-C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\8jbmea23pl-{0}-iqcx8x7gu5-iqcx8x7gu5.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\staticwebassets.build.json
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\staticwebassets.build.json.cache
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\staticwebassets.development.json
@@ -715,3 +713,5 @@ C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case 
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\do3qv9e14j-{0}-7pe2qdoiwv-7pe2qdoiwv.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\25c4030kra-{0}-qvwfyqrbjq-qvwfyqrbjq.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\s7i49pryaz-{0}-i093f8zmdz-i093f8zmdz.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\58vwizni16-{0}-51dy0d2m6n-51dy0d2m6n.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\8jbmea23pl-{0}-iqcx8x7gu5-iqcx8x7gu5.gz
