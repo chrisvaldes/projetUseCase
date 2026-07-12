@@ -5046,6 +5046,23 @@
     border-inline-start: 0.25rem solid rgba(var(--danger-rgb), 0.6);
 }
 
+.main-sidebar{
+    background:#111C43;
+}
+
+.side-menu__label{
+    color:white;
+}
+
+.side-menu__icon{
+    color:white;
+}
+
+.category-name{
+    color:#B2DFDB;
+}
+ 
+
 .alert {
     padding: 0.625rem 0.85rem;
     border-radius: 0.3rem;

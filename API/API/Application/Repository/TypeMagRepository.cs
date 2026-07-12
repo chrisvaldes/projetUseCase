@@ -88,7 +88,7 @@ namespace API.Application.Repository
             if (typeMag == null)
                 return false;
 
-            typeMag.isAlreadyDownload = true;
+            typeMag.IsAlreadyDownload = true;
 
             await _dbContext.SaveChangesAsync();
 
