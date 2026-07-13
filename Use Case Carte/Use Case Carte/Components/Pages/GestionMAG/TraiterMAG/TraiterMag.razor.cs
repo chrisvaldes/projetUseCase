@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
+using Microsoft.JSInterop;
 using Use_Case_Carte.Components.Route;
 using Use_Case_Carte.Models;
 using Use_Case_Carte.Services;
@@ -13,6 +14,8 @@ public partial class TraiterMag : ComponentBase
 
     [Inject]
     NouveauMagService NouveauMagService { get; set; } = default!;
+    [Inject]
+    public IJSRuntime JS { get; set; } = default!;
 
     private readonly ILogger<TraiterMag> _logger;
 
@@ -22,12 +25,15 @@ public partial class TraiterMag : ComponentBase
     {
         _logger = logger;
     }
+
     public void OnCancel()
     {
         NavigationService.GoGestionMAG();
     }
+
     public async Task Traiter()
     {
+        await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
         Console.WriteLine($"data : {inputModel.TypeMag}");
         try
         {
@@ -35,6 +41,7 @@ public partial class TraiterMag : ComponentBase
             if (resultRequest == null || !resultRequest.Success)
             {
                 // TODO: afficher un toast d'erreur avec resultRequest?.Message
+                await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
                 return;
             }
             // succès -> navigation ou notification

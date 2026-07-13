@@ -1,3 +1,10 @@
+using System;
+using System.Text;
+using API.Application.Repository;
+using API.Application.Repository.IRepository;
+using API.Application.Service.ProfilService;
+using API.Application.Services;
+using API.Application.Services.IServices;
 using Auth.Application.Interfaces;
 using Auth.Application.Services;
 using Auth.DependencyInjection;
@@ -13,27 +20,19 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using OfficeOpenXml;
 using Settings.Application.Interfaces;
-using System;
-using System.Text;
+using SYSGES_MAGs.Helpers;
 using Users.DependencyInjection;
 using Users.Domain.Entities;
-using API.Application.Repository.IRepository;
-using API.Application.Repository;
-using API.Application.Services.IServices;
-using API.Application.Services;
-using API.Application.Service.ProfilService;
-using SYSGES_MAGs.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
-
- 
 
 // Add services to the container.
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
- 
+
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IPermissionService, PermissionService>();
 builder.Services.AddScoped<IPermissionGenerator, PermissionGenerator>();
@@ -43,11 +42,11 @@ builder.Services.AddScoped<ILoginTrackingService, LoginTrackingService>();
 builder.Services.AddScoped<ILdapService, LdapService>();
 builder.Services.AddScoped<ISettingService, SettingService>();
 builder.Services.AddScoped<IProfilService, ProfilService>();
-builder.Services.AddScoped<IProfilRepository, ProfilRepository>(); 
-builder.Services.AddScoped<IAuthService, AuthService>();  
-builder.Services.AddScoped<IMagProcessingService, MagProcessingService>(); 
+builder.Services.AddScoped<IProfilRepository, ProfilRepository>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IMagProcessingService, MagProcessingService>();
 builder.Services.AddScoped<IBkmvtiRepository, BkmvtiRepository>();
-builder.Services.AddScoped<ITypeMagRepository, TypeMagRepository>(); 
+builder.Services.AddScoped<ITypeMagRepository, TypeMagRepository>();
 builder.Services.AddScoped<IBkmvtiService, BkmvtiService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 builder.Services.AddScoped<IComptesOuvertRepository, ComptesOuvertRepository>();
@@ -56,74 +55,82 @@ builder.Services.AddScoped<ICompteDebiteRedevCarteService, CompteDebiteRedevCart
 builder.Services.AddScoped<IComptesDebiteRedevCarteRepository, ComptesDebiteRedevCarteRepository>();
 builder.Services.AddScoped<MagProcessingHelper>();
 
-
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowUse_Case_Carte", policy =>
-    {
-        policy
-            .WithOrigins(
-                "http://localhost:5239",
-                "https://localhost:5229",
-                "http://localhost:5074",
-                "https://localhost:7014")
-            .AllowAnyHeader()
-            .AllowAnyMethod()
-            .AllowCredentials();
-    });
+    options.AddPolicy(
+        "AllowUse_Case_Carte",
+        policy =>
+        {
+            policy
+                .WithOrigins(
+                    "http://localhost:5239",
+                    "https://localhost:5229",
+                    "http://localhost:5074",
+                    "https://localhost:7014"
+                )
+                .AllowAnyHeader()
+                .AllowAnyMethod()
+                .AllowCredentials();
+        }
+    );
 });
 
-builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole<Guid>>()
+builder
+    .Services.AddIdentity<ApplicationUser, IdentityRole<Guid>>()
     .AddEntityFrameworkStores<ApplicationDbContext>()
     .AddDefaultTokenProviders();
 
-
 var connectionStringSql = builder.Configuration.GetConnectionString("SqlServerConnection");
 
+ExcelPackage.License.SetNonCommercialPersonal("Ton Nom");
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionStringSql));
+    options.UseSqlServer(connectionStringSql)
+);
 
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
+builder
+    .Services.AddAuthentication(options =>
     {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateLifetime = true,
-        ValidateIssuerSigningKey = true,
-        ValidIssuer = builder.Configuration["Jwt:Issuer"],
-        ValidAudience = builder.Configuration["Jwt:Audience"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]))
-    };
-    options.Events = new JwtBearerEvents
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
     {
-        OnAuthenticationFailed = ctx =>
+        options.TokenValidationParameters = new TokenValidationParameters
         {
-            Console.WriteLine($"Jwt OnAuthenticationFailed: {ctx.Exception?.Message}");
-            return Task.CompletedTask;
-        },
-        OnTokenValidated = ctx =>
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(
+                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"])
+            ),
+        };
+        options.Events = new JwtBearerEvents
         {
-            Console.WriteLine("Jwt OnTokenValidated: token valid");
-            return Task.CompletedTask;
-        },
-        OnChallenge = ctx =>
-        {
-            Console.WriteLine($"Jwt OnChallenge: Error={ctx.Error} Description={ctx.ErrorDescription}");
-            return Task.CompletedTask;
-        }
-    };
-});
+            OnAuthenticationFailed = ctx =>
+            {
+                Console.WriteLine($"Jwt OnAuthenticationFailed: {ctx.Exception?.Message}");
+                return Task.CompletedTask;
+            },
+            OnTokenValidated = ctx =>
+            {
+                Console.WriteLine("Jwt OnTokenValidated: token valid");
+                return Task.CompletedTask;
+            },
+            OnChallenge = ctx =>
+            {
+                Console.WriteLine(
+                    $"Jwt OnChallenge: Error={ctx.Error} Description={ctx.ErrorDescription}"
+                );
+                return Task.CompletedTask;
+            },
+        };
+    });
 
 builder.Services.AddAuthorization();
-builder.Services.AddHttpContextAccessor(); 
- 
+builder.Services.AddHttpContextAccessor();
 
 var app = builder.Build();
 
@@ -140,12 +147,13 @@ using (var scope = app.Services.CreateScope())
 }
 
 //}
-app.Use(async (context, next) =>
-{
-    Console.WriteLine($"{context.Request.Method} {context.Request.Path}");
-    await next();
-});
-
+app.Use(
+    async (context, next) =>
+    {
+        Console.WriteLine($"{context.Request.Method} {context.Request.Path}");
+        await next();
+    }
+);
 
 using (var scope = app.Services.CreateScope())
 {
@@ -156,18 +164,20 @@ using (var scope = app.Services.CreateScope())
 app.UseCors("AllowUse_Case_Carte");
 
 app.UseHttpsRedirection();
-        
-app.UseAuthentication(); 
+
+app.UseAuthentication();
 
 // Debugging: log raw Authorization header and authentication result
-app.Use(async (context, next) =>
-{
-    var authHeader = context.Request.Headers["Authorization"].ToString();
-    var isAuth = context.User?.Identity?.IsAuthenticated ?? false;
-    Console.WriteLine($"Incoming Authorization: {authHeader}");
-    Console.WriteLine($"HttpContext.User.Identity.IsAuthenticated: {isAuth}");
-    await next();
-});
+app.Use(
+    async (context, next) =>
+    {
+        var authHeader = context.Request.Headers["Authorization"].ToString();
+        var isAuth = context.User?.Identity?.IsAuthenticated ?? false;
+        Console.WriteLine($"Incoming Authorization: {authHeader}");
+        Console.WriteLine($"HttpContext.User.Identity.IsAuthenticated: {isAuth}");
+        await next();
+    }
+);
 
 app.UseAuthorization();
 

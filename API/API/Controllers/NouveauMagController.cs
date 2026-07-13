@@ -1,5 +1,3 @@
-
-
 using API.Application.DTO;
 using API.Application.Services.IServices;
 using API.Domain.Entities;
@@ -20,7 +18,12 @@ namespace API.Controllers
         private readonly IBkmvtiService _bkmvtiService;
         private readonly MagProcessingHelper _magProcessingHelper;
 
-        public NouveauMagController(IMagProcessingService magProcessingService, IBkmvtiService bkmvtiService, ILogger<NouveauMagController> logger, MagProcessingHelper magProcessingHelper)
+        public NouveauMagController(
+            IMagProcessingService magProcessingService,
+            IBkmvtiService bkmvtiService,
+            ILogger<NouveauMagController> logger,
+            MagProcessingHelper magProcessingHelper
+        )
         {
             _magProcessingService = magProcessingService;
             _bkmvtiService = bkmvtiService;
@@ -37,17 +40,29 @@ namespace API.Controllers
             _logger.LogInformation($"========>>>>>>>>type mag : {inputModel.TypeMag} ");
             _logger.LogInformation($"========>>>>>>>>type mag : {inputModel.StartPeriod} ");
             //Vérification des paramètres obligatoires
-            if (inputModel.Apprint == null || inputModel.Apprint.Length == 0 ||
-                inputModel.OpenAccount == null || inputModel.OpenAccount.Length == 0 ||
-                inputModel.ActiveAccount == null || inputModel.ActiveAccount.Length == 0 ||
-                inputModel.DateLastSouPackEchu == null || inputModel.DateLastSouPackEchu.Length == 0 ||
-                inputModel.ActivePackage == null || inputModel.ActivePackage.Length == 0 ||
-                inputModel.AccountHisDebiteByRedevCard == null || inputModel.AccountHisDebiteByRedevCard.Length == 0 ||
-                string.IsNullOrEmpty(inputModel.TypeMag) || inputModel.CtxAccount.Length == 0 ||
-                inputModel.StartPeriod == default || inputModel.EndPeriod == default)
+            if (
+                inputModel.Apprint == null
+                || inputModel.Apprint.Length == 0
+                || inputModel.OpenAccount == null
+                || inputModel.OpenAccount.Length == 0
+                || inputModel.ActiveAccount == null
+                || inputModel.ActiveAccount.Length == 0
+                || inputModel.DateLastSouPackEchu == null
+                || inputModel.DateLastSouPackEchu.Length == 0
+                || inputModel.ActivePackage == null
+                || inputModel.ActivePackage.Length == 0
+                || inputModel.AccountHisDebiteByRedevCard == null
+                || inputModel.AccountHisDebiteByRedevCard.Length == 0
+                || string.IsNullOrEmpty(inputModel.TypeMag)
+                || inputModel.CtxAccount.Length == 0
+                || inputModel.StartPeriod == default
+                || inputModel.EndPeriod == default
+            )
             {
                 _logger.LogInformation("Tous les champs sont obligatoires");
-                return Ok(ApiResponse<InputModel>.Fail("Tous les champs du formulaire sont requis"));
+                return Ok(
+                    ApiResponse<InputModel>.Fail("Tous les champs du formulaire sont requis")
+                );
             }
             try
             {
@@ -56,7 +71,9 @@ namespace API.Controllers
                 _logger.LogInformation($"========>>>>>>>>type mag : {inputModel.TypeMag} ");
                 if (!result.Success)
                 {
-                    _logger.LogWarning("Erreur lors du traitement des fichiers : " + result.Message);
+                    _logger.LogWarning(
+                        "Erreur lors du traitement des fichiers : " + result.Message
+                    );
                     return Ok(result);
                 }
 
@@ -67,7 +84,11 @@ namespace API.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Erreur inattendue lors du traitement des fichiers MAG");
-                return Ok(ApiResponse<bool>.Fail("Une erreur est survenue lors du traitement des fichiers. " + ex.Message));
+                return Ok(
+                    ApiResponse<bool>.Fail(
+                        "Une erreur est survenue lors du traitement des fichiers. " + ex.Message
+                    )
+                );
             }
         }
 
@@ -85,44 +106,40 @@ namespace API.Controllers
 
             var bkmvtis = await _bkmvtiService.BkmvtisByMagType(request.TypeMag);
 
-
             await _magProcessingHelper.IsDownloadAsync(request.TypeMag);
 
             if (bkmvtis == null || !bkmvtis.Any())
-                return Ok(ApiResponse<bool>.SuccessResponse(true, "Le fichier ne contient aucun manque à gagner à récupérer."));
+                return Ok(
+                    ApiResponse<bool>.SuccessResponse(
+                        true,
+                        "Le fichier ne contient aucun manque à gagner à récupérer."
+                    )
+                );
 
-            var fileBytes =
-                await _magProcessingHelper.GenerateFile(bkmvtis);
+            var fileBytes = await _magProcessingHelper.GenerateFile(bkmvtis);
 
-            var fileName =
-                $"BKMVTI_{DateTime.Now:yyyyMMddHHmmss}";
+            var fileName = $"BKMVTI_{DateTime.Now:yyyyMMddHHmmss}";
 
-            return File(
-                fileBytes,
-                "application/octet-stream",
-                fileName);
+            return File(fileBytes, "application/octet-stream", fileName);
         }
 
         [HttpPost]
-        public async Task<IActionResult> TelechargerCarteARegulerExcel([FromBody] DownloadRequest request)
+        public async Task<IActionResult> TelechargerCarteARegulerExcel(
+            [FromBody] DownloadRequest request
+        )
         {
             try
             {
-
                 var result = await _bkmvtiService.DashboardResult();
 
                 if (request.TypeMag == Guid.Empty)
                     return Ok(ApiResponse<bool>.Fail("Identifiant du MAG invalide!!!"));
 
-
                 var carteAReguler = await _bkmvtiService.CarteAReguler(request.TypeMag);
                 // Génération du fichier Excel
-                byte[] fichier = _magProcessingHelper.TxtToExcel(
-                    carteAReguler
-                );
+                byte[] fichier = _magProcessingHelper.TxtToExcel(carteAReguler);
 
-                string nomFichier =
-                    $"BKMBTI_{DateTime.Today}.xlsx";
+                string nomFichier = $"BKMBTI_{DateTime.Today}.xlsx";
 
                 return File(
                     fichier,
@@ -132,15 +149,11 @@ namespace API.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new
-                {
-                    Message = "Erreur lors de la génération du fichier",
-                    Error = ex.Message
-                });
+                return StatusCode(
+                    500,
+                    new { Message = "Erreur lors de la génération du fichier", Error = ex.Message }
+                );
             }
         }
-
     }
-
 }
-

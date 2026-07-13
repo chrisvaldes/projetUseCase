@@ -224,6 +224,9 @@ namespace API.Migrations
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<bool>("IsAlreadyDownload")
+                        .HasColumnType("bit");
+
                     b.Property<DateTimeOffset>("PeriodeDebut")
                         .HasColumnType("datetimeoffset");
 
@@ -235,9 +238,6 @@ namespace API.Migrations
 
                     b.Property<DateTimeOffset>("UpdatedAt")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<bool>("isAlreadyDownload")
-                        .HasColumnType("bit");
 
                     b.HasKey("Id");
 

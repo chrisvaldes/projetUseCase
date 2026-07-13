@@ -1,3 +1,4 @@
+using System.Net.Http.Headers;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
@@ -6,19 +7,23 @@ using Use_Case_Carte.Models;
 
 namespace Use_Case_Carte.Services
 {
-
     public class NouveauMagService : BaseApiService
     {
         private SafeJs _safeJs;
         private readonly IJSRuntime _js;
 
-        public NouveauMagService(SafeJs safeJs, HttpClient http,
-                ILocalStorageService storage,
-                IJSRuntime js) : base(http, storage)
+        public NouveauMagService(
+            SafeJs safeJs,
+            HttpClient http,
+            ILocalStorageService storage,
+            IJSRuntime js
+        )
+            : base(http, storage)
         {
             _js = js;
             _safeJs = safeJs;
         }
+
         public async Task<ApiResponse<InputModel>> NouveauMag(InputModel request)
         {
             try
@@ -35,7 +40,8 @@ namespace Use_Case_Carte.Services
 
                 async Task AddFileAsync(IBrowserFile file, string fieldName)
                 {
-                    if (file == null) return;
+                    if (file == null)
+                        return;
 
                     var tempPath = Path.GetTempFileName();
                     tempFiles.Add(tempPath);
@@ -47,8 +53,11 @@ namespace Use_Case_Carte.Services
                     }
 
                     var streamContent = new StreamContent(File.OpenRead(tempPath));
-                    streamContent.Headers.ContentType =
-                        new System.Net.Http.Headers.MediaTypeHeaderValue(file.ContentType ?? "application/octet-stream");
+                    streamContent.Headers.ContentType = new MediaTypeHeaderValue(
+                        string.IsNullOrWhiteSpace(file.ContentType)
+                            ? "application/octet-stream"
+                            : file.ContentType
+                    );
                     form.Add(streamContent, fieldName, file.Name);
                 }
 
@@ -59,7 +68,10 @@ namespace Use_Case_Carte.Services
                 await AddFileAsync(request.ActivePackage, "ActivePackage");
                 await AddFileAsync(request.CtxAccount, "CtxAccount");
                 await AddFileAsync(request.DateLastSouPackEchu, "DateLastSouPackEchu");
-                await AddFileAsync(request.AccountHisDebiteByRedevCard, "AccountHisDebiteByRedevCard");
+                await AddFileAsync(
+                    request.AccountHisDebiteByRedevCard,
+                    "AccountHisDebiteByRedevCard"
+                );
 
                 var response = await _http.PostAsync("api/nouveauMag", form);
                 var content = await response.Content.ReadAsStringAsync();
@@ -69,7 +81,13 @@ namespace Use_Case_Carte.Services
                 // nettoyage des fichiers temporaires
                 foreach (var path in tempFiles)
                 {
-                    try { File.Delete(path); } catch { /* ignore */ }
+                    try
+                    {
+                        File.Delete(path);
+                    }
+                    catch
+                    { /* ignore */
+                    }
                 }
 
                 if (!response.IsSuccessStatusCode)
