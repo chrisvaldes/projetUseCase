@@ -1,8 +1,11 @@
+@page "/MAG/dashboard"
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
 @{
     var totalMontant = dashboardSynthese.BkmvtiSyntheseDto.Sum(x => x.MontantTotal);
 }
 
-@page "/dashboard"
+
 
 <div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2">
     <div>
@@ -82,78 +85,4 @@
         </div>
     </div>
     <!-- Chart.js CDN -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', async () => {
-
-        try {
-
-        const response = await fetch('/Home/Dashboard');
-
-        if (!response.ok) {
-        throw new Error('Impossible de charger les données');
-        }
-
-        const result = await response.json();
-
-        // Tableau contenant les données du graphique
-        const dashboard = result.dashboardResult;
-
-        const labels = dashboard.map(x =>
-        `${String(x.mois).padStart(2, '0')}/${x.annee}`
-        );
-
-        const montants = dashboard.map(x => x.montant);
-
-        const ctx = document.getElementById("myChart").getContext("2d");
-
-        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-
-        gradient.addColorStop(0, "#Ff0054");
-        gradient.addColorStop(1, "#FA003F");
-
-        const gradient1 = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient1.addColorStop(0, "#f8d7da"); // rose pâle
-        gradient1.addColorStop(1, "#d1e7dd");
-
-        new Chart(ctx, {
-        type: "line",
-        data: {
-        labels: labels,
-        datasets: [{
-        label: "Montant total",
-        data: montants,
-        backgroundColor: gradient1,
-        borderColor: gradient,
-        borderWidth: 2,
-        tension: 0.4,
-        fill: true
-        }]
-        },
-        options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-        legend: {
-        display: true
-        }
-        },
-        scales: {
-        y: {
-        beginAtZero: true
-        }
-        }
-        }
-        });
-
-        }
-        catch (error) {
-        console.error(error);
-        }
-
-        });
-    </script>
-
-
-
+ 

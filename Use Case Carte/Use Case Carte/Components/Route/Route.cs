@@ -8,7 +8,7 @@ public static class Route
     public const string CreateProfil = "/creation-profil";
     public const string ModifierProfil = "/modification-profil";
     public const string SupprimerProfil = "/suppression-profil";
-    public const string Dashboard = "/dashboard";
+    public const string Dashboard = "/MAG/dashboard";
     public const string Profils = "/profil";
     public const string GestionMAG = "/gestion-mag";
     public const string NouveauMag = "/nouveau-mag";

@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Components;
+using Microsoft.JSInterop;
 using Use_Case_Carte.Components.Route;
 using Use_Case_Carte.Models;
 using Use_Case_Carte.Services;
@@ -12,22 +13,32 @@ public partial class ListeMag
 
     protected IEnumerable<TypeMag> typeMags = new List<TypeMag>();
 
+
+    [Inject]
+    public IJSRuntime JS { get; set; } = default!;
+
+
+
     [Inject]
     public TypeMagService TypeMagService { get; set; } = default!;
 
     // utiliser un contructeur pour écouter à chaque fois la liste des mags traiter
- 
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await LoadProfils();
+            await LoadListMags();
         }
     }
 
-    private async Task LoadProfils()
+    private async Task LoadListMags()
     {
+        await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
+
         typeMags = await TypeMagService.GetAllMags();
+
+        await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
 
         StateHasChanged();
     }

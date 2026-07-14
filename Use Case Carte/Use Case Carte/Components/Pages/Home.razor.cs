@@ -22,14 +22,13 @@ public partial class Home : ComponentBase
 
     protected LoginRequest loginRequest = new();
 
-    private bool IsLoading = false;
-    private string Message = string.Empty;
 
     protected async Task LoginAsync()
     {
         try
         {
-            IsLoading = true;
+            await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
+            
             Console.WriteLine($"LoginRequest : {loginRequest.Username}, {loginRequest.Password}");
 
             var result = await AuthService.Login(loginRequest);
@@ -46,16 +45,17 @@ public partial class Home : ComponentBase
             }
             else
             {
-                Message = result?.Message ?? "Erreur de connexion";
+                // Message = result?.Message ?? "Erreur de connexion";
             }
         }
         catch (Exception ex)
         {
-            Message = ex.Message;
+            // Message = ex.Message;
+            await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
         }
         finally
         {
-            IsLoading = false;
+            await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
         }
     }
 }

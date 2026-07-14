@@ -28,14 +28,18 @@ public partial class ListProfil : ComponentBase
     {
         if (firstRender)
         {
+            await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
+
             await LoadProfils();
+
+            await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
         }
     }
 
     private async Task LoadProfils()
     {
         profils = await ProfilService.GetAllProfils();
-    
+
         StateHasChanged();
     }
 

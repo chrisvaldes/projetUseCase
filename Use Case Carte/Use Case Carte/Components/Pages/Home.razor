@@ -1,11 +1,8 @@
 ﻿@page "/"
-@using Use_Case_Carte.Components.ToastComponent
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
  
 
-<PageTitle>Home</PageTitle>
-<Toast />
-
+<PageTitle>Home</PageTitle> 
 @layout MainLayoutLogin
 
 <div class="row  authentication authentication-cover-main ">

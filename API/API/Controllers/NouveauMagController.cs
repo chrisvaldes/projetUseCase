@@ -110,6 +110,20 @@ namespace API.Controllers
             return Ok(ApiResponse<IEnumerable<TypeMag>>.SuccessResponse(typeMags, ""));
         }
 
+        [Authorize]
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> Dashboard()
+        {
+            var result = await _bkmvtiService.DashboardResult();
+
+            if (result == null)
+            {
+                throw new Exception("DashboardResult() retourne null");
+            }
+
+            return Ok(ApiResponse<DashboardSynthese>.SuccessResponse(result, ""));
+        }
+
         public async Task<IActionResult> DownloadBkmvti([FromBody] DownloadRequest request)
         {
             if (request.TypeMag == Guid.Empty)
