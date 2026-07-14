@@ -13,4 +13,5 @@ public static class Route
     public const string GestionMAG = "/gestion-mag";
     public const string NouveauMag = "/nouveau-mag";
     public const string DetailFacturation = "/detail-facturation";
+    public const string SyntheseMag = "/MAG/Synthese";
 }

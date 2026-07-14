@@ -1,6 +1,6 @@
-﻿using System.Net.Http.Headers;
+﻿using System;
+using System.Net.Http.Headers;
 using Blazored.LocalStorage;
-using System;
 
 namespace Use_Case_Carte.Services
 {
@@ -27,8 +27,10 @@ namespace Use_Case_Carte.Services
                     return;
                 }
 
-                _http.DefaultRequestHeaders.Authorization =
-                    new AuthenticationHeaderValue("Bearer", token);
+                _http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue(
+                    "Bearer",
+                    token
+                );
             }
             catch (InvalidOperationException ex)
             {

@@ -92,11 +92,22 @@ namespace API.Controllers
             }
         }
 
+        [Authorize]
+        [HttpGet("synthese/{id}")]
         public async Task<IActionResult> Synthese(Guid id)
         {
             var result = await _magProcessingHelper.GetTypeMagWithSynthese(id);
+            Console.WriteLine($"resultat : {result.Description}");
             // check le type de retour de la synthèse
             return Ok(result);
+        }
+
+        [Authorize]
+        [HttpGet("typeMag")]
+        public async Task<IActionResult> Index()
+        {
+            IEnumerable<TypeMag> typeMags = await _magProcessingHelper.GetAllTypeMagsAsync();
+            return Ok(ApiResponse<IEnumerable<TypeMag>>.SuccessResponse(typeMags, ""));
         }
 
         public async Task<IActionResult> DownloadBkmvti([FromBody] DownloadRequest request)

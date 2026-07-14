@@ -18,7 +18,7 @@ builder.Services.AddScoped<SafeJs>();
 builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<NouveauMagService>();
 builder.Services.AddScoped<DetailReclamationService>();
-// builder.Services.AddScoped<DashboarS>();
+builder.Services.AddScoped<TypeMagService>();
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri("http://localhost:5229/"),

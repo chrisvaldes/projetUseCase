@@ -53,10 +53,10 @@ public class NavigationService
         _navigation.NavigateTo(Route.DetailFacturation);
     }
 
-    //public void GoCustomers()
-    //{
-    //    _navigation.NavigateTo(Route.Customers);
-    //}
+    public void GoSyntheseMag(TypeMag typeMag)
+    {
+        _navigation.NavigateTo($"{Route.SyntheseMag}/{typeMag.Id}");
+    }
 
     //public void GoCreateCustomer()
     //{

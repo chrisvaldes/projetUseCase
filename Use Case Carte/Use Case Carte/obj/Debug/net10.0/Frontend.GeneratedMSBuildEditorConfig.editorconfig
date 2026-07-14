@@ -75,6 +75,10 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xQcm9maWxzXFVwZGF0ZVByb2ZpbC5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Admin_dev/source/repos/projet/projetCarteusecase/source/repos/projetUseCase/Use Case Carte/Use Case Carte/Components/Pages/Synthese/Synthese.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xTeW50aGVzZVxTeW50aGVzZS5yYXpvcg==
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Admin_dev/source/repos/projet/projetCarteusecase/source/repos/projetUseCase/Use Case Carte/Use Case Carte/Components/Pages/Toast/ToastNotification.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUb2FzdFxUb2FzdE5vdGlmaWNhdGlvbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 

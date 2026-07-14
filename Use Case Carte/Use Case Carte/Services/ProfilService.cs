@@ -1,5 +1,4 @@
-﻿ 
-using Blazored.LocalStorage; 
+﻿using Blazored.LocalStorage;
 using Microsoft.JSInterop;
 using Use_Case_Carte.Components.Layout;
 using Use_Case_Carte.Models;
@@ -85,10 +84,10 @@ namespace Use_Case_Carte.Services
 
             Console.WriteLine($"response {response.IsSuccessStatusCode}");
 
-            if (  response.IsSuccessStatusCode)
-            { 
-                
-                return await response.Content.ReadFromJsonAsync<ApiResponse<ProfilModel>>();;
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<ApiResponse<ProfilModel>>();
+                ;
             }
 
             if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
