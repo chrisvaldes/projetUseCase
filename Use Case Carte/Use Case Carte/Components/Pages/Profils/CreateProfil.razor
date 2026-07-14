@@ -1,6 +1,6 @@
 @page "/creation-profil"
 @using Use_Case_Carte.Components.Shared
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 <div>
     <SharedHeader PreviousPage="Liste des Profils" CurrentPage="Creation Profil" />
 </div>

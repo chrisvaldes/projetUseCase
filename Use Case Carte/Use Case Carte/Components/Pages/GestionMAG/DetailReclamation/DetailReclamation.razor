@@ -1,6 +1,6 @@
 
 @page "/detail-facturation"
-
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
   
 @{ 
     var totalMontant = customerBilling.CustomerBillingSynthese.Sum(x => x.MontantTotal);
