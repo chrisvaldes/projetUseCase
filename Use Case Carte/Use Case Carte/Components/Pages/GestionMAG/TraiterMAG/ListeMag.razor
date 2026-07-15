@@ -1,12 +1,12 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-@page "/gestion-mag"
+@page "/MAG/gestion-mag"
 @{
     var index = 1;
     var data = "";
 }
 <div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2">
     <div>
-        <SharedHeader PreviousPage="Gestion du MAG" CurrentPage="Liste MAG" />
+        <SharedHeader PreviousPage="Gestion du MAG" CurrentPage="Liste MAG" OnCancel="OnCancel" />
     </div>
     <button class="btn btn-primary" @onclick="NouveauMag">
         <i class="fa-solid fa-plus me-1 fw-medium align-middle"></i>

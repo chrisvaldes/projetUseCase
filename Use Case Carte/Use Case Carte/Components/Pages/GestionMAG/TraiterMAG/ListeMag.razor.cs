@@ -13,11 +13,8 @@ public partial class ListeMag
 
     protected IEnumerable<TypeMag> typeMags = new List<TypeMag>();
 
-
     [Inject]
     public IJSRuntime JS { get; set; } = default!;
-
-
 
     [Inject]
     public TypeMagService TypeMagService { get; set; } = default!;
@@ -52,5 +49,11 @@ public partial class ListeMag
     {
         Console.WriteLine("go to synthese");
         NavigationService.GoSyntheseMag(typeMag);
+    }
+
+    private async Task OnCancel()
+    {
+        NavigationService.GoGestionMAG();
+        await Task.CompletedTask;
     }
 }

@@ -26,6 +26,7 @@ namespace Use_Case_Carte.Services
         public async Task<DashboardSynthese> GetSynthese()
         {
             await AddAuthHeader();
+            await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
 
             var response = await _http.GetAsync("api/dashboard");
 
@@ -36,11 +37,14 @@ namespace Use_Case_Carte.Services
                 var responseData = await response.Content.ReadFromJsonAsync<
                     ApiResponse<DashboardSynthese>
                 >();
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
 
                 return responseData!.Data;
             }
             else
             {
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
                 throw new Exception("Erreur lors de la récupération de la synthese.");
             }
         }

@@ -1,10 +1,10 @@
-@page "/modification-profil/{Id:guid}"
+@page "/MAG/modification-profil/{Id:guid}"
 @using Use_Case_Carte.Components.Shared
 @using Use_Case_Carte.Components.ToastComponent
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 <Toast />
 <div>
-    <SharedHeader PreviousPage="Gestion des Profils" CurrentPage="Modifier Profil" />
+    <SharedHeader PreviousPage="Gestion des Profils" CurrentPage="Modifier Profil" OnCancel="OnCancel"/>
 </div>
 <div class="row d-flex align-items-center justify-content-center">
     <div class="col-xxl-10 col-xl-12">
@@ -13,7 +13,7 @@
                 <div class="card-title">Modifier profil</div>
             </div>
             <div class="card-body">
-                <EditForm Model="@profilModel" FormName="OnUpdateProfil">
+                <EditForm Model="@profilModel" FormName="OnUpdateProfil" >
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="row gy-3">

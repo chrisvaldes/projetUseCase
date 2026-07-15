@@ -232,17 +232,19 @@
     }
 
     private bool DashboardOpen =>
-        IsActive("dashboard");
+        IsActive("MAG/dashboard");
 
     private bool ProfilOpen =>
-        IsActive("profil")
-        || IsActive("creation-profil")
-        || IsActive("modification-profil")
-        || IsActive("suppression-profil");
+        IsActive("MAG/profil")
+        || IsActive("MAG/creation-profil")
+        || IsActive("MAG/modification-profil")
+        || IsActive("MAG/suppression-profil");
 
     private bool MagOpen =>
-        IsActive("gestion-mag")
-        || IsActive("nouveau-mag")
-        || IsActive("detail-facturation");
+        IsActive("MAG/gestion-mag")
+        || IsActive("MAG/nouveau-mag")
+        || IsActive("MAG/detail-facturation")
+        || IsActive("MAG/Synthese");
 
 }
+ 

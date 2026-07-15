@@ -1,8 +1,8 @@
-@page "/creation-profil"
+@page "/MAG/creation-profil"
 @using Use_Case_Carte.Components.Shared
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 <div>
-    <SharedHeader PreviousPage="Liste des Profils" CurrentPage="Creation Profil" />
+    <SharedHeader PreviousPage="Liste des Profils" CurrentPage="Creation Profil" OnCancel="OnCancel" />
 </div>
 <div class="row align-items-center justify-content-center">
     <div class="col-xxl-10 col-xl-12">

@@ -1,5 +1,5 @@
 
-@page "/detail-facturation"
+@page "/MAG/detail-facturation"
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
   
 @{ 
@@ -11,7 +11,7 @@
         <nav>
             <ol class="breadcrumb mb-1">
                 <li class="breadcrumb-item fw-bold">
-                    <a href="javascript:void(0);">Gestion des cartes client</a>
+                    <a @onclick="OnCancel">Gestion des cartes client</a>
                 </li>
                 <i class="ri-arrow-right-s-line side-menu__angle"></i>
                 <li class="active">Liste des cartes</li>
@@ -78,7 +78,7 @@
             <div class="card-header d-flex align-items-center justify-content-between">
                 <div class="card-title">Liste des cartes</div>
 
-                <EditForm FormName="customerBilling" Model="inputBilling" OnInvalidSubmit="Submit" class="d-block"
+                <EditForm FormName="customerBilling" Model="inputBilling" OnInvalidSubmit="Submit" class="d-block" 
                       id="Detail-mag-client">
 
                     <div class="d-flex align-items-end gap-2">

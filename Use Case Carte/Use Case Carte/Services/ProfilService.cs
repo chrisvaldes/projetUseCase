@@ -28,9 +28,9 @@ namespace Use_Case_Carte.Services
         {
             try
             {
-                await _safeJs.SafeJsUtilities("toggleOnLoaderAndToast");
-
                 await AddAuthHeader();
+
+                await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
 
                 var response = await _http.PostAsJsonAsync("api/profil/save", request);
 
@@ -61,6 +61,8 @@ namespace Use_Case_Carte.Services
         {
             await AddAuthHeader();
 
+            await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
+
             var response = await _http.GetAsync("api/profils");
 
             if (response.IsSuccessStatusCode)
@@ -68,34 +70,56 @@ namespace Use_Case_Carte.Services
                 var result = await response.Content.ReadFromJsonAsync<
                     ApiResponse<IEnumerable<ProfilModel>>
                 >();
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
                 return result?.Data ?? new List<ProfilModel>();
             }
             else
             {
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
                 throw new Exception("Erreur lors de la récupération des profils.");
             }
         }
 
         public async Task<ApiResponse<ProfilModel>?> UpdateProfil(Guid id, ProfilModel profilModel)
         {
-            await AddAuthHeader();
-
-            var response = await _http.PutAsJsonAsync($"api/profil/{id}", profilModel);
-
-            Console.WriteLine($"response {response.IsSuccessStatusCode}");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                return await response.Content.ReadFromJsonAsync<ApiResponse<ProfilModel>>();
-                ;
-            }
+                await AddAuthHeader();
 
-            if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
+
+                var response = await _http.PutAsJsonAsync($"api/profil/{id}", profilModel);
+
+                Console.WriteLine($"response {response.IsSuccessStatusCode}");
+
+                if (response.IsSuccessStatusCode)
+                {
+                    await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
+                    return await response.Content.ReadFromJsonAsync<ApiResponse<ProfilModel>>();
+                }
+
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
+                    throw new Exception(
+                        $"Erreur lors de la Modification du profil. Le profil à modifier n'existe pas."
+                    );
+                }
+
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
+                throw new Exception($"Erreur lors de la Modification du profil .");
+            }
+            catch (Exception ex)
             {
-                return null;
-            }
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
 
-            throw new Exception("Erreur lors de la Modification du profil.");
+                throw new Exception($"Erreur lors de la Modification du profil {ex.Message}.");
+            }
         }
 
         public async Task<ProfilModel?> GetById(Guid id)

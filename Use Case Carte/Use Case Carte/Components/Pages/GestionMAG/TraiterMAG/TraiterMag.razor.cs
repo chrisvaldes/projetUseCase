@@ -14,8 +14,6 @@ public partial class TraiterMag : ComponentBase
 
     [Inject]
     NouveauMagService NouveauMagService { get; set; } = default!;
-    [Inject]
-    public IJSRuntime JS { get; set; } = default!;
 
     private readonly ILogger<TraiterMag> _logger;
 
@@ -26,14 +24,14 @@ public partial class TraiterMag : ComponentBase
         _logger = logger;
     }
 
-    public void OnCancel()
+    public async Task OnCancel()
     {
         NavigationService.GoGestionMAG();
+        await Task.CompletedTask;
     }
 
     public async Task Traiter()
     {
-        await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
         Console.WriteLine($"data : {inputModel.TypeMag}");
         try
         {
@@ -41,7 +39,7 @@ public partial class TraiterMag : ComponentBase
             if (resultRequest == null || !resultRequest.Success)
             {
                 // TODO: afficher un toast d'erreur avec resultRequest?.Message
-                await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
+
                 NavigationService.GoGestionMAG();
 
                 return;

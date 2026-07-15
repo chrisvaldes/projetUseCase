@@ -52,11 +52,7 @@ namespace Use_Case_Carte.Components.Pages.Synthese
             {
                 loaded = true;
 
-                await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
-
                 typeMagWithSyntheseDto = await TypeMagService.GetSynthseMag(Id);
-
-                await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
 
                 StateHasChanged();
             }
@@ -65,6 +61,12 @@ namespace Use_Case_Carte.Components.Pages.Synthese
         public void GoToListGestionMAG()
         {
             NavigationService.GoGestionMAG();
+        }
+
+        private async Task OnCancel()
+        {
+            NavigationService.GoGestionMAG();
+            await Task.CompletedTask;
         }
     }
 }

@@ -28,6 +28,8 @@ namespace Use_Case_Carte.Services
         {
             try
             {
+                await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
+
                 await AddAuthHeader();
 
                 using var form = new MultipartFormDataContent();
@@ -91,14 +93,19 @@ namespace Use_Case_Carte.Services
                 }
 
                 if (!response.IsSuccessStatusCode)
+                {
+                    await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
                     return null;
+                }
 
                 var result = await response.Content.ReadFromJsonAsync<ApiResponse<InputModel>>();
-                return result ?? null;
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+                return result!;
             }
             catch (Exception ex)
             {
                 Console.WriteLine(ex.Message);
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
                 return null;
             }
         }

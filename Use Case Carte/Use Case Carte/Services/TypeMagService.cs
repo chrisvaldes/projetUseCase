@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Blazored.LocalStorage;
 using Microsoft.JSInterop;
 using Use_Case_Carte.Components.Layout;
@@ -51,6 +47,8 @@ namespace Use_Case_Carte.Services
         {
             await AddAuthHeader();
 
+            await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
+
             var response = await _http.GetAsync($"api/synthese/{Id}");
 
             Console.WriteLine($"id reçu dans le service typemag : {Id}");
@@ -59,10 +57,15 @@ namespace Use_Case_Carte.Services
             if (response.IsSuccessStatusCode)
             {
                 var result = await response.Content.ReadFromJsonAsync<TypeMagWithSyntheseDto>();
+
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
                 return result ?? new TypeMagWithSyntheseDto();
             }
             else
             {
+                await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
+
                 throw new Exception("Erreur lors de la récupération de la synthese.");
             }
         }

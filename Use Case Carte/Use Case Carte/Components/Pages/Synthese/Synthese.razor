@@ -34,22 +34,12 @@
         height: 0 !important;
         overflow: hidden !important;
     }</style>
-<div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2">
-    <div>
-        <nav>
-            <ol class="breadcrumb mb-1">
-                <li class="breadcrumb-item fw-bold">
-                    <a href="GoToListGestionMAG">Gestion des
-                        MAGs</a>
-                </li>
-                <li class="breadcrumb-item active" aria-current="page">
-                    Synth?se MAG
-                    @typeMagWithSyntheseDto.Description
-                </li>
-            </ol>
-        </nav>
-    </div>
-</div>
+ 
+
+<SharedHeader
+    PreviousPage="Gestion des MAGs"
+    CurrentPage="@($"Synthèse MAG {typeMagWithSyntheseDto.Description}")"
+    OnCancel="OnCancel" />
 <div class="row mx-1">
     @foreach (var item in typeMagWithSyntheseDto.SyntheseBkmvtis)
     {

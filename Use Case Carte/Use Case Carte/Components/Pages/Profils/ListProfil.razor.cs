@@ -45,29 +45,6 @@ public partial class ListProfil : ComponentBase
 
     public ProfilModel SelectedProfil = new();
 
-    private async void EditProfil(ProfilModel profil)
-    {
-        Console.WriteLine(
-            $"information {profil.Email}, {profil.IsDeleted}, {profil.Status}, {profil.UserName}, {profil.Userag}"
-        );
-        SelectedProfil = new ProfilModel
-        {
-            Id = profil.Id,
-            UserName = profil.UserName,
-            Userag = profil.Userag,
-            Email = profil.Email,
-            TypeProfile = profil.TypeProfile,
-            Status = profil.Status,
-        };
-
-        await JS.InvokeVoidAsync("showUpdateProfileModal");
-    }
-
-    private void CreateProfil()
-    {
-        NavigationService.GoCreerProfil();
-    }
-
     private void ModifierProfil(ProfilModel profil)
     {
         NavigationService.GoModifierProfil(profil);

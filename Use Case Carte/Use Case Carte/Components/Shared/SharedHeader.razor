@@ -3,13 +3,13 @@
         <nav>
             <ol class="breadcrumb mb-1">
                 <li class="breadcrumb-item fw-bold">
-                    <a href="javascript:void(0);">
-                    @PreviousPage
+                    <a href="javascript:void(0);" @onclick="async () => await OnCancel.InvokeAsync()">
+                        @PreviousPage
                     </a>
                 </li>
                 <i class="ri-arrow-right-s-line side-menu__angle"></i>
                 <li class="breadcrumb-item">
-                @CurrentPage
+                    @CurrentPage
                 </li>
             </ol>
         </nav>
