@@ -2,6 +2,7 @@ using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.Extensions.Logging;
+using Microsoft.JSInterop;
 using Use_Case_Carte.Components.Route;
 using Use_Case_Carte.Models;
 using Use_Case_Carte.Services;
@@ -22,6 +23,9 @@ namespace Use_Case_Carte.Components.Pages.Synthese
 
         [Parameter]
         public Guid Id { get; set; }
+
+        [Inject]
+        IJSRuntime JS { get; set; } = default!;
 
         public Synthese(ILogger<Synthese> logger)
         {
@@ -48,7 +52,11 @@ namespace Use_Case_Carte.Components.Pages.Synthese
             {
                 loaded = true;
 
+                await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
+
                 typeMagWithSyntheseDto = await TypeMagService.GetSynthseMag(Id);
+
+                await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
 
                 StateHasChanged();
             }

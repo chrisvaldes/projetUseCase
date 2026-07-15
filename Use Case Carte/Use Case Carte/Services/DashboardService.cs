@@ -23,7 +23,7 @@ namespace Use_Case_Carte.Services
             _safeJs = safeJs;
         }
 
-        public async  Task<DashboardSynthese> GetSynthese()
+        public async Task<DashboardSynthese> GetSynthese()
         {
             await AddAuthHeader();
 
@@ -33,16 +33,16 @@ namespace Use_Case_Carte.Services
 
             if (response.IsSuccessStatusCode)
             {
-                var result = await response.Content.ReadFromJsonAsync<DashboardSynthese>();
+                var responseData = await response.Content.ReadFromJsonAsync<
+                    ApiResponse<DashboardSynthese>
+                >();
 
-
-                return result ?? new DashboardSynthese();
+                return responseData!.Data;
             }
             else
             {
                 throw new Exception("Erreur lors de la récupération de la synthese.");
             }
         }
- 
     }
 }

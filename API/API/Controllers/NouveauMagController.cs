@@ -121,6 +121,11 @@ namespace API.Controllers
                 throw new Exception("DashboardResult() retourne null");
             }
 
+            _logger.LogInformation(
+                "Montants : {Montants}",
+                string.Join(", ", result.BkmvtiSyntheseDto.Select(x => x.MontantTotal))
+            );
+
             return Ok(ApiResponse<DashboardSynthese>.SuccessResponse(result, ""));
         }
 

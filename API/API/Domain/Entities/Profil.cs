@@ -1,11 +1,12 @@
-using API.Domain.Entities.Enum;
 using System.ComponentModel.DataAnnotations;
+using API.Domain.Entities.Enum;
+using Domain.Common;
 using Shared.Attributes;
 
 namespace API.Domain.Entities
 {
     [PermissionModule(nameof(Profil))]
-    public class Profil
+    public class Profil : BaseEntity
     {
         public Guid Id { get; set; }
 

@@ -7,7 +7,6 @@ namespace Use_Case_Carte.Components.Pages.Dashboard
 {
     public partial class Dashboard : ComponentBase
     {
-
         [Inject]
         private NavigationManager Navigation { get; set; } = default!;
 
@@ -38,35 +37,25 @@ namespace Use_Case_Carte.Components.Pages.Dashboard
 
             await LoadSyntheseDashboard();
 
-            var labels = dashboardSynthese.DashboardResult
-                .Select(x => $"{x.Mois}/{x.Annee}")
+            var labels = dashboardSynthese
+                .DashboardResult.Select(x => $"{x.Mois}/{x.Annee}")
                 .ToArray();
 
-            var montants = dashboardSynthese.DashboardResult
-                .Select(x => x.Montant)
-                .ToArray();
+            var montants = dashboardSynthese.DashboardResult.Select(x => x.Montant).ToArray();
 
-            Console.WriteLine(
-dashboardSynthese.DashboardResult.Count);
+            Console.WriteLine(dashboardSynthese.DashboardResult.Count);
 
-            Console.WriteLine(
-                dashboardSynthese.BkmvtiSyntheseDto.Count);
+            Console.WriteLine(dashboardSynthese.BkmvtiSyntheseDto.Count);
 
-            await JS.InvokeVoidAsync(
-                "drawDashboardChart",
-                labels,
-                montants);
+            await JS.InvokeVoidAsync("drawDashboardChart", labels, montants);
         }
 
         private async Task LoadSyntheseDashboard()
         {
-
             Console.WriteLine("On load data to display in the dashboard ");
             dashboardSynthese = await DashboardService.GetSynthese();
 
             StateHasChanged();
         }
-
-
     }
 }

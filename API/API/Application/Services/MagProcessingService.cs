@@ -46,19 +46,21 @@ namespace API.Application.Services
             _magProcessingHelper = magProcessingHelper;
         }
 
-
-
         public async Task<ApiResponse<bool>> ProcessTxtExcelFiles(InputModel inputModel)
         {
-
-            Dictionary<string, ComptesActifsResponse> comptesActifs = new Dictionary<string, ComptesActifsResponse>();
+            Dictionary<string, ComptesActifsResponse> comptesActifs =
+                new Dictionary<string, ComptesActifsResponse>();
             //Dictionary<string, ComptesOuvertsResponse> comptesOuverts =
             //    new Dictionary<string, ComptesOuvertsResponse>();
             List<ComptesOuvert> comptesOuverts;
-            Dictionary<string, ComptesCtxResponse> comptesCtx = new Dictionary<string, ComptesCtxResponse>();
-            Dictionary<string, DateDsouPackEchuResponse> dateDersouPackEchus = new Dictionary<string, DateDsouPackEchuResponse>();
-            Dictionary<string, List<CompteDebiteRedevCarte>> histCptDebiteRedevCartes = new Dictionary<string, List<CompteDebiteRedevCarte>>();
-            Dictionary<string, PackagesActifsResponse> packActifs = new Dictionary<string, PackagesActifsResponse>();
+            Dictionary<string, ComptesCtxResponse> comptesCtx =
+                new Dictionary<string, ComptesCtxResponse>();
+            Dictionary<string, DateDsouPackEchuResponse> dateDersouPackEchus =
+                new Dictionary<string, DateDsouPackEchuResponse>();
+            Dictionary<string, List<CompteDebiteRedevCarte>> histCptDebiteRedevCartes =
+                new Dictionary<string, List<CompteDebiteRedevCarte>>();
+            Dictionary<string, PackagesActifsResponse> packActifs =
+                new Dictionary<string, PackagesActifsResponse>();
 
             //string numeroCompte = "";
 
@@ -75,22 +77,29 @@ namespace API.Application.Services
             try
             {
                 // La période d'étude doit être au minimum 1 mois, et la période de fin d'étude doit être > au début d'étude
-                var dureePeriode = _magProcessingHelper.NombreMois(inputModel.StartPeriod, inputModel.EndPeriod);
+                var dureePeriode = _magProcessingHelper.NombreMois(
+                    inputModel.StartPeriod,
+                    inputModel.EndPeriod
+                );
 
                 if ((inputModel.StartPeriod > inputModel.EndPeriod) || (dureePeriode < 1))
                 {
-                    return ApiResponse<bool>.Fail("La période de début doit être inférieur à la période de fin, et la différence >= 1");
-
+                    return ApiResponse<bool>.Fail(
+                        "La période de début doit être inférieur à la période de fin, et la différence >= 1"
+                    );
                 }
 
                 if (inputModel.EndPeriod > DateTime.Today)
                 {
-                    return ApiResponse<bool>.Fail("La date de la période de fin d'étude ne peut être supérieur à la date du jour.");
-
+                    return ApiResponse<bool>.Fail(
+                        "La date de la période de fin d'étude ne peut être supérieur à la date du jour."
+                    );
                 }
 
                 // Vérifier si le manque à gagner n'a pas encore été récupérer sur la période.
-                TypeMag? existTypeMag = await _typeMagRepository.IsTypeMagExist(inputModel.StartPeriod);
+                TypeMag? existTypeMag = await _typeMagRepository.IsTypeMagExist(
+                    inputModel.StartPeriod
+                );
 
                 // si oui, retourné un message informantif
                 if (existTypeMag != null)
@@ -111,10 +120,14 @@ namespace API.Application.Services
                 //lecture des différents fichiers excel contenant les requetes des bases de données
                 using var compteOuvert = _magProcessingHelper.ReadFile(inputModel.OpenAccount);
                 using var compteActif = _magProcessingHelper.ReadFile(inputModel.ActiveAccount);
-                using var dateDerniereSouPackEchu = _magProcessingHelper.ReadFile(inputModel.DateLastSouPackEchu);
+                using var dateDerniereSouPackEchu = _magProcessingHelper.ReadFile(
+                    inputModel.DateLastSouPackEchu
+                );
                 using var packageActif = _magProcessingHelper.ReadFile(inputModel.ActivePackage);
                 using var compteCtx = _magProcessingHelper.ReadFile(inputModel.CtxAccount);
-                using var histCptDebiteParRedevCarte = _magProcessingHelper.ReadFile(inputModel.AccountHisDebiteByRedevCard);
+                using var histCptDebiteParRedevCarte = _magProcessingHelper.ReadFile(
+                    inputModel.AccountHisDebiteByRedevCard
+                );
 
                 //lecture de la première feuille de calcule excel
                 var worksheetCompteActif = compteActif.Workbook.Worksheets[0];
@@ -130,7 +143,9 @@ namespace API.Application.Services
                 dateDersouPackEchus = _magProcessingHelper.GetDsouPackEchu(worksheetDsouPackEchu);
 
                 var worksheetHistCptDebiteRedev = histCptDebiteParRedevCarte.Workbook.Worksheets[0];
-                histCptDebiteRedevCartes = _magProcessingHelper.GetHistCptDebiteRedevCarte(worksheetHistCptDebiteRedev);
+                histCptDebiteRedevCartes = _magProcessingHelper.GetHistCptDebiteRedevCarte(
+                    worksheetHistCptDebiteRedev
+                );
 
                 var worksheetPackActif = packageActif.Workbook.Worksheets[0];
                 packActifs = _magProcessingHelper.GetPackagesActifs(worksheetPackActif);
@@ -162,8 +177,9 @@ namespace API.Application.Services
                                     + endPer.ToString("MMM", new CultureInfo("fr-FR"))
                                     + "_"
                                     + endPer.Year,
+                                TypeMags = inputModel.TypeMag,
                                 Email =
-                                    _httpContextAccessor.HttpContext?.User?.Identity?.Name  // l'interface IHttpContextAccessor permet d'avoir l'utilisateur connecter à un instant donné
+                                    _httpContextAccessor.HttpContext?.User?.Identity?.Name // l'interface IHttpContextAccessor permet d'avoir l'utilisateur connecter à un instant donné
                                     ?? "unknown",
                                 PeriodeDebut = inputModel.StartPeriod,
                                 PeriodeFin = inputModel.EndPeriod,
@@ -190,7 +206,7 @@ namespace API.Application.Services
                                 Clc = c.Clc,
                                 Cha = c.Cha,
                                 Age = c.Age,
-                                Inti = c.Inti
+                                Inti = c.Inti,
                             };
                             comptes.Add(compte);
                         }
@@ -201,31 +217,41 @@ namespace API.Application.Services
                         {
                             foreach (var cd in item.Value)
                             {
-                                var compteDeb =
-                                    new CompteDebiteRedevCarte
-                                    {
-                                        Id = Guid.NewGuid(),
-                                        Ncp = cd.Ncp,
-                                        Mon = cd.Mon,
-                                        Dco = cd.Dco
-                                    };
+                                var compteDeb = new CompteDebiteRedevCarte
+                                {
+                                    Id = Guid.NewGuid(),
+                                    Ncp = cd.Ncp,
+                                    Mon = cd.Mon,
+                                    Dco = cd.Dco,
+                                };
 
                                 comptesDebite.Add(compteDeb);
                             }
                         }
 
                         // appel de la fonction "callFuncAsync" pour un traitement asynchrone.
-                        clientPlusUneCarte = await _magProcessingHelper.callFuncAsync(comptes, reader, ligne, comptesCtx, comptesOuverts, clientPlusUneCarte, comptesDebite);
+                        clientPlusUneCarte = await _magProcessingHelper.callFuncAsync(
+                            comptes,
+                            reader,
+                            ligne,
+                            comptesCtx,
+                            comptesOuverts,
+                            clientPlusUneCarte,
+                            comptesDebite
+                        );
 
+                        // Une fois l'ensemble du fichier apprint parcouru, parcourir les clients ayant plus d'une carte.
+                        await _magProcessingHelper.MapClientPlusUneCarte(
+                            clientPlusUneCarte,
+                            dateDersouPackEchus,
+                            packActifs,
+                            startPer,
+                            endPer,
+                            typeMagResult,
+                            bkmvtis
+                        );
 
-
-                        // Une fois l'ensemble du fichier apprint parcouru, parcourir les clients ayant plus d'une carte. 
-                        await _magProcessingHelper.MapClientPlusUneCarte(clientPlusUneCarte, dateDersouPackEchus, packActifs, startPer, endPer, typeMagResult, bkmvtis);
-
-
-
-                        var comptesOuvertsEntities =
-                        comptesOuverts
+                        var comptesOuvertsEntities = comptesOuverts
                             .Select(c => new ComptesOuvert
                             {
                                 Id = c.Id == Guid.Empty ? Guid.NewGuid() : c.Id,
@@ -234,26 +260,24 @@ namespace API.Application.Services
                                 Clc = c.Clc,
                                 Cha = c.Cha,
                                 Age = c.Age,
-                                Inti = c.Inti
+                                Inti = c.Inti,
                             })
                             .ToList();
 
-                        var comptesDebiteEntities =
-                            histCptDebiteRedevCartes.Values
-                                .SelectMany(x => x)
-                                .Select(c => new CompteDebiteRedevCarte
-                                {
-                                    Id = Guid.NewGuid(),
-                                    Ncp = c.Ncp,
-                                    Mon = c.Mon,
-                                    Dco = c.Dco
-                                })
-                                .ToList();
+                        var comptesDebiteEntities = histCptDebiteRedevCartes
+                            .Values.SelectMany(x => x)
+                            .Select(c => new CompteDebiteRedevCarte
+                            {
+                                Id = Guid.NewGuid(),
+                                Ncp = c.Ncp,
+                                Mon = c.Mon,
+                                Dco = c.Dco,
+                            })
+                            .ToList();
 
                         try
                         {
-                            await _bkmvtiRepository
-                                .SaveBkmvtiAsync(bkmvtis);
+                            await _bkmvtiRepository.SaveBkmvtiAsync(bkmvtis);
 
                             await transaction.CommitAsync();
                         }
@@ -275,8 +299,9 @@ namespace API.Application.Services
                     }
                     catch (Exception ex)
                     {
-                        // Rollback si erreur 
-                        return ApiResponse<bool>.Fail("Erreur : " + ex.Message); ;
+                        // Rollback si erreur
+                        return ApiResponse<bool>.Fail("Erreur : " + ex.Message);
+                        ;
                         // return new ServiceResult<string>
                         // {
                         //     Success = false,
@@ -285,7 +310,10 @@ namespace API.Application.Services
                     }
                 }
 
-                return ApiResponse<bool>.SuccessResponse(true, "Manque à gagner traité avec succès!!!");
+                return ApiResponse<bool>.SuccessResponse(
+                    true,
+                    "Manque à gagner traité avec succès!!!"
+                );
 
                 // return new ServiceResult<string>
                 // {
@@ -296,9 +324,10 @@ namespace API.Application.Services
             catch (Exception ex)
             {
                 _logger.LogInformation("message erreur de traitement. cause : " + ex.Message);
-                return ApiResponse<bool>.Fail("message erreur de traitement. cause : " + ex.Message);
+                return ApiResponse<bool>.Fail(
+                    "message erreur de traitement. cause : " + ex.Message
+                );
             }
         }
-
     }
 }

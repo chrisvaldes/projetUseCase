@@ -42,6 +42,8 @@ public partial class TraiterMag : ComponentBase
             {
                 // TODO: afficher un toast d'erreur avec resultRequest?.Message
                 await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
+                NavigationService.GoGestionMAG();
+
                 return;
             }
             // succès -> navigation ou notification
