@@ -137,7 +137,7 @@ namespace Auth.Application.Services
 
             var expiration = DateTime.UtcNow.AddHours(2);
 
-            var token = new JwtSecurityToken(
+            var token = new JwtSecurityToken( 
                 issuer: _configuration["Jwt:Issuer"],
                 audience: _configuration["Jwt:Audience"],
                 claims: claims,

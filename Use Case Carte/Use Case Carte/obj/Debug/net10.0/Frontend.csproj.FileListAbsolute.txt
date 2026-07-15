@@ -892,7 +892,6 @@ C:\Users\Valdes FEUTSEU\Desktop\js\projetUseCase\Use Case Carte\Use Case Carte\o
 C:\Users\Valdes FEUTSEU\Desktop\js\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\Frontend.pdb
 C:\Users\Valdes FEUTSEU\Desktop\js\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\Frontend.genruntimeconfig.cache
 C:\Users\Valdes FEUTSEU\Desktop\js\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\ref\Frontend.dll
-C:\Users\Valdes FEUTSEU\Desktop\js\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\sjw77wfeox-{0}-kd61h9o167-kd61h9o167.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\bin\Debug\net10.0\appsettings.Development.json
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\bin\Debug\net10.0\appsettings.json
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\bin\Debug\net10.0\Frontend.staticwebassets.runtime.json
@@ -1072,3 +1071,5 @@ C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUse
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\ref\Frontend.dll
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\lxg50j0s6s-{0}-43dn1r7m3c-43dn1r7m3c.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\9uofpisjod-{0}-rj97opg06y-rj97opg06y.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\9uofpisjod-{0}-rj97opg06y-rj97opg06y.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\lxg50j0s6s-{0}-43dn1r7m3c-43dn1r7m3c.gz
