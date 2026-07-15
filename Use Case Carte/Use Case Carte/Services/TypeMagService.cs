@@ -43,6 +43,76 @@ namespace Use_Case_Carte.Services
             }
         }
 
+        public async Task GetBkmvti(TypeMag typeMag)
+        {
+            try
+            {
+                await AddAuthHeader();
+
+                await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
+
+                var response = await _http.GetAsync($"api/bkmvti/Download/{typeMag.Id}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
+                    throw new Exception("Erreur de téléchargement.");
+                }
+
+                var bytes = await response.Content.ReadAsByteArrayAsync();
+
+                var fileName =
+                    response.Content.Headers.ContentDisposition?.FileName?.Trim('"')
+                    ?? "BKMVTI.txt";
+
+                await _js.InvokeVoidAsync("downloadFile", fileName, Convert.ToBase64String(bytes));
+
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+            }
+            catch (Exception ex)
+            {
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+                throw new Exception($"Erreur lors du téléchargement bkmvti {ex.Message}");
+            }
+        }
+
+        public async Task GetCarteAReguler(TypeMag typeMag)
+        {
+            try
+            {
+                await AddAuthHeader();
+
+                await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
+
+                var response = await _http.GetAsync($"api/carteAReguler/Download/{typeMag.Id}");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception(await response.Content.ReadAsStringAsync());
+                }
+
+                var bytes = await response.Content.ReadAsByteArrayAsync();
+
+                var fileName =
+                    response.Content.Headers.ContentDisposition?.FileName?.Trim('"')
+                    ?? $"BKMBTI_{DateTime.Today:yyyyMMdd}.xlsx";
+
+                await _js.InvokeVoidAsync(
+                    "downloadExcelFile",
+                    fileName,
+                    Convert.ToBase64String(bytes)
+                );
+
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+            }
+            catch (Exception ex)
+            {
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+                throw new Exception($"Erreur lors du téléchargement : {ex.Message}");
+            }
+        }
+
         public async Task<TypeMagWithSyntheseDto> GetSynthseMag(Guid Id)
         {
             await AddAuthHeader();

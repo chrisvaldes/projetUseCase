@@ -51,6 +51,15 @@ public partial class ListeMag
         NavigationService.GoSyntheseMag(typeMag);
     }
 
+    public async Task DownloadBkmvti(TypeMag typeMag)
+    {
+        await TypeMagService.GetBkmvti(typeMag);
+    }
+    public async Task DownloadCarteAReguler(TypeMag typeMag)
+    {
+        await TypeMagService.GetCarteAReguler(typeMag);
+    }
+
     private async Task OnCancel()
     {
         NavigationService.GoGestionMAG();

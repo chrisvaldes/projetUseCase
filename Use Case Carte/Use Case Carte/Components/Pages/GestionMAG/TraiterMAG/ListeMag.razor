@@ -86,34 +86,16 @@
                                                 </button>
 
                                                 <!-- Téléchargement BKMVTI -->
-                                                <form onsubmit="DownloadBkmvti(event)" class="d-inline">
-                                                    <input type="hidden" name="typeMag" value="@typeMag.Id" />
 
-                                                    <button @onclick="() => GoToSyntheseMag(typeMag)"
-                                                            class="btn btn-icon btn-sm btn-success-light">
-                                                        <i class="ri-download-2-line"></i>
-                                                    </button>
+                                                <button @onclick="() => DownloadBkmvti(typeMag)"
+                                                        class="btn btn-icon btn-sm btn-success-light">
+                                                    <i class="ri-download-2-line"></i>
+                                                </button>
 
-                                                </form>
-
-                                                <!-- Cartes à régulariser -->
-                                                <form class="d-inline">
-                                                    <input type="hidden" name="carteAReguler" value="@typeMag.Id" />
-
-                                                    @* <button type="button" onclick="DownloadCarteARegulerExcel(event)"
-                                                                    class="btn p-0 border-0 bg-transparent text-warning fs-4"
-                                                                    data-bs-toggle="tooltip" data-bs-placement="top"
-                                                                    title="Télécharger les cartes à régulariser">
-
-                                                            </button> *@
-
-                                                    <button @onclick="() => GoToSyntheseMag(typeMag)"
-                                                            class="btn btn-icon btn-sm btn-warning-light">
-                                                        <i class="ri-bank-card-line"></i>
-                                                    </button>
-                                                </form>
-
-                                                
+                                                <button @onclick="() => DownloadCarteAReguler(typeMag)"
+                                                          class="btn btn-icon btn-sm btn-warning-light">
+                                                    <i class="ri-bank-card-line"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     </tr>

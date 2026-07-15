@@ -1,26 +1,26 @@
 using API.Application.DTO;
 using API.Application.Repository.IRepository;
-using Microsoft.EntityFrameworkCore;
 using API.Domain.Entities;
 using Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace API.Application.Repository
 {
-        public class BkmvtiRepository : IBkmvtiRepository
+    public class BkmvtiRepository : IBkmvtiRepository
     {
         public readonly ApplicationDbContext _dbContext;
-         public readonly ILogger<BkmvtiRepository> _logger;
-        public BkmvtiRepository(ApplicationDbContext context, ILogger<BkmvtiRepository> logger) { 
+        public readonly ILogger<BkmvtiRepository> _logger;
+
+        public BkmvtiRepository(ApplicationDbContext context, ILogger<BkmvtiRepository> logger)
+        {
             _dbContext = context;
             _logger = logger;
         }
 
         public async Task<List<BkmvtiResult>> BkmvtisByMagType(Guid typeMagId)
         {
-
-
-            return await _dbContext.Bkmvtis
-                .Where(x => x.TypeMag == typeMagId)
+            return await _dbContext
+                .Bkmvtis.Where(x => x.TypeMag == typeMagId)
                 .AsNoTracking()
                 .Select(x => new BkmvtiResult
                 {
@@ -28,7 +28,7 @@ namespace API.Application.Repository
                     CodeAgence = x.CodeAgence!,
                     DatePrelevement = x.DatePrelevement,
                     LibelleCarte = x.LibelleCarte,
-                    Montant = x.PrixUnitCarte
+                    Montant = x.PrixUnitCarte,
                 })
                 .OrderBy(x => x.DatePrelevement)
                 .ToListAsync();
@@ -59,7 +59,8 @@ namespace API.Application.Repository
                                 entry.Entity.GetType().Name,
                                 prop.Metadata.Name,
                                 dto,
-                                dto.Offset);
+                                dto.Offset
+                            );
                         }
                     }
                 }
@@ -68,35 +69,59 @@ namespace API.Application.Repository
             }
         }
 
+        // public async Task<List<CarteARegulerDto>> CarteAReguler(Guid typeMagId)
+        // {
+        //     return await _dbContext
+        //         .Database.SqlQuery<CarteARegulerDto>(
+        //             $"""
+        //                 SELECT DISTINCT
+        //                     "DateCreationCarte",
+        //                     "Carte",
+        //                     "CodeCarte",
+        //                     "NumeroCompte",
+        //                     "CodeAgence",
+        //                     "CodeTarif",
+        //                     "NomClient"
+        //                 FROM public."Bkmvtis"
+        //                 WHERE "Basculer" = TRUE
+        //                   AND "TypeMag" = {typeMagId}
+        //             """
+        //         )
+        //         .OrderBy(x => x.NumeroCompte)
+        //         .ToListAsync();
+        // }
+
         public async Task<List<CarteARegulerDto>> CarteAReguler(Guid typeMagId)
         {
-            return await _dbContext.Database
-                .SqlQuery<CarteARegulerDto>($"""
-                        SELECT DISTINCT
-                            "DateCreationCarte",
-                            "Carte",
-                            "CodeCarte",
-                            "NumeroCompte",
-                            "CodeAgence",
-                            "CodeTarif",
-                            "NomClient"
-                        FROM public."Bkmvtis"
-                        WHERE "Basculer" = TRUE
-                          AND "TypeMag" = {typeMagId}
-                    """)
+            return await _dbContext
+                .Database.SqlQuery<CarteARegulerDto>(
+                    $"""
+                    SELECT DISTINCT
+                        DateCreationCarte,
+                        Carte,
+                        CodeCarte,
+                        NumeroCompte,
+                        CodeAgence,
+                        CodeTarif,
+                        NomClient
+                    FROM Bkmvtis
+                    WHERE Basculer = 1
+                      AND TypeMag = {typeMagId}
+                    """
+                )
                 .OrderBy(x => x.NumeroCompte)
                 .ToListAsync();
         }
 
         /// <summary>
-        /// 
+        /// ///
         /// </summary>
         /// <param name="typeMagId"></param>
         /// <returns></returns>
         public async Task<List<BkmvtiSyntheseDto>> GetSyntheseByTypeMagAsync(Guid typeMagId)
         {
-            return await _dbContext.Bkmvtis
-                .Where(b => b.TypeMag == typeMagId)
+            return await _dbContext
+                .Bkmvtis.Where(b => b.TypeMag == typeMagId)
                 .GroupBy(b => b.CodeCarte)
                 .Select(g => new BkmvtiSyntheseDto
                 {
@@ -111,13 +136,13 @@ namespace API.Application.Repository
         }
 
         public async Task<CustomerBilling> GetAllCustomerBilling(
-             DateTimeOffset dateDebutFacturation,
-             string ncpf,
-             DateTimeOffset? dateFinFacturation = null)
+            DateTimeOffset dateDebutFacturation,
+            string ncpf,
+            DateTimeOffset? dateFinFacturation = null
+        )
         {
             try
             {
-
                 CustomerBilling customerSynthese = new();
 
                 var debutUtc = dateDebutFacturation.ToUniversalTime();
@@ -125,15 +150,11 @@ namespace API.Application.Repository
                 var finUtc = dateFinFacturation?.ToUniversalTime();
 
                 // QUERY COMMUNE
-                var query = _dbContext.Bkmvtis
-                    .Where(b =>
-                        b.NumeroCompte == ncpf &&
-                        b.DatePrelevement >= debutUtc &&
-                        (
-                            !finUtc.HasValue ||
-                            b.DatePrelevement <= finUtc.Value
-                        )
-                    );
+                var query = _dbContext.Bkmvtis.Where(b =>
+                    b.NumeroCompte == ncpf
+                    && b.DatePrelevement >= debutUtc
+                    && (!finUtc.HasValue || b.DatePrelevement <= finUtc.Value)
+                );
 
                 // =========================
                 // SYNTHESE
@@ -145,7 +166,7 @@ namespace API.Application.Repository
                         CodeCarte = g.Key,
                         NombreClients = g.Count(),
                         DesignationCarte = g.First().DesignationCarte,
-                        MontantTotal = g.Sum(x => x.PrixUnitCarte)
+                        MontantTotal = g.Sum(x => x.PrixUnitCarte),
                     })
                     .OrderByDescending(x => x.MontantTotal)
                     .AsNoTracking()
@@ -162,7 +183,6 @@ namespace API.Application.Repository
                         DatePrelevement = x.DatePrelevement,
                         LibelleCarte = x.LibelleCarte,
                         Montant = x.PrixUnitCarte,
-
                     })
                     .OrderBy(x => x.CodeCarte)
                     .ThenBy(x => x.DatePrelevement)
@@ -171,7 +191,6 @@ namespace API.Application.Repository
 
                 customerSynthese.BkmvtiResults = customerBilling;
                 customerSynthese.CustomerBillingSynthese = synthese;
-
 
                 return customerSynthese;
             }
@@ -183,37 +202,32 @@ namespace API.Application.Repository
 
         public async Task<DashboardSynthese> DashboardResult()
         {
-
             try
             {
                 DashboardSynthese dashboardSynthese = new();
 
-                var synthese = await _dbContext.Bkmvtis
-                        .GroupBy(b => b.CodeCarte)
-                        .Select(g => new BkmvtiSyntheseDto
-                        {
-                            CodeCarte = g.Key,
-                            NombreClients = g.Count(),
-                            DesignationCarte = g.First().DesignationCarte,
-                            MontantTotal = g.Sum(x => x.PrixUnitCarte)
-                        })
-                        .OrderByDescending(x => x.MontantTotal)
-                        .AsNoTracking()
-                        .ToListAsync();
-
-                var syntheseParMois = await _dbContext.Bkmvtis
-                    .AsNoTracking()
-                    .Where(x => x.DatePrelevement != null)
-                    .GroupBy(x => new
+                var synthese = await _dbContext
+                    .Bkmvtis.GroupBy(b => b.CodeCarte)
+                    .Select(g => new BkmvtiSyntheseDto
                     {
-                        x.DatePrelevement!.Year,
-                        x.DatePrelevement.Month
+                        CodeCarte = g.Key,
+                        NombreClients = g.Count(),
+                        DesignationCarte = g.First().DesignationCarte,
+                        MontantTotal = g.Sum(x => x.PrixUnitCarte),
                     })
+                    .OrderByDescending(x => x.MontantTotal)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var syntheseParMois = await _dbContext
+                    .Bkmvtis.AsNoTracking()
+                    .Where(x => x.DatePrelevement != null)
+                    .GroupBy(x => new { x.DatePrelevement!.Year, x.DatePrelevement.Month })
                     .Select(g => new DashboardResult
                     {
                         Annee = g.Key.Year,
                         Mois = g.Key.Month,
-                        Montant = g.Sum(x => x.PrixUnitCarte)
+                        Montant = g.Sum(x => x.PrixUnitCarte),
                     })
                     .OrderBy(x => x.Annee)
                     .ThenBy(x => x.Mois)
@@ -223,13 +237,12 @@ namespace API.Application.Repository
                 dashboardSynthese.BkmvtiSyntheseDto = synthese;
 
                 return dashboardSynthese;
-            }catch(Exception ex)
+            }
+            catch (Exception ex)
             {
                 _logger.LogInformation("Erreur synthèse Dashboar.");
                 throw new Exception("" + ex.Message);
             }
         }
-
     }
-
 }

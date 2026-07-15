@@ -121,22 +121,20 @@ namespace API.Controllers
                 throw new Exception("DashboardResult() retourne null");
             }
 
-            _logger.LogInformation(
-                "Montants : {Montants}",
-                string.Join(", ", result.BkmvtiSyntheseDto.Select(x => x.MontantTotal))
-            );
-
             return Ok(ApiResponse<DashboardSynthese>.SuccessResponse(result, ""));
         }
 
-        public async Task<IActionResult> DownloadBkmvti([FromBody] DownloadRequest request)
+        [Authorize]
+        [HttpGet("bkmvti/Download/{id}")]
+        public async Task<IActionResult> DownloadBkmvti(Guid id)
         {
-            if (request.TypeMag == Guid.Empty)
+            _logger.LogInformation($"id reçu : {id}");
+            if (id == Guid.Empty)
                 return Ok(ApiResponse<bool>.Fail("Identifiant du MAG invalide!!!"));
 
-            var bkmvtis = await _bkmvtiService.BkmvtisByMagType(request.TypeMag);
+            var bkmvtis = await _bkmvtiService.BkmvtisByMagType(id);
 
-            await _magProcessingHelper.IsDownloadAsync(request.TypeMag);
+            await _magProcessingHelper.IsDownloadAsync(id);
 
             if (bkmvtis == null || !bkmvtis.Any())
                 return Ok(
@@ -153,23 +151,23 @@ namespace API.Controllers
             return File(fileBytes, "application/octet-stream", fileName);
         }
 
-        [HttpPost]
-        public async Task<IActionResult> TelechargerCarteARegulerExcel(
-            [FromBody] DownloadRequest request
-        )
+        [Authorize]
+        [HttpGet("carteAReguler/Download/{id}")]
+        public async Task<IActionResult> TelechargerCarteARegulerExcel(Guid id)
         {
+            _logger.LogInformation($"id recu : {id}");
             try
             {
                 var result = await _bkmvtiService.DashboardResult();
 
-                if (request.TypeMag == Guid.Empty)
+                if (id == Guid.Empty)
                     return Ok(ApiResponse<bool>.Fail("Identifiant du MAG invalide!!!"));
 
-                var carteAReguler = await _bkmvtiService.CarteAReguler(request.TypeMag);
+                var carteAReguler = await _bkmvtiService.CarteAReguler(id);
                 // Génération du fichier Excel
                 byte[] fichier = _magProcessingHelper.TxtToExcel(carteAReguler);
 
-                string nomFichier = $"BKMBTI_{DateTime.Today}.xlsx";
+                string nomFichier = $"BKMBTI_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
 
                 return File(
                     fichier,
