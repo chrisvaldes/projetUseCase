@@ -1,3 +1,6 @@
+using Domain.Common;
+using Shared.Attributes;
+
 namespace API.Domain.Entities
 {
     public class TypeMag
@@ -9,7 +12,7 @@ namespace API.Domain.Entities
         public bool IsAlreadyDownload { get; set; } = false;
         public DateTimeOffset PeriodeDebut { get; set; }
         public DateTimeOffset PeriodeFin { get; set; }
-        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset CreatedAt { get; set; } = DateTimeOffset.UtcNow;
         public DateTimeOffset UpdatedAt { get; set; }
     }
 }

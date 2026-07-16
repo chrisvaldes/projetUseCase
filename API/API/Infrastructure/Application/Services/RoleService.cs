@@ -1,9 +1,9 @@
-﻿using Authorization.Application.DTO;
+using System.Security.Claims;
+using Authorization.Application.DTO;
 using Authorization.Application.Interfaces;
 using Authorization.Domain.Entities;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Identity;
-using System.Security.Claims;
 using Users.Domain.Entities;
 
 namespace Infrastructure.Application.Services
@@ -14,7 +14,11 @@ namespace Infrastructure.Application.Services
         private readonly RoleManager<Role> _roleManager;
         private readonly UserManager<ApplicationUser> _userManager;
 
-        public RoleService(ApplicationDbContext context, RoleManager<Role> roleManager, UserManager<ApplicationUser> userManager)
+        public RoleService(
+            ApplicationDbContext context,
+            RoleManager<Role> roleManager,
+            UserManager<ApplicationUser> userManager
+        )
         {
             _context = context;
             _roleManager = roleManager;
@@ -37,10 +41,7 @@ namespace Infrastructure.Application.Services
             }
 
             //var role = new IdentityRole(dto.Name);
-            var role = new Role
-            {
-                Name = dto.Name
-            };
+            var role = new Role { Name = dto.Name };
             var result = await _roleManager.CreateAsync(role);
 
             // Gestion des erreurs Identity
@@ -48,10 +49,7 @@ namespace Infrastructure.Application.Services
             {
                 var errors = result.Errors.Select(e => e.Description).ToList();
 
-                return ApiResponse<string>.Fail(
-                    "Erreur lors de la création du rôle",
-                    errors
-                );
+                return ApiResponse<string>.Fail("Erreur lors de la création du rôle", errors);
             }
 
             // Ajouter les permissions
@@ -87,10 +85,7 @@ namespace Infrastructure.Application.Services
                 );
             }
 
-            return ApiResponse<string>.SuccessResponse(
-                role.Id.ToString(),
-                "Rôle créé avec succès"
-            );
+            return ApiResponse<string>.SuccessResponse(role.Id.ToString(), "Rôle créé avec succès");
         }
 
         public async Task<ApiResponse<string>> UpdateAsync(Guid roleId, UpdateRoleDto dto)
@@ -121,7 +116,7 @@ namespace Infrastructure.Application.Services
             {
                 return ApiResponse<string>.Fail("Un autre rôle avec ce nom existe déjà");
             }
-                        
+
             // Gestion des permissions
             try
             {
@@ -247,14 +242,22 @@ namespace Infrastructure.Application.Services
             foreach (var role in roles)
             {
                 var claims = await _roleManager.GetClaimsAsync(role);
-                var claims_value = claims.Where(c => c.Type == "Permission").Select(c => c.Value).ToList();
-                var permissions = permissionsAll.Where(p => p.ParentId != null && claims_value.Contains(p.Code)).Select(p => p.Name).ToList();
-                rolePermissions.Add(new RoleDto
-                {
-                    Id = role.Id.ToString(),
-                    Name = role.Name,
-                    Permissions = permissions
-                });
+                var claims_value = claims
+                    .Where(c => c.Type == "Permission")
+                    .Select(c => c.Value)
+                    .ToList();
+                var permissions = permissionsAll
+                    .Where(p => p.ParentId != null && claims_value.Contains(p.Code))
+                    .Select(p => p.Name)
+                    .ToList();
+                rolePermissions.Add(
+                    new RoleDto
+                    {
+                        Id = role.Id.ToString(),
+                        Name = role.Name,
+                        Permissions = permissions,
+                    }
+                );
             }
 
             return rolePermissions;
@@ -289,13 +292,10 @@ namespace Infrastructure.Application.Services
                 {
                     Id = role.Id.ToString(),
                     Name = role.Name!,
-                    Permissions = permissions
+                    Permissions = permissions,
                 };
 
-                return ApiResponse<RoleDto>.SuccessResponse(
-                    result,
-                    "Rôle récupéré avec succès"
-                );
+                return ApiResponse<RoleDto>.SuccessResponse(result, "Rôle récupéré avec succès");
             }
             catch (Exception ex)
             {

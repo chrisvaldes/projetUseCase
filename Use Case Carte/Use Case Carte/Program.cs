@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using MudBlazor.Services;
 using Use_Case_Carte.Components;
 using Use_Case_Carte.Components.Layout;
 using Use_Case_Carte.Components.Route;
@@ -20,6 +21,7 @@ builder.Services.AddScoped<NouveauMagService>();
 builder.Services.AddScoped<DetailReclamationService>();
 builder.Services.AddScoped<TypeMagService>();
 builder.Services.AddScoped<DashboardService>();
+builder.Services.AddMudServices();
 builder.Services.AddScoped(sp => new HttpClient
 {
     BaseAddress = new Uri("http://localhost:5229/"),

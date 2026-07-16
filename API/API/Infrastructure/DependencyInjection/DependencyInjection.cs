@@ -1,4 +1,9 @@
-﻿using Auth.Application.Interfaces;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using Auth.Application.Interfaces;
 using Auth.Application.Services;
 using Authorization.Application.Interfaces;
 using Authorization.Domain.Entities;
@@ -10,11 +15,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.DependencyInjection;
 using Organigramme.Application.Interfaces;
 using Settings.Application.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Users.Application.Interfaces;
 using Users.Domain.Entities;
 
@@ -24,13 +24,14 @@ namespace Infrastructure.DependencyInjection
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            services.AddIdentityCore<ApplicationUser>(options =>
-            {
-                options.User.RequireUniqueEmail = true;
-            })
-            .AddRoles<Role>()
-            .AddEntityFrameworkStores<ApplicationDbContext>()
-            .AddDefaultTokenProviders();
+            services
+                .AddIdentityCore<ApplicationUser>(options =>
+                {
+                    options.User.RequireUniqueEmail = true;
+                })
+                .AddRoles<Role>()
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultTokenProviders();
 
             services.AddScoped<IPermissionService, PermissionService>();
             services.AddScoped<IRoleService, RoleService>();
@@ -40,7 +41,7 @@ namespace Infrastructure.DependencyInjection
             services.AddScoped<ITypeOrganisationService, TypeOrganisationService>();
             services.AddScoped<IOrganisationService, OrganisationService>();
             services.AddScoped<ISettingService, SettingService>();
-            services.AddScoped<IPermissionGenerator, PermissionGenerator>(); 
+            services.AddScoped<IPermissionGenerator, PermissionGenerator>();
             return services;
         }
     }
