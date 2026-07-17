@@ -41,15 +41,15 @@ namespace Use_Case_Carte.Services
 
                 if (result.Success)
                 {
-                    await _safeJs.SafeJsUtilities("hideCreateProfileModal");
-                    await _safeJs.SafeJsUtilities("showToast", result.Message, "success");
+                    await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+                    return result;
                 }
                 else
                 {
-                    await _safeJs.SafeJsUtilities("showToast", result.Message, "danger");
+                    await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+                    return result;
                 }
 
-                return result;
             }
             finally
             {

@@ -1,6 +1,7 @@
 @rendermode InteractiveServer
 @page "/MAG/nouveau-mag"
 
+<Toast />
 <div>
     <SharedHeader PreviousPage="Gestion du MAG" CurrentPage="Nouveau MAG" OnCancel="OnCancel"/>
 </div>
@@ -13,7 +14,7 @@
             </div>
             <div class=" card-body ">
 
-                <EditForm FormName="typeMagForm" Model="@inputModel" 
+                <EditForm FormName="typeMagForm" Model="@InputModel" 
                           OnValidSubmit="Traiter">
 
                     <div class="row gy-3">
@@ -24,7 +25,7 @@
                                 Type de MAG <span class="text-danger">*</span>
                             </label>
 
-                            <InputSelect @bind-Value="inputModel.TypeMag" class="form-select">
+                            <InputSelect @bind-Value="InputModel.TypeMag" class="form-select">
                                 <option disabled selected>Selectionnez un type de MAG</option>
                                 <option value="CL_AV_PACK">Client avec plus d'une carte</option>
                             </InputSelect>
@@ -36,7 +37,7 @@
                                 Période début <span class="text-danger">*</span>
                             </label>
 
-                            <InputDate @bind-Value="inputModel.StartPeriod" class="form-control" />
+                            <InputDate @bind-Value="InputModel.StartPeriod" class="form-control" />
                         </div>
 
                         <div class="col-md-6">
@@ -44,7 +45,7 @@
                                 Période fin <span class="text-danger">*</span>
                             </label>
 
-                            <InputDate @bind-Value="inputModel.EndPeriod" class="form-control" />
+                            <InputDate @bind-Value="InputModel.EndPeriod" class="form-control" />
                         </div>
 
                         <!-- Apprint -->
@@ -53,7 +54,7 @@
                                 Fichier Apprint <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile   OnChange="@(e => OnFileSelected(e, nameof(inputModel.Apprint)))" class="form-control" />
+                            <InputFile   OnChange="@(e => OnFileSelected(e, nameof(InputModel.Apprint)))" class="form-control" />
                         </div>
 
                         <!-- Comptes -->
@@ -62,7 +63,7 @@
                                 Fichier compte ouvert <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.OpenAccount)))" class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(InputModel.OpenAccount)))" class="form-control" />
                         </div>
 
                         <div class="col-md-6">
@@ -70,7 +71,7 @@
                                 Fichier compte actif <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile  OnChange="@(e => OnFileSelected(e, nameof(inputModel.ActiveAccount)))" class="form-control" />
+                            <InputFile  OnChange="@(e => OnFileSelected(e, nameof(InputModel.ActiveAccount)))" class="form-control" />
                         </div>
 
                         <!-- Package -->
@@ -79,7 +80,7 @@
                                 Package actif <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.ActivePackage)))" class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(InputModel.ActivePackage)))" class="form-control" />
                         </div>
 
                         <!-- Contentieux -->
@@ -88,7 +89,7 @@
                                 Comptes en contentieux <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.CtxAccount)))" class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(InputModel.CtxAccount)))" class="form-control" />
                         </div>
 
                         <div class="col-md-6">
@@ -97,7 +98,7 @@
                                 <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.DateLastSouPackEchu)))" class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(InputModel.DateLastSouPackEchu)))" class="form-control" />
                         </div>
 
                         <!-- Redevance -->
@@ -107,7 +108,7 @@
                                 <span class="text-danger">*</span>
                             </label>
 
-                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(inputModel.AccountHisDebiteByRedevCard)))" class="form-control" />
+                            <InputFile OnChange="@(e => OnFileSelected(e, nameof(InputModel.AccountHisDebiteByRedevCard)))" class="form-control" />
                         </div>
 
                     </div>

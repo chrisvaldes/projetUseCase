@@ -13,6 +13,10 @@ public class NavigationService
         _navigation = navigation;
     }
 
+    public void GoLogin()
+    {
+        _navigation.NavigateTo(Route.Login);
+    }
     public void GoProfil()
     {
         _navigation.NavigateTo(Route.Profil);

@@ -2,130 +2,184 @@
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 <div class="d-flex align-items-center justify-content-between page-header-breadcrumb flex-wrap gap-2">
- 
-    <SharedHeader PreviousPage="Gestion des permissions" CurrentPage="Liste des permissions"/>
-    <button
-        class="btn btn-primary open-modal-btn"
-        @onclick="() => NouvellePermission()"
-        id="openProfileModalBtn">
+
+    <SharedHeader PreviousPage="Gestion des permissions" CurrentPage="Liste des permissions" />
+
+    <button class="btn btn-primary open-modal-btn" @onclick="NouvellePermission" id="openProfileModalBtn">
         <i class="fa-solid fa-plus me-1 fw-medium align-middle"></i>
         Nouvelle permission
-    </button> 
+    </button>
+
 </div>
 
 <div class="row d-flex align-items-center justify-content-center">
     <div class="col-xxl-12">
         <div class="card custom-card">
+
             <div class="card-header d-flex align-items-center justify-content-between">
-                <div class="card-title">Liste des permissions</div>
-                <div class="d-block">
-                     
+                <div class="card-title">
+                    Liste des permissions
                 </div>
             </div>
+
             <div class="card-body">
-                <div class="card-body">
-                    <div class="table-responsive">
-                        <table id="usersTable" class="table table-hover text-nowrap table-bordered">
-                            <thead>
-                                <tr>
-                                    <th class="text-center" scope="col">
-                                        P.No
-                                    </th>
-                                    <th class="text-center" scope="col">
-                                        Code
-                                    </th>
-                                    <th class="text-center" scope="col">
-                                        Utilisateur
-                                    </th>
-                                    <th class="text-center" scope="col">
-                                        Actions
-                                    </th>
-                                     
+
+                <div class="table-responsive">
+
+                    <table id="usersTable" class="table table-hover text-nowrap table-bordered">
+
+                        <thead>
+                            <tr>
+                                <th class="text-center">P.No</th>
+                                <th class="text-center">Code</th>
+                                <th class="text-center">Utilisateur</th>
+                                <th class="text-center">Actions</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            @if (!profils.Any())
+                            {
+                                <tr class="text-center text-danger">
+                                    <td colspan="4">
+                                        Aucune permission enregistrée !
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody>
-                                @if (!profils.Any())
-                                {
-                                    <tr class="text-center text-danger">
-                                        <td colspan="6">Aucune permission enregistré!!!</td>
-                                    </tr>
-                                }
-                                else
-                                {
-                                    foreach (ProfilModel profil in profils)
+                            }
+                            else
+                            {
+                                int index = 1;
+
+                                @foreach (ProfilModel profil in profils)
                                 {
                                     <tr>
+
                                         <td class="text-center">
-                                        @* @index *@ 1
+                                            @index
                                         </td>
+
                                         <td class="text-center">
-                                        @profil.UserName
+                                            @profil.UserName
                                         </td>
+
                                         <td class="text-center">
-                                        @profil.Userag
+                                            @profil.Userag
                                         </td>
-                                         
+
                                         <td class="text-center">
+
                                             <div class="btn-list">
-                                                <a
-                                                    class="btn btn-icon rounded-pill btn-sm btn-secondary-light"
-                                                    @
-                                                    @onclick="() => ModifierProfil(profil)">
+
+                                                <a href="javascript:void(0)"
+                                                   class="btn btn-icon rounded-pill btn-sm btn-secondary-light"
+                                                   @onclick="() => ModifierProfil(profil)">
+
                                                     <i class="fa-solid fa-pencil"></i>
+
                                                 </a>
-                                                <a
-                                                    href="javascript:void(0);"
-                                                    onclick="showDeleteProfile('@profil.Id')"
-                                                    data-bs-toggle="tooltip"
-                                                    data-bs-placement="top"
-                                                    title="Delete"
-                                                    class="btn btn-icon rounded-pill btn-sm btn-danger-light">
+
+                                                @* <a href="javascript:void(0)"
+                                                   class="btn btn-icon rounded-pill btn-sm btn-danger-light"
+                                                   @onclick="() => SupprimerProfil(profil)">
+
                                                     <i class="fa-solid fa-trash"></i>
-                                                </a>
+
+                                                </a> *@
+
                                             </div>
+
                                         </td>
+
                                     </tr>
-                                    @* index++; *@
-                            }
+
+                                    index++;
                                 }
-                            </tbody>
-                        </table>
-                        <div class="card-footer">
-                            <div class="d-flex align-items-center">
-                                <div>
-                                    <small id="resultCount" class="text-muted"></small>
-                                </div>
-                                <div class="ms-auto">
-                                    <nav aria-label="Page navigation" class="pagination-style-4">
-                                        <ul class="pagination mb-0" id="paginationContainer">
-                                            <!-- PREV -->
-                                            <li class="page-item" id="prevPageItem">
-                                                <a
-                                                    class="page-link"
-                                                    href="javascript:void(0);"
-                                                    id="prevPage">
-                                                    Prec
-                                                </a>
-                                            </li>
-                                            <!-- NUMEROS -->
-                                            <span id="pageNumbers" class=" "></span>
-                                            <!-- NEXT -->
-                                            <li class="page-item" id="nextPageItem">
-                                                <a
-                                                    class="page-link text-primary"
-                                                    href="javascript:void(0);"
-                                                    id="nextPage">
-                                                    Suiv
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                            }
+
+                        </tbody>
+
+                    </table>
+
                 </div>
+
+                <div class="card-footer">
+
+                    <div class="d-flex align-items-center">
+
+                        <div>
+                            <small id="resultCount" class="text-muted"></small>
+                        </div>
+
+                        <div class="ms-auto">
+
+                            <nav aria-label="Page navigation" class="pagination-style-4">
+
+                                <ul class="pagination mb-0" id="paginationContainer">
+
+                                    <li class="page-item" id="prevPageItem">
+                                        <a class="page-link" href="javascript:void(0);" id="prevPage">
+                                            Prec
+                                        </a>
+                                    </li>
+
+                                    <span id="pageNumbers"></span>
+
+                                    <li class="page-item" id="nextPageItem">
+                                        <a class="page-link text-primary" href="javascript:void(0);" id="nextPage">
+                                            Suiv
+                                        </a>
+                                    </li>
+
+                                </ul>
+
+                            </nav>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
             </div>
+
         </div>
     </div>
+</div>
+
+<!-- ARBRE DES PERMISSIONS -->
+
+<div class="row d-flex align-items-center justify-content-center mt-3">
+
+    <div class="col-xxl-12">
+
+        <div class="card custom-card">
+
+            <div class="card-header">
+
+                <div class="card-title">
+                    Arbre des permissions
+                </div>
+
+            </div>
+
+            <div class="card-body">
+
+                @if (!permissionsTree.Any())
+                {
+                    <p class="text-center text-danger">
+                        Aucune permission disponible.
+                    </p>
+                }
+                else
+                {
+                    <div id="permissionTreeContainer"></div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
 </div>

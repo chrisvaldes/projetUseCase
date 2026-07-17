@@ -47,26 +47,54 @@ public partial class CreateProfil : ComponentBase
     {
         if (firstRender)
         {
-            await JS.InvokeVoidAsync("initProfileModals");
+            // await JS.InvokeVoidAsync("initProfileModals");
         }
     }
 
     // Handler conseillé : reçoit EditContext, retourne Task
+    // private async Task OnSaveProfil()
+    // {
+    //     var resp = await ProfilService.Save(profilModel);
+
+    //     if (resp?.Success == true)
+    //     {
+    //         profilModel = new ProfilModel();
+    //         NavigationService.GoProfil();
+    //         ToastService.ShowSuccess(resp.Message);
+    //         await Task.Delay(1500);
+
+    //         await OnSaved.InvokeAsync();
+    //     }
+    //     else
+    //     {
+    //         ToastService.ShowError(resp?.Message ?? "Erreur lors de l'enregistrement");
+    //     }
+    // }
     private async Task OnSaveProfil()
     {
         var resp = await ProfilService.Save(profilModel);
 
         if (resp?.Success == true)
         {
-            profilModel = new ProfilModel();
-            NavigationService.GoProfil();
+            profilModel = new ProfilModel(); 
+            
+            // 1. Afficher le toast AVANT toute navigation
             ToastService.ShowSuccess(resp.Message);
+
+            // 2. Laisser le temps au toast de s'afficher/être visible
             await Task.Delay(1500);
+
+            // 3. Naviguer seulement après
+            NavigationService.GoProfil();
+
             await OnSaved.InvokeAsync();
         }
         else
-        {
-            ToastService.ShowError(resp?.Message ?? "Erreur lors de l'enregistrement");
+        { 
+            await JS.InvokeVoidAsync("showToast", "message", "warning");
+            ToastService.ShowError(resp!.Message);
+            // 2. Laisser le temps au toast de s'afficher/être visible
+            await Task.Delay(2000);
         }
     }
 

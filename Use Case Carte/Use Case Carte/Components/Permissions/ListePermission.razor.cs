@@ -1,4 +1,4 @@
- 
+
 using Microsoft.AspNetCore.Components;
 using Microsoft.JSInterop;
 using Use_Case_Carte.Components.Route;
@@ -39,10 +39,13 @@ namespace Use_Case_Carte.Components.Permissions
                 await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
 
                 await LoadProfils();
+                             // On construit l'arbre après le premier render, une fois les données chargées
+                await RenderPermissionTreeAsync();
 
                 await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
             }
         }
+ 
 
         private async Task LoadProfils()
         {
@@ -59,8 +62,52 @@ namespace Use_Case_Carte.Components.Permissions
         }
 
         public async Task NouvellePermission()
-        { 
+        {
             NavigationService.GoNouvellePermission();
         }
+
+
+
+ 
+        [Inject]
+        protected PermissionService PermissionService { get; set; } = default!;
+ 
+        [Inject]
+        public ToastService ToastService { get; set; } = default!;
+         protected List<PermissionTreeDto> permissionsTree = new();
+
+        protected override async Task OnInitializedAsync()
+        {
+            await LoadProfilsAsync();
+            await LoadPermissionsAsync();
+        }
+
+       
+
+        private async Task LoadProfilsAsync()
+        {
+            // profils = await ProfilService.GetAllAsync();
+            profils ??= new List<ProfilModel>();
+        }
+
+        private async Task LoadPermissionsAsync()
+        {
+            permissionsTree = await PermissionService.GetAllAsync();
+
+            if (!permissionsTree.Any())
+            {
+                Console.WriteLine("---------->> Aucune permission récupérée");
+            }
+        }
+
+        private async Task RenderPermissionTreeAsync()
+        {
+            if (permissionsTree.Any())
+            {
+                // Envoie les données au JS pour construire le jsTree
+                await JS.InvokeVoidAsync("initPermissionTree", "permissionTreeContainer", permissionsTree);
+            }
+        }
+
     }
 }
