@@ -167,7 +167,7 @@ namespace API.Controllers
                 // Génération du fichier Excel
                 byte[] fichier = _magProcessingHelper.TxtToExcel(carteAReguler);
 
-                string nomFichier = $"BKMBTI_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
+                string nomFichier = $"CarteAReguler_{DateTime.Now:yyyyMMddHHmmss}.xlsx";
 
                 return File(
                     fichier,

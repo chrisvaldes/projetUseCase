@@ -58,6 +58,21 @@ public class NavigationService
         _navigation.NavigateTo($"{Route.SyntheseMag}/{typeMag.Id}");
     }
 
+    public void GoRole()
+    {
+        _navigation.NavigateTo(Route.Roles);
+    }
+
+    public void GoPermission()
+    {
+        _navigation.NavigateTo(Route.Permissions);
+    }
+
+    public void GoNouvellePermission()
+    { 
+        _navigation.NavigateTo(Route.NouvellePermission);
+    }
+
     //public void GoCreateCustomer()
     //{
     //    _navigation.NavigateTo(Route.CreateCustomer);

@@ -1,9 +1,6 @@
-﻿using Authorization.Application.DTO;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿ 
+using Authorization.Application.DTO;
+using Authorization.Domain.Entities;
 
 namespace Authorization.Application.Interfaces
 {
@@ -11,5 +8,7 @@ namespace Authorization.Application.Interfaces
     {
         Task<List<string>> GetPermissionsByUserId(Guid userId);
         Task<List<PermissionTreeDto>> GetAllAsync();
+        Task<ApiResponse<Permission>> PostAsync(Permission permission);
+        Task<Permission?> GetPermissionByCode(String code);
     }
 }

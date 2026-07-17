@@ -1,5 +1,3 @@
-
-
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -17,7 +15,6 @@ namespace SYSGES_MAGs.Helpers
 {
     public class MagProcessingHelper
     {
-
         public readonly ILogger<MagProcessingService> _logger;
         public readonly IComptesDebiteRedevCarteRepository _comptesDebiteRedevCarteRepository;
         public readonly ITypeMagRepository _typeMagRepository;
@@ -27,6 +24,7 @@ namespace SYSGES_MAGs.Helpers
         /// numéro d'evenement (valeur incrementielle)
         /// </summary>
         public int _sequence = 52292;
+
         /// <summary>
         /// limite maximale du numéro d'évènement
         /// </summary>
@@ -39,13 +37,14 @@ namespace SYSGES_MAGs.Helpers
         /// <param name="comptesDebiteRedevCarteRepository"></param>
         /// <param name="typeMagRepository"></param>
         /// <param name="comptesOuvertService"></param>
-
         public MagProcessingHelper() { }
+
         public MagProcessingHelper(
             ILogger<MagProcessingService> logger,
             IComptesDebiteRedevCarteRepository comptesDebiteRedevCarteRepository,
             ITypeMagRepository typeMagRepository,
-            IComptesOuvertService comptesOuvertService)
+            IComptesOuvertService comptesOuvertService
+        )
         {
             _logger = logger;
             _comptesDebiteRedevCarteRepository = comptesDebiteRedevCarteRepository;
@@ -53,119 +52,99 @@ namespace SYSGES_MAGs.Helpers
             _comptesOuvertService = comptesOuvertService;
         }
 
-        public async Task<Dictionary<string, List<Apprint>>> callFuncAsync(List<ComptesOuvert> comptes,
+        public async Task<Dictionary<string, List<Apprint>>> callFuncAsync(
+            List<ComptesOuvert> comptes,
             StreamReader reader,
             long ligne,
             Dictionary<string, ComptesCtxResponse> comptesCtx,
             List<ComptesOuvert> comptesOuverts,
-            Dictionary<string, List<Apprint>> clientPlusUneCarte, List<CompteDebiteRedevCarte> comptesDebite)
+            Dictionary<string, List<Apprint>> clientPlusUneCarte,
+            List<CompteDebiteRedevCarte> comptesDebite
+        )
         {
-
             await _comptesOuvertService.SaveComptesOuvertAsync(comptes);
 
-            await _comptesDebiteRedevCarteRepository
-                                .SaveComptesDebiteAsync(comptesDebite);
+            await _comptesDebiteRedevCarteRepository.SaveComptesDebiteAsync(comptesDebite);
 
             return await GetCartesClient(
                 reader,
                 ligne,
                 comptesCtx,
                 comptesOuverts,
-                clientPlusUneCarte);
+                clientPlusUneCarte
+            );
         }
-
 
         public async Task<Dictionary<string, List<Apprint>>> GetCartesClient(
             StreamReader reader,
             long ligne,
             Dictionary<string, ComptesCtxResponse> comptesCtx,
             List<ComptesOuvert> comptesOuverts,
-            Dictionary<string, List<Apprint>> clientPlusUneCarte)
+            Dictionary<string, List<Apprint>> clientPlusUneCarte
+        )
         {
             string? ligneApprint;
 
             // Préparation des recherches rapides
-            var comptesOuvertsSet = comptesOuverts
-                .Select(x => x.Ncp)
-                .ToHashSet();
+            var comptesOuvertsSet = comptesOuverts.Select(x => x.Ncp).ToHashSet();
 
-            var comptesCtxSet = comptesCtx
-                .Keys
-                .ToHashSet();
+            var comptesCtxSet = comptesCtx.Keys.ToHashSet();
 
-            var cartesExcluesSet = CardConstants.cartesExclu
-                .ToHashSet();
+            var cartesExcluesSet = CardConstants.cartesExclu.ToHashSet();
 
-            var cartesGratuitesSet = CardConstants.cartesGratuite
-                .ToHashSet();
-
+            var cartesGratuitesSet = CardConstants.cartesGratuite.ToHashSet();
 
             while ((ligneApprint = await reader.ReadLineAsync()) != null)
             {
-
                 ligne++;
 
                 try
                 {
-                    if (string.IsNullOrWhiteSpace(ligneApprint) ||
-                        ligneApprint.TrimStart().StartsWith("99 "))
+                    if (
+                        string.IsNullOrWhiteSpace(ligneApprint)
+                        || ligneApprint.TrimStart().StartsWith("99 ")
+                    )
                     {
                         continue;
                     }
 
+                    var apprint = ConvertTxtToApprint(ligneApprint, ligne);
 
-                    var apprint = ConvertTxtToApprint(
-                        ligneApprint,
-                        ligne);
-
-
-                    if (string.IsNullOrWhiteSpace(
-                        apprint.DateValiditeAgenceCodeDeviseNumeroCompte))
+                    if (string.IsNullOrWhiteSpace(apprint.DateValiditeAgenceCodeDeviseNumeroCompte))
                     {
                         continue;
                     }
-
 
                     // Extraction compte
-                    var numeroCompte =
-                        apprint.DateValiditeAgenceCodeDeviseNumeroCompte
-                        .Substring(12);
-
+                    var numeroCompte = apprint.DateValiditeAgenceCodeDeviseNumeroCompte.Substring(
+                        12
+                    );
 
                     // Date validité carte
-                    var dateValiditeCarte =
-                        GetDateValiditeCarte(apprint);
+                    var dateValiditeCarte = GetDateValiditeCarte(apprint);
 
                     bool carteExpiree = dateValiditeCarte <= DateTimeOffset.UtcNow;
 
-
                     // Exclusions
                     if (
-                        carteExpiree ||
-                        comptesCtxSet.Contains(numeroCompte) ||
-                        !comptesOuvertsSet.Contains(numeroCompte) ||
-                        cartesExcluesSet.Contains(apprint.CodeCarte!) ||
-                        (!numeroCompte.StartsWith("02") &&
-                         !numeroCompte.StartsWith("31"))
-                       )
+                        carteExpiree
+                        || comptesCtxSet.Contains(numeroCompte)
+                        || !comptesOuvertsSet.Contains(numeroCompte)
+                        || cartesExcluesSet.Contains(apprint.CodeCarte!)
+                        || (!numeroCompte.StartsWith("02") && !numeroCompte.StartsWith("31"))
+                    )
                     {
-                        _logger.LogInformation($"Ligne {ligne} : Carte invalide" + apprint);
+                        //_logger.LogInformation($"Ligne {ligne} : Carte invalide" + apprint);
                         continue;
                     }
 
-
-
                     // Code tarification
-                    var codeTarif =
-                        apprint.EstActifCodeTarifNumeroCompte?
-                        .Substring(1, 2);
-
+                    var codeTarif = apprint.EstActifCodeTarifNumeroCompte?.Substring(1, 2);
 
                     if (string.IsNullOrEmpty(codeTarif))
                     {
                         continue;
                     }
-
 
                     // Carte gratuite uniquement
                     if (!cartesGratuitesSet.Contains(codeTarif))
@@ -173,11 +152,8 @@ namespace SYSGES_MAGs.Helpers
                         continue;
                     }
 
-
                     // Ajout dans le dictionnaire
-                    if (!clientPlusUneCarte.TryGetValue(
-                        numeroCompte,
-                        out var cartes))
+                    if (!clientPlusUneCarte.TryGetValue(numeroCompte, out var cartes))
                     {
                         cartes = new List<Apprint>();
                         clientPlusUneCarte[numeroCompte] = cartes;
@@ -186,27 +162,22 @@ namespace SYSGES_MAGs.Helpers
                     // ajout d'une nouvelle carte à la liste des cartes existant du client.
                     cartes.Add(apprint);
 
-
                     // log progression tous les 10000
                     if (ligne % 10000 == 0)
                     {
-                        _logger.LogInformation(
-                            "Traitement APPRINT : {ligne} lignes",
-                            ligne);
+                        //_logger.LogInformation("Traitement APPRINT : {ligne} lignes", ligne);
+                        continue;
                     }
                 }
                 catch (Exception ex)
                 {
-                    _logger.LogError(
-                        ex,
-                        "Erreur ligne APPRINT {ligne}",
-                        ligne);
+                    _logger.LogError(ex, "Erreur ligne APPRINT {ligne}", ligne);
 
                     throw new Exception(
-                        $"Erreur lecture fichier APPRINT ligne {ligne}: {ex.Message}");
+                        $"Erreur lecture fichier APPRINT ligne {ligne}: {ex.Message}"
+                    );
                 }
             }
-
 
             return clientPlusUneCarte;
         }
@@ -214,13 +185,13 @@ namespace SYSGES_MAGs.Helpers
         /// <summary>
         /// Cette fonction parcours le dictionnaire des clients avec une ou plus ou plusieurs carte(s) gratuite(s).
         /// si dans la liste le client à une seule carte, il ne nous interesse pas, on continue la boucle,
-        /// on vérifi si le client a résilié son package, si oui calculer le manque à gagner suivant les cas ou, 
-        /// - la date de fin de souscription est inf a la période de début d'étude (Dfsoupack < Ddeb) : 
+        /// on vérifi si le client a résilié son package, si oui calculer le manque à gagner suivant les cas ou,
+        /// - la date de fin de souscription est inf a la période de début d'étude (Dfsoupack < Ddeb) :
         ///      - calculer comme si le client n'avait jamais eu de package : MAG = Sum(Min(T, Tci).PUci i allant de 1 à n ou n représente le nombre de carte du client
-        /// - la date de fin de souscription est sup à la période de début d'étude (dsouc > Ddeb) : 
+        /// - la date de fin de souscription est sup à la période de début d'étude (dsouc > Ddeb) :
         ///     - MAG = Sum(Min(T, Tci).PUci - (Max(Tpkg inter Tcj)).PUj i = 1 à n, j = 1 à k, n le nombre de carte, k le nombre de carte qui remplissent TCj avec le Tpck
-        /// - si la ddsou inf ddeb et dfsou est sup à ddeb : 
-        ///     - MAG = Sum(Min(T, Tci).PUci (Max(Tpck inter T inter Tcj)).PUcj 
+        /// - si la ddsou inf ddeb et dfsou est sup à ddeb :
+        ///     - MAG = Sum(Min(T, Tci).PUci (Max(Tpck inter T inter Tcj)).PUcj
         /// </summary>
         /// <param name="clientPlusUneCarte"></param>
         /// <param name="dateDersouPackEchus"></param>
@@ -231,8 +202,15 @@ namespace SYSGES_MAGs.Helpers
         /// <param name="bkmvtis"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task MapClientPlusUneCarte(Dictionary<string, List<Apprint>> clientPlusUneCarte, Dictionary<string, DateDsouPackEchuResponse> dateDersouPackEchus,
-            Dictionary<string, PackagesActifsResponse> packActifs, DateTime startPeriod, DateTime endPeriod, TypeMag typeMagResult, List<Bkmvti> bkmvtis)
+        public async Task MapClientPlusUneCarte(
+            Dictionary<string, List<Apprint>> clientPlusUneCarte,
+            Dictionary<string, DateDsouPackEchuResponse> dateDersouPackEchus,
+            Dictionary<string, PackagesActifsResponse> packActifs,
+            DateTime startPeriod,
+            DateTime endPeriod,
+            TypeMag typeMagResult,
+            List<Bkmvti> bkmvtis
+        )
         {
             // on boucle sur les clients ayant les cartes gratuites
             foreach (var client in clientPlusUneCarte)
@@ -247,18 +225,22 @@ namespace SYSGES_MAGs.Helpers
                     continue;
                 }
 
-                var mappingCartePackageResult = BuildCartePackageEchuList(cartesClient, dateDersouPackEchus, ncpf);
+                var mappingCartePackageResult = BuildCartePackageEchuList(
+                    cartesClient,
+                    dateDersouPackEchus,
+                    ncpf
+                );
 
                 // rechercher et retourner le code de la carte qui mappe avec le package
                 HashSet<string> codeCartes = mappingCartePackageResult
-                 .Where(cartePack =>
-                     CardConstants.cartePackage.TryGetValue(
-                         cartePack.CodeCarte!,
-                         out var packages)
-                     && packages.Contains(cartePack.CodePackage!)
-                 )
-                 .Select(x => x.CodeCarte!)
-                 .ToHashSet();
+                    .Where(cartePack =>
+                        CardConstants.cartePackage.TryGetValue(
+                            cartePack.CodeCarte!,
+                            out var packages
+                        ) && packages.Contains(cartePack.CodePackage!)
+                    )
+                    .Select(x => x.CodeCarte!)
+                    .ToHashSet();
 
                 // recupérer toutes les cartes dont le code de la carte correspond à celui qui mappe avec le package.
                 // nous ordonnons par la suite par ordre croissant pour avoir la carte la plus anciènne en tête de liste.
@@ -267,7 +249,7 @@ namespace SYSGES_MAGs.Helpers
                     .OrderBy(carte => GetDateCreationCarte(carte.DateCreationCarte))
                     .ToList();
 
-                // liste des cartes à faire basculer : 
+                // liste des cartes à faire basculer :
                 HashSet<string> cartesABasculer = maxCartesClientPackResult
                     .Skip(1) // skip(1) exclu la prémière (la carte la plus anciènne) qui mappe avec le package.
                     .Select(c => c.NumCarte!)
@@ -275,7 +257,9 @@ namespace SYSGES_MAGs.Helpers
 
                 if (maxCartesClientPackResult.Count() > 1)
                 {
-                    _logger.LogInformation("plus d'une carte mappe le package : " + maxCartesClientPackResult);
+                    // _logger.LogInformation(
+                    //     "plus d'une carte mappe le package : " + maxCartesClientPackResult
+                    // );
                 }
 
                 // est ce que le client de ce numéro de compte a résilié son package?
@@ -285,11 +269,9 @@ namespace SYSGES_MAGs.Helpers
                     if (PackEchu != null)
                     {
                         // Un client ayant résilié sont package ne peut plus figurer dans les packages actifs
-                        // si la liste des packages actifs ne contient pas le ncpf, alors : 
+                        // si la liste des packages actifs ne contient pas le ncpf, alors :
                         if (!packActifs.TryGetValue(ncpf, out var pack))
                         {
-
-
                             //// exple 260210 pour => 10/02/2026
                             //DateTimeOffset? maxDateCreationCarte = GetDateCreationCarte(
                             //    maxCartesClientPack!.DateCreationCarte
@@ -297,56 +279,99 @@ namespace SYSGES_MAGs.Helpers
 
                             if (PackEchu.Dfsou < startPeriod)
                             {
-
                                 //ClientAvecPlusUneCartePackResilieEtDfsouInfDdeb(cartesClient, ncpf, startPeriod, endPeriod, typeMagResult);
-                                await ClientAvecPlusUneCarteSansPackage(cartesClient, ncpf, startPeriod, endPeriod, typeMagResult, bkmvtis, cartesABasculer);
-
+                                await ClientAvecPlusUneCarteSansPackage(
+                                    cartesClient,
+                                    ncpf,
+                                    startPeriod,
+                                    endPeriod,
+                                    typeMagResult,
+                                    bkmvtis,
+                                    cartesABasculer
+                                );
                             }
-                            // ddsou > Ddeb et Dfsou < Ddeb 
-                            else if (PackEchu.Ddsou > startPeriod && PackEchu.Dfsou > startPeriod && PackEchu.Dfsou < endPeriod)
-                            {
-
-
-                                var periodePack = new Periode(PackEchu.Ddsou, PackEchu.Dfsou);
-                                var periodeEtude = new Periode(startPeriod, endPeriod);
-
-                                var carteMaxIntersection = GetCarteMaxIntersection(maxCartesClientPackResult, periodePack, endPeriod);
-
-                                if (carteMaxIntersection != null)
-                                {
-                                    // récupération de la date de création de la carte qui à le maximum d'intersection
-                                    var maxDateIntersectionCarte = GetDateCreationCarte(carteMaxIntersection.Carte.DateCreationCarte);
-
-                                    await ClientAvecPlusUneCartePackResilieEtDdsouSupDdeb(cartesClient, maxDateIntersectionCarte,
-                                        typeMagResult, ncpf, startPeriod, endPeriod, bkmvtis, cartesABasculer);
-                                }
-                                else
-                                {
-                                    _logger.LogWarning($"Aucune intersection trouvée pour le client {ncpf} avec la période du package");
-                                }
-
-                            }
-                            // ddsou < Ddeb et Dfsou < Ddeb 
-                            else if (PackEchu.Ddsou < startPeriod && PackEchu.Dfsou > startPeriod && PackEchu.Dfsou < endPeriod)
+                            // ddsou > Ddeb et Dfsou < Ddeb
+                            else if (
+                                PackEchu.Ddsou > startPeriod
+                                && PackEchu.Dfsou > startPeriod
+                                && PackEchu.Dfsou < endPeriod
+                            )
                             {
                                 var periodePack = new Periode(PackEchu.Ddsou, PackEchu.Dfsou);
                                 var periodeEtude = new Periode(startPeriod, endPeriod);
 
-                                var carteMaxIntersection = GetCarteMaxIntersection(maxCartesClientPackResult, periodePack, endPeriod, periodeEtude);
+                                var carteMaxIntersection = GetCarteMaxIntersection(
+                                    maxCartesClientPackResult,
+                                    periodePack,
+                                    endPeriod
+                                );
 
                                 if (carteMaxIntersection != null)
                                 {
                                     // récupération de la date de création de la carte qui à le maximum d'intersection
-                                    var maxDateIntersectionCarte = GetDateCreationCarte(carteMaxIntersection.Carte.DateCreationCarte);
+                                    var maxDateIntersectionCarte = GetDateCreationCarte(
+                                        carteMaxIntersection.Carte.DateCreationCarte
+                                    );
 
-                                    await ClientAvecPlusUneCartePackResilieEtDdsouInfDdeb(cartesClient, maxDateIntersectionCarte,
-                                            typeMagResult, ncpf, startPeriod, endPeriod, bkmvtis, cartesABasculer);
+                                    await ClientAvecPlusUneCartePackResilieEtDdsouSupDdeb(
+                                        cartesClient,
+                                        maxDateIntersectionCarte,
+                                        typeMagResult,
+                                        ncpf,
+                                        startPeriod,
+                                        endPeriod,
+                                        bkmvtis,
+                                        cartesABasculer
+                                    );
                                 }
                                 else
                                 {
-                                    _logger.LogWarning($"Aucune intersection trouvée pour le client {ncpf} avec la période du package");
+                                    _logger.LogWarning(
+                                        $"Aucune intersection trouvée pour le client {ncpf} avec la période du package"
+                                    );
                                 }
+                            }
+                            // ddsou < Ddeb et Dfsou < Ddeb
+                            else if (
+                                PackEchu.Ddsou < startPeriod
+                                && PackEchu.Dfsou > startPeriod
+                                && PackEchu.Dfsou < endPeriod
+                            )
+                            {
+                                var periodePack = new Periode(PackEchu.Ddsou, PackEchu.Dfsou);
+                                var periodeEtude = new Periode(startPeriod, endPeriod);
 
+                                var carteMaxIntersection = GetCarteMaxIntersection(
+                                    maxCartesClientPackResult,
+                                    periodePack,
+                                    endPeriod,
+                                    periodeEtude
+                                );
+
+                                if (carteMaxIntersection != null)
+                                {
+                                    // récupération de la date de création de la carte qui à le maximum d'intersection
+                                    var maxDateIntersectionCarte = GetDateCreationCarte(
+                                        carteMaxIntersection.Carte.DateCreationCarte
+                                    );
+
+                                    await ClientAvecPlusUneCartePackResilieEtDdsouInfDdeb(
+                                        cartesClient,
+                                        maxDateIntersectionCarte,
+                                        typeMagResult,
+                                        ncpf,
+                                        startPeriod,
+                                        endPeriod,
+                                        bkmvtis,
+                                        cartesABasculer
+                                    );
+                                }
+                                else
+                                {
+                                    _logger.LogWarning(
+                                        $"Aucune intersection trouvée pour le client {ncpf} avec la période du package"
+                                    );
+                                }
                             }
                         }
                     }
@@ -356,27 +381,32 @@ namespace SYSGES_MAGs.Helpers
                 {
                     // constituer le couple (code, package) exple "011 => 300001", "016 => 100003"... entre les packages actifs et le ncpf
                     // afin de vérifier si au moins une carte match avec un package.
-                    var cartePackageResult = BuildCartePackageActifList(cartesClient, packActifs, ncpf);
+                    var cartePackageResult = BuildCartePackageActifList(
+                        cartesClient,
+                        packActifs,
+                        ncpf
+                    );
 
                     bool hasPackage = cartePackageResult.Any();
 
                     HashSet<string> cartesBasculer = cartesClient
-                        .Where(carte => cartePackageResult
-                            .Any(cp => cp.CodeCarte == carte.CodeCarte))
+                        .Where(carte =>
+                            cartePackageResult.Any(cp => cp.CodeCarte == carte.CodeCarte)
+                        )
                         .Select(carte => carte.NumCarte!)
                         .ToHashSet();
-
 
                     // le client à t'il un package?
                     if (hasPackage)
                     {
                         // le client à au moins une carte aligner au package?
-                        bool hasAtLeastOneCoherenceCartePackage = cartePackageResult.Any(cartePack =>
-                             CardConstants.cartePackage.TryGetValue(
-                                 cartePack.CodeCarte!,
-                                 out var packages)
-                             && packages.Contains(cartePack.CodePackage!)
-                         );
+                        bool hasAtLeastOneCoherenceCartePackage = cartePackageResult.Any(
+                            cartePack =>
+                                CardConstants.cartePackage.TryGetValue(
+                                    cartePack.CodeCarte!,
+                                    out var packages
+                                ) && packages.Contains(cartePack.CodePackage!)
+                        );
 
                         // le client a t'il au moins une carte aligné au package
                         // => non
@@ -386,9 +416,15 @@ namespace SYSGES_MAGs.Helpers
                             // Pour Chaque carte du client recupérer le manque à gagner suivant le min entre la période de traitement
                             // et la période de validité du package
 
-                            await ClientAvecPlusUneCarteSansPackage(cartesClient, ncpf, startPeriod, endPeriod, typeMagResult, bkmvtis, cartesBasculer);
-
-
+                            await ClientAvecPlusUneCarteSansPackage(
+                                cartesClient,
+                                ncpf,
+                                startPeriod,
+                                endPeriod,
+                                typeMagResult,
+                                bkmvtis,
+                                cartesBasculer
+                            );
                         }
                         else
                         {
@@ -411,31 +447,34 @@ namespace SYSGES_MAGs.Helpers
                             // MAG = sum(min(T,Tci)*PUci - Max(Min(T, Tcjpkg))*PUcj; (j (1 à k) : k => nombre de carte qui map avec le package, i (1 à n) : n => le nombre de carte)
                             if (startPeriod < ddsou)
                             {
-
                                 string? codeCarte = cartePackageResult
-                                     .FirstOrDefault(cartePack =>
-                                         CardConstants.cartePackage.TryGetValue(
-                                             cartePack.CodeCarte!,
-                                             out var packages)
-                                         && packages.Contains(cartePack.CodePackage!)
-                                     )
-                                     ?.CodeCarte;
+                                    .FirstOrDefault(cartePack =>
+                                        CardConstants.cartePackage.TryGetValue(
+                                            cartePack.CodeCarte!,
+                                            out var packages
+                                        ) && packages.Contains(cartePack.CodePackage!)
+                                    )
+                                    ?.CodeCarte;
                                 // recupération du max du min des cartes (c'est lui qu'on devra exclure dans l'application de la formule)
 
                                 var maxCartesClientPack = cartesClient
-                                    .Where(c =>
-                                        c.CodeCarte == codeCarte
-                                    )
+                                    .Where(c => c.CodeCarte == codeCarte)
                                     .OrderBy(c => c.DateCreationCarte)
                                     .FirstOrDefault();
-
 
                                 if (maxCartesClientPack == null)
                                 {
                                     // Aucun max(min) entre Tpkg et Tcjpkg
-                                    await ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtudeAucunMaxMin(cartesClient, ddsou, ncpf, typeMagResult, startPeriod, endPeriod, bkmvtis, cartesABasculer);
-
-
+                                    await ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtudeAucunMaxMin(
+                                        cartesClient,
+                                        ddsou,
+                                        ncpf,
+                                        typeMagResult,
+                                        startPeriod,
+                                        endPeriod,
+                                        bkmvtis,
+                                        cartesABasculer
+                                    );
                                 }
                                 else
                                 {
@@ -445,24 +484,29 @@ namespace SYSGES_MAGs.Helpers
                                     );
 
                                     // au moins un Max(Min) entre Tpkg et Tcjpkg
-                                    await ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtude(cartesClient, ddsou, ncpf, typeMagResult, startPeriod, endPeriod, maxDateCreationCarte, bkmvtis, cartesABasculer);
-
-
+                                    await ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtude(
+                                        cartesClient,
+                                        ddsou,
+                                        ncpf,
+                                        typeMagResult,
+                                        startPeriod,
+                                        endPeriod,
+                                        maxDateCreationCarte,
+                                        bkmvtis,
+                                        cartesABasculer
+                                    );
                                 }
-
-
                             }
                             else
                             {
-
                                 string? codeCarte = cartePackageResult
-                                     .FirstOrDefault(cartePack =>
-                                         CardConstants.cartePackage.TryGetValue(
-                                             cartePack.CodeCarte!,
-                                             out var packages)
-                                         && packages.Contains(cartePack.CodePackage!)
-                                     )
-                                     ?.CodeCarte;
+                                    .FirstOrDefault(cartePack =>
+                                        CardConstants.cartePackage.TryGetValue(
+                                            cartePack.CodeCarte!,
+                                            out var packages
+                                        ) && packages.Contains(cartePack.CodePackage!)
+                                    )
+                                    ?.CodeCarte;
 
                                 // recupération du max du min des cartes (c'est lui qu'on devra exclure dans l'application de la formule)
                                 var maxCartesClientPack = cartesClient
@@ -476,38 +520,59 @@ namespace SYSGES_MAGs.Helpers
                                 if (maxCartesClientPack == null)
                                 {
                                     // gérer le cas (continuer, logger, ou utiliser autre stratégie)
-                                    await ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtudeAucunMaxMin(cartesClient, ddsou, ncpf, typeMagResult, startPeriod, endPeriod, bkmvtis, cartesABasculer);
-
-
+                                    await ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtudeAucunMaxMin(
+                                        cartesClient,
+                                        ddsou,
+                                        ncpf,
+                                        typeMagResult,
+                                        startPeriod,
+                                        endPeriod,
+                                        bkmvtis,
+                                        cartesABasculer
+                                    );
                                 }
                                 else
                                 {
                                     var maxDateCreationCarte = GetDateCreationCarte(
-                                    maxCartesClientPack.DateCreationCarte);
+                                        maxCartesClientPack.DateCreationCarte
+                                    );
 
-                                    await ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtude(cartesClient, ddsou, ncpf, typeMagResult, startPeriod, endPeriod, maxDateCreationCarte, bkmvtis, cartesABasculer);
-
-
+                                    await ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtude(
+                                        cartesClient,
+                                        ddsou,
+                                        ncpf,
+                                        typeMagResult,
+                                        startPeriod,
+                                        endPeriod,
+                                        maxDateCreationCarte,
+                                        bkmvtis,
+                                        cartesABasculer
+                                    );
                                 }
-
                             }
                         }
                     }
                     else
                     {
-
-                        await ClientAvecPlusUneCarteSansPackage(cartesClient, ncpf, startPeriod, endPeriod, typeMagResult, bkmvtis, cartesBasculer);
-
+                        await ClientAvecPlusUneCarteSansPackage(
+                            cartesClient,
+                            ncpf,
+                            startPeriod,
+                            endPeriod,
+                            typeMagResult,
+                            bkmvtis,
+                            cartesBasculer
+                        );
                     }
                 }
-
             }
-
-
         }
 
-
-        public void AjoutListeClientAvecPlusUneCarte(Apprint apprint, string numeroCompte, Dictionary<string, List<Apprint>> clientPlusUneCarte)
+        public void AjoutListeClientAvecPlusUneCarte(
+            Apprint apprint,
+            string numeroCompte,
+            Dictionary<string, List<Apprint>> clientPlusUneCarte
+        )
         {
             clientPlusUneCarte[numeroCompte]
                 .Add(
@@ -534,147 +599,214 @@ namespace SYSGES_MAGs.Helpers
             string ncpf,
             DateTime startPeriod,
             DateTime endPeriod,
-            TypeMag typeMagResult, List<Bkmvti> bkmvtis, HashSet<string> cartesABasculer)
+            TypeMag typeMagResult,
+            List<Bkmvti> bkmvtis,
+            HashSet<string> cartesABasculer
+        )
         {
-            var compteDebiteRedevance =
-                await _comptesDebiteRedevCarteRepository
-                    .GetByNumerosAsync(ncpf);
+            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository.GetByNumerosAsync(
+                ncpf
+            );
 
             foreach (var carte in cartesClient)
             {
                 //var duree = CalculDuree( GetDateCreationCarte(carte.DateCreationCarte),
                 //    startPeriod, endPeriod);
 
-                var periodeFacturation =
-                 CalculPeriodeFacturation(
-                     GetDateCreationCarte(carte.DateCreationCarte),
-                     startPeriod,
-                     endPeriod);
+                var periodeFacturation = CalculPeriodeFacturation(
+                    GetDateCreationCarte(carte.DateCreationCarte),
+                    startPeriod,
+                    endPeriod
+                );
 
-                var lignesCarte = BuildBkmvti(carte, ncpf, periodeFacturation, typeMagResult, startPeriod, compteDebiteRedevance, cartesABasculer);
+                var lignesCarte = BuildBkmvti(
+                    carte,
+                    ncpf,
+                    periodeFacturation,
+                    typeMagResult,
+                    startPeriod,
+                    compteDebiteRedevance,
+                    cartesABasculer
+                );
 
                 // IMPORTANT
                 bkmvtis.AddRange(lignesCarte);
             }
         }
 
-        public async Task ClientAvecPlusUneCartePackResilieEtDdsouSupDdeb(List<Apprint> cartesClient,
-            DateTimeOffset maxDateCreationCarte, TypeMag typeMagResult, string ncpf, DateTime startPeriod, DateTime endPeriod, List<Bkmvti> bkmvtis, HashSet<string> cartesABasculer)
+        public async Task ClientAvecPlusUneCartePackResilieEtDdsouSupDdeb(
+            List<Apprint> cartesClient,
+            DateTimeOffset maxDateCreationCarte,
+            TypeMag typeMagResult,
+            string ncpf,
+            DateTime startPeriod,
+            DateTime endPeriod,
+            List<Bkmvti> bkmvtis,
+            HashSet<string> cartesABasculer
+        )
         {
-            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository
-                 .GetByNumerosAsync(ncpf);
+            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository.GetByNumerosAsync(
+                ncpf
+            );
 
             foreach (var carte in cartesClient)
             {
                 // récupération de la date de création de la carte
-                var dateCreationCarte = GetDateCreationCarte(
-                        carte.DateCreationCarte
-                    );
+                var dateCreationCarte = GetDateCreationCarte(carte.DateCreationCarte);
 
+                var periodeFacturation = CalculPeriodeFacturation(
+                    GetDateCreationCarte(carte.DateCreationCarte),
+                    startPeriod,
+                    endPeriod
+                );
 
-                var periodeFacturation =
-                     CalculPeriodeFacturation(
-                         GetDateCreationCarte(carte.DateCreationCarte),
-                         startPeriod,
-                         endPeriod);
-
-                // pour chaque date de création de la carte, est elle égale à la date de création de la 
+                // pour chaque date de création de la carte, est elle égale à la date de création de la
                 // carte ayant l'intersection maximal?
                 if (dateCreationCarte != maxDateCreationCarte)
                 {
                     bkmvtis.AddRange(
-                        BuildBkmvti(carte, ncpf, periodeFacturation, typeMagResult, startPeriod, compteDebiteRedevance, cartesABasculer)
+                        BuildBkmvti(
+                            carte,
+                            ncpf,
+                            periodeFacturation,
+                            typeMagResult,
+                            startPeriod,
+                            compteDebiteRedevance,
+                            cartesABasculer
+                        )
                     );
                 }
             }
         }
 
-        public async Task ClientAvecPlusUneCartePackResilieEtDdsouInfDdeb(List<Apprint> cartesClient, DateTimeOffset maxDateCreationCarte,
-                TypeMag typeMagResult, string ncpf, DateTime startPeriod, DateTime endPeriod, List<Bkmvti> bkmvtis, HashSet<string> cartesABasculer)
+        public async Task ClientAvecPlusUneCartePackResilieEtDdsouInfDdeb(
+            List<Apprint> cartesClient,
+            DateTimeOffset maxDateCreationCarte,
+            TypeMag typeMagResult,
+            string ncpf,
+            DateTime startPeriod,
+            DateTime endPeriod,
+            List<Bkmvti> bkmvtis,
+            HashSet<string> cartesABasculer
+        )
         {
-            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository
-                .GetByNumerosAsync(ncpf);
+            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository.GetByNumerosAsync(
+                ncpf
+            );
 
             foreach (var carte in cartesClient)
             {
                 // récupération de la date de création de la carte
-                var dateCreationCarte = GetDateCreationCarte(
-                        carte.DateCreationCarte
-                    );
+                var dateCreationCarte = GetDateCreationCarte(carte.DateCreationCarte);
 
-                var periodeFacturation =
-                     CalculPeriodeFacturation(
-                         GetDateCreationCarte(carte.DateCreationCarte),
-                         startPeriod,
-                         endPeriod);
+                var periodeFacturation = CalculPeriodeFacturation(
+                    GetDateCreationCarte(carte.DateCreationCarte),
+                    startPeriod,
+                    endPeriod
+                );
 
-                // pour chaque date de création de la carte, est elle égale à la date de création de la 
+                // pour chaque date de création de la carte, est elle égale à la date de création de la
                 // carte ayant l'intersection maximal?
                 if (dateCreationCarte != maxDateCreationCarte)
                 {
                     bkmvtis.AddRange(
-                        BuildBkmvti(carte, ncpf, periodeFacturation, typeMagResult, endPeriod, compteDebiteRedevance, cartesABasculer)
+                        BuildBkmvti(
+                            carte,
+                            ncpf,
+                            periodeFacturation,
+                            typeMagResult,
+                            endPeriod,
+                            compteDebiteRedevance,
+                            cartesABasculer
+                        )
                     );
                 }
             }
-
         }
-
 
         public async Task ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtudeAucunMaxMin(
-             List<Apprint> cartesClient, DateTimeOffset ddsou, string ncpf,
-             TypeMag typeMagResult, DateTime startPeriod, DateTime endPeriod, List<Bkmvti> bkmvtis, HashSet<string> cartesABasculer)
+            List<Apprint> cartesClient,
+            DateTimeOffset ddsou,
+            string ncpf,
+            TypeMag typeMagResult,
+            DateTime startPeriod,
+            DateTime endPeriod,
+            List<Bkmvti> bkmvtis,
+            HashSet<string> cartesABasculer
+        )
         {
-
-            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository
-                .GetByNumerosAsync(ncpf);
+            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository.GetByNumerosAsync(
+                ncpf
+            );
 
             foreach (var carte in cartesClient)
             {
-                var periodeFacturation =
-                 CalculPeriodeFacturation(
-                     GetDateCreationCarte(carte.DateCreationCarte),
-                     startPeriod,
-                     endPeriod);
+                var periodeFacturation = CalculPeriodeFacturation(
+                    GetDateCreationCarte(carte.DateCreationCarte),
+                    startPeriod,
+                    endPeriod
+                );
 
                 var dateCreationCarte = GetDateCreationCarte(carte.DateCreationCarte);
 
                 // si la carte ne correspond pas à la carte la plus anciènne apparteneant au package (Tpkg > T)
-                bkmvtis.AddRange(BuildBkmvti(carte, ncpf, periodeFacturation, typeMagResult, startPeriod, compteDebiteRedevance, cartesABasculer));
+                bkmvtis.AddRange(
+                    BuildBkmvti(
+                        carte,
+                        ncpf,
+                        periodeFacturation,
+                        typeMagResult,
+                        startPeriod,
+                        compteDebiteRedevance,
+                        cartesABasculer
+                    )
+                );
             }
         }
 
         public async Task ClientAvecPlusUneCarteAuMoinsPackPeriodePackInfPeriodeEtude(
-             List<Apprint> cartesClient, DateTimeOffset ddsou, string ncpf,
-             TypeMag typeMagResult, DateTime startPeriod, DateTime endPeriod, DateTimeOffset? maxDateCreationCarte, List<Bkmvti> bkmvtis, HashSet<string> cartesABasculer)
+            List<Apprint> cartesClient,
+            DateTimeOffset ddsou,
+            string ncpf,
+            TypeMag typeMagResult,
+            DateTime startPeriod,
+            DateTime endPeriod,
+            DateTimeOffset? maxDateCreationCarte,
+            List<Bkmvti> bkmvtis,
+            HashSet<string> cartesABasculer
+        )
         {
-            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository
-                .GetByNumerosAsync(ncpf);
+            var compteDebiteRedevance = await _comptesDebiteRedevCarteRepository.GetByNumerosAsync(
+                ncpf
+            );
 
             foreach (var carte in cartesClient)
             {
-                var periodeFacturation =
-                 CalculPeriodeFacturation(
-                     GetDateCreationCarte(carte.DateCreationCarte),
-                     startPeriod,
-                     endPeriod);
-
-
-                var dateCreationCarte = GetDateCreationCarte(
-                    carte.DateCreationCarte
+                var periodeFacturation = CalculPeriodeFacturation(
+                    GetDateCreationCarte(carte.DateCreationCarte),
+                    startPeriod,
+                    endPeriod
                 );
+
+                var dateCreationCarte = GetDateCreationCarte(carte.DateCreationCarte);
 
                 // si la carte ne correspond pas à la carte la plus anciènne apparteneant au package (Tpkg > T)
                 if (dateCreationCarte != maxDateCreationCarte)
                 {
                     bkmvtis.AddRange(
-                        BuildBkmvti(carte, ncpf, periodeFacturation, typeMagResult, startPeriod, compteDebiteRedevance, cartesABasculer)
+                        BuildBkmvti(
+                            carte,
+                            ncpf,
+                            periodeFacturation,
+                            typeMagResult,
+                            startPeriod,
+                            compteDebiteRedevance,
+                            cartesABasculer
+                        )
                     );
                 }
             }
         }
-
-
 
         public string DesignationCartes(string codeTarifComplet)
         {
@@ -729,6 +861,7 @@ namespace SYSGES_MAGs.Helpers
 
             return result;
         }
+
         public List<CartePackageResult> BuildCartePackageEchuList(
             List<Apprint> cartesClient,
             Dictionary<string, DateDsouPackEchuResponse> packEchu,
@@ -785,40 +918,29 @@ namespace SYSGES_MAGs.Helpers
         /// Un objet <see cref="PeriodeFacturation"/> contenant la période ajustée de facturation
         /// (début, fin) ainsi que le nombre de mois à facturer.
         /// </returns>
-
         public PeriodeFacturation CalculPeriodeFacturation(
             DateTimeOffset dateDebutCarte,
             DateTime startPeriod,
-            DateTime endPeriod)
+            DateTime endPeriod
+        )
         {
-
             const int jourPivot = 10;
 
             var p1 = new Periode(startPeriod, endPeriod);
 
-            var p2 = new Periode(
-                dateDebutCarte.DateTime,
-                endPeriod);
+            var p2 = new Periode(dateDebutCarte.DateTime, endPeriod);
 
             var min = MinPeriode(p1, p2);
 
-            int nbMois =
-                NombreMoisFacturation(
-                    min.Debut,
-                    min.Fin,
-                    dateDebutCarte);
+            int nbMois = NombreMoisFacturation(min.Debut, min.Fin, dateDebutCarte);
 
-
-            DateTime PremDizaine = new DateTime(
-                    min.Debut.Year,
-                    min.Debut.Month,
-                    jourPivot);
+            DateTime PremDizaine = new DateTime(min.Debut.Year, min.Debut.Month, jourPivot);
 
             return new PeriodeFacturation
             {
                 Debut = PremDizaine,
                 Fin = min.Fin,
-                NombreMois = Math.Max(0, nbMois)
+                NombreMois = Math.Max(0, nbMois),
             };
         }
 
@@ -827,9 +949,7 @@ namespace SYSGES_MAGs.Helpers
             if (fin < debut)
                 return 0;
 
-            int mois =
-                ((fin.Year - debut.Year) * 12)
-                + (fin.Month - debut.Month);
+            int mois = ((fin.Year - debut.Year) * 12) + (fin.Month - debut.Month);
 
             // Si le dernier mois n'est pas complet
             if (fin.Day < debut.Day && fin.Month == debut.Month)
@@ -856,15 +976,14 @@ namespace SYSGES_MAGs.Helpers
         /// </summary>
         public int NombreMoisFacturation(
             DateTimeOffset debutPeriode,
-            DateTimeOffset finPeriode, DateTimeOffset dateCreationCarte)
+            DateTimeOffset finPeriode,
+            DateTimeOffset dateCreationCarte
+        )
         {
             const int jourPivot = 10;
             int mois;
 
-            DateTime PremDizaine = new DateTime(
-                    debutPeriode.Year,
-                    debutPeriode.Month,
-                    jourPivot);
+            DateTime PremDizaine = new DateTime(debutPeriode.Year, debutPeriode.Month, jourPivot);
 
             // =========================
             // Détermine le premier cycle
@@ -878,56 +997,55 @@ namespace SYSGES_MAGs.Helpers
                 // Facturation le 1 du même mois
                 debutFacturation = PremDizaine;
             }
-            else if (dateCreationCarte.Day >= jourPivot && dateCreationCarte.DateTime >= PremDizaine)
+            else if (
+                dateCreationCarte.Day >= jourPivot
+                && dateCreationCarte.DateTime >= PremDizaine
+            )
             {
                 // Facturation le 12 du mois suivant
                 var moisSuivant = debutPeriode.AddMonths(1);
 
-                debutFacturation = new DateTime(
-                    debutPeriode.Year,
-                    moisSuivant.Month,
-                    jourPivot);
+                debutFacturation = new DateTime(moisSuivant.Year, moisSuivant.Month, jourPivot);
             }
             else
             {
-
                 debutFacturation = debutPeriode.DateTime;
             }
 
+            // Fin réelle de calcul
 
-            // Fin réelle de calcul 
+            var finFacturation = new DateTime(finPeriode.Year, finPeriode.Month, finPeriode.Day);
 
-            var finFacturation = new DateTime(
-                finPeriode.Year,
-                finPeriode.Month,
-                finPeriode.Day);
-
-            // Sécurité la date de fin ne saurait être antérieur à la date de début.  
+            // Sécurité la date de fin ne saurait être antérieur à la date de début.
 
             if (finFacturation <= debutFacturation)
                 return 0;
 
-            // Calcul exact des cycles 
+            // Calcul exact des cycles
 
             if (finFacturation.Day < jourPivot)
             {
                 mois =
-                 ((finFacturation.Year - debutFacturation.Year) * 12)
-                 + (finFacturation.Month - debutFacturation.Month);
+                    ((finFacturation.Year - debutFacturation.Year) * 12)
+                    + (finFacturation.Month - debutFacturation.Month);
             }
             else
             {
                 mois =
                     ((finFacturation.Year - debutFacturation.Year) * 12)
-                    + (finFacturation.Month - debutFacturation.Month) + 1;
+                    + (finFacturation.Month - debutFacturation.Month)
+                    + 1;
             }
+            _logger.LogInformation(
+                $"nombre de mois de facturation : {mois}, début : {debutFacturation}, fin : {finFacturation}"
+            );
             return mois;
         }
 
         /// <summary>
         /// Calcule l’intersection commune entre plusieurs périodes temporelles.
         ///
-        /// La méthode détermine : 
+        /// La méthode détermine :
         /// - la date de début maximale parmi les périodes,
         /// - la date de fin minimale parmi les périodes,
         /// afin d’obtenir la zone de recouvrement effective.
@@ -1005,7 +1123,8 @@ namespace SYSGES_MAGs.Helpers
             List<Apprint> cartesClient,
             Periode periodePackage,
             DateTimeOffset endPeriode,
-            Periode? periodeEtude = null)
+            Periode? periodeEtude = null
+        )
         {
             var listeIntersectionCarte = cartesClient
                 .Select(carte =>
@@ -1026,10 +1145,7 @@ namespace SYSGES_MAGs.Helpers
                     }
                     else
                     {
-                        intersection = GetIntersectionPeriode(
-                            periodeCarte,
-                            periodePackage
-                        );
+                        intersection = GetIntersectionPeriode(periodeCarte, periodePackage);
                     }
 
                     if (intersection == null)
@@ -1052,10 +1168,9 @@ namespace SYSGES_MAGs.Helpers
             var maxDuree = listeIntersectionCarte.Max(x => x!.Duree);
 
             var MaxIntersection = listeIntersectionCarte
-                           .Where(x =>
-                               x!.Duree == maxDuree)
-                           .OrderBy(x => x!.DateCreation)
-                           .First();
+                .Where(x => x!.Duree == maxDuree)
+                .OrderBy(x => x!.DateCreation)
+                .First();
 
             return new CarteIntersectionResult(
                 MaxIntersection!.Carte,
@@ -1067,16 +1182,13 @@ namespace SYSGES_MAGs.Helpers
             string numeroCompte,
             string mois,
             decimal montantCarte,
-            Dictionary<string, List<CompteDebiteRedevCarte>> redevances)
+            Dictionary<string, List<CompteDebiteRedevCarte>> redevances
+        )
         {
             if (!redevances.ContainsKey(numeroCompte))
                 return false;
 
-            return redevances[numeroCompte]
-                .Any(x =>
-                    x.Dco == mois
-                    &&
-                    x.Mon == montantCarte);
+            return redevances[numeroCompte].Any(x => x.Dco == mois && x.Mon == montantCarte);
         }
 
         /// <summary>
@@ -1129,9 +1241,15 @@ namespace SYSGES_MAGs.Helpers
         /// Une liste d’écritures comptables BKMVTI correspondant
         /// aux redevances carte à générer.
         /// </returns>
-        public List<Bkmvti> BuildBkmvti(Apprint carte, string ncpf, PeriodeFacturation periodeFacturation, TypeMag typeMagResult, DateTime startPeriod,
-        Dictionary<string, List<CompteDebiteRedevCarte>>
-        redevancesPrelevees, HashSet<string> cartesABasculer)
+        public List<Bkmvti> BuildBkmvti(
+            Apprint carte,
+            string ncpf,
+            PeriodeFacturation periodeFacturation,
+            TypeMag typeMagResult,
+            DateTime startPeriod,
+            Dictionary<string, List<CompteDebiteRedevCarte>> redevancesPrelevees,
+            HashSet<string> cartesABasculer
+        )
         {
             var result = new List<Bkmvti>();
 
@@ -1139,127 +1257,123 @@ namespace SYSGES_MAGs.Helpers
 
             string codeTarif = carte.EstActifCodeTarifNumeroCompte!.Substring(1, 2);
 
-            string codeTarifComplet =
-                BuildCodeTarifComplet(
-                    carte.EstActifCodeTarifNumeroCompte,
-                    carte.CodeCarte);
+            string codeTarifComplet = BuildCodeTarifComplet(
+                carte.EstActifCodeTarifNumeroCompte,
+                carte.CodeCarte
+            );
 
-            string designationCarte =
-                DesignationCartes(codeTarifComplet);
+            string designationCarte = DesignationCartes(codeTarifComplet);
 
-            long prixMensuelCarte =
-                PrixUnitaireCarte(carte.CodeCarte!);
+            long prixMensuelCarte = PrixUnitaireCarte(carte.CodeCarte!);
 
-            // GENERATION MOIS PAR MOIS 
+            // GENERATION MOIS PAR MOIS
 
             for (int i = 0; i < periodeFacturation.NombreMois; i++)
             {
+                var moisFacture = periodeFacturation.Debut.AddMonths(i);
 
-                var moisFacture =
-                    periodeFacturation.Debut.AddMonths(i);
+                if (moisFacture > periodeFacturation.Debut.AddMonths(i))
+                {
+                    break;
+                }
 
-                string moisKey =
-                    moisFacture.ToString("yyyy-MM");
+                string moisKey = moisFacture.ToString("yyyy-MM");
 
-                // Vérifie si déjà débité 
+                // Vérifie si déjà débité
 
-                bool dejaPreleve =
-                    CarteDejaPrelevee(
-                        ncpf,
-                        moisKey,
-                        prixMensuelCarte,
-                        redevancesPrelevees);
-
+                bool dejaPreleve = CarteDejaPrelevee(
+                    ncpf,
+                    moisKey,
+                    prixMensuelCarte,
+                    redevancesPrelevees
+                );
 
                 if (dejaPreleve)
                 {
-                    _logger.LogInformation(
-                        $"SKIP => {ncpf} | {designationCarte} | {moisKey} déjà prélevé");
+                    // _logger.LogInformation(
+                    //     $"SKIP => {ncpf} | {designationCarte} | {moisKey} déjà prélevé"
+                    // );
                     continue;
                 }
 
-                // Génération comptable 
+                // Génération comptable
 
-                result.Add(new Bkmvti
-                {
-                    NumeroCompte = ncpf,
+                result.Add(
+                    new Bkmvti
+                    {
+                        NumeroCompte = ncpf,
 
-                    NomClient = carte.NomPrenom,
+                        NomClient = carte.NomPrenom,
 
-                    DateCreationCarte = DateTime.SpecifyKind(
-                        GetDateCreationCarte(
-                            carte.DateCreationCarte).DateTime,
-                        DateTimeKind.Utc),
+                        DateCreationCarte = DateTime.SpecifyKind(
+                            GetDateCreationCarte(carte.DateCreationCarte).DateTime,
+                            DateTimeKind.Utc
+                        ),
 
-                    DateValiditeCarte = DateTime.SpecifyKind(
-                        GetDateValiditeCarte(carte
-                            ).DateTime,
-                        DateTimeKind.Utc),
+                        DateValiditeCarte = DateTime.SpecifyKind(
+                            GetDateValiditeCarte(carte).DateTime,
+                            DateTimeKind.Utc
+                        ),
 
-                    CodeTarif = codeTarif,
+                        CodeTarif = codeTarif,
 
-                    CodeCarte = carte.CodeCarte!,
+                        CodeCarte = carte.CodeCarte!,
 
-                    Basculer = basculer,
+                        Basculer = basculer,
 
-                    DesignationCarte = designationCarte,
+                        DesignationCarte = designationCarte,
 
-                    StartPeriod = DateTime.SpecifyKind(
-                        moisFacture.Date,
-                        DateTimeKind.Utc),
+                        StartPeriod = DateTime.SpecifyKind(moisFacture.Date, DateTimeKind.Utc),
 
-                    EndPeriod = DateTime.SpecifyKind(
-                        moisFacture.Date,
-                        DateTimeKind.Utc),
+                        EndPeriod = DateTime.SpecifyKind(moisFacture.Date, DateTimeKind.Utc),
 
-                    TypeMag = typeMagResult.Id,
+                        TypeMag = typeMagResult.Id,
 
-                    CodeIN = "IN3",
+                        CodeIN = "IN3",
 
-                    CodeDevise =
-                        carte.DateValiditeAgenceCodeDeviseNumeroCompte!
-                            .Substring(9, 3),
+                        CodeDevise = carte.DateValiditeAgenceCodeDeviseNumeroCompte!.Substring(
+                            9,
+                            3
+                        ),
 
-                    EstActif =
-                        carte.EstActifCodeTarifNumeroCompte!
-                            .Substring(0, 1),
+                        EstActif = carte.EstActifCodeTarifNumeroCompte!.Substring(0, 1),
 
-                    CodeAgence =
-                        carte.DateValiditeAgenceCodeDeviseNumeroCompte!
-                            .Substring(4, 5),
+                        CodeAgence = carte.DateValiditeAgenceCodeDeviseNumeroCompte!.Substring(
+                            4,
+                            5
+                        ),
 
-                    TypeBeneficiaire = " AUTO",
+                        TypeBeneficiaire = " AUTO",
 
-                    ReferenceBeneficiaire = 691228,
+                        ReferenceBeneficiaire = 691228,
 
-                    CleBeneficiaire = 46,
+                        CleBeneficiaire = 46,
 
-                    DatePrelevement = DateTime.SpecifyKind(
-                        moisFacture.Date,
-                        DateTimeKind.Utc),
+                        DatePrelevement = DateTime.SpecifyKind(moisFacture.Date, DateTimeKind.Utc),
 
-                    // IMPORTANT :
-                    // un seul mois
-                    PrixUnitCarte = prixMensuelCarte,
+                        // IMPORTANT :
+                        // un seul mois
+                        PrixUnitCarte = prixMensuelCarte,
 
-                    ReferenceOperation =
-                        $"RVSA{moisFacture:yyMMdd}",
+                        ReferenceOperation = $"RVSA{moisFacture:yyMMdd}",
 
-                    CodeOperation = "D",
+                        CodeOperation = "D",
 
-                    CodeEmetteur = "FACSER",
+                        CodeEmetteur = "FACSER",
 
-                    IndicateurDomiciliation = "N",
+                        IndicateurDomiciliation = "N",
 
-                    LibelleCarte = BuildLibelleCarte(
-                        carte.EstActifCodeTarifNumeroCompte,
-                        carte.CodeCarte,
-                        moisFacture.Date),
+                        LibelleCarte = BuildLibelleCarte(
+                            carte.EstActifCodeTarifNumeroCompte,
+                            carte.CodeCarte,
+                            moisFacture.Date
+                        ),
 
-                    Carte = carte.NumCarte!.Substring(8),
+                        Carte = carte.NumCarte!.Substring(8),
 
-                    Sequence = "001",
-                });
+                        Sequence = "001",
+                    }
+                );
             }
 
             return result;
@@ -1296,7 +1410,9 @@ namespace SYSGES_MAGs.Helpers
         /// le type exact de carte.
         /// Retourne une chaîne vide si un des paramètres est nul ou vide.
         /// </returns>
-        public string BuildCodeTarifComplet(string? estActifCodeTarifNumeroCompte, string? codeCarte
+        public string BuildCodeTarifComplet(
+            string? estActifCodeTarifNumeroCompte,
+            string? codeCarte
         )
         {
             if (
@@ -1349,16 +1465,15 @@ namespace SYSGES_MAGs.Helpers
         public string BuildLibelleCarte(
             string? estActifCodeTarifNumeroCompte,
             string? codeCarte,
-            DateTime startPeriod)
+            DateTime startPeriod
+        )
         {
             string key = BuildCodeTarifComplet(estActifCodeTarifNumeroCompte, codeCarte);
 
             if (string.IsNullOrEmpty(key))
                 return "Nom inconnu";
 
-            string mois = RemoveAccents(
-                startPeriod.ToString("MMM", new CultureInfo("fr-FR"))
-            );
+            string mois = RemoveAccents(startPeriod.ToString("MMM", new CultureInfo("fr-FR")));
 
             if (CardConstants.codeTarifNom.TryGetValue(key, out var libelle))
             {
@@ -1371,7 +1486,6 @@ namespace SYSGES_MAGs.Helpers
                 return $"Regul redev. {mois} {startPeriod.Year}";
             }
         }
-
 
         public static string RemoveAccents(string text)
         {
@@ -1424,7 +1538,6 @@ namespace SYSGES_MAGs.Helpers
         /// </exception>
         public DateTimeOffset GetDateCreationCarte(string dNaissanceCarte)
         {
-
             if (
                 DateTime.TryParseExact(
                     dNaissanceCarte,
@@ -1461,30 +1574,27 @@ namespace SYSGES_MAGs.Helpers
 
         public DateTimeOffset GetDateValiditeCarte(Apprint apprint)
         {
-            var valeur =
-                apprint.DateValiditeAgenceCodeDeviseNumeroCompte;
+            var valeur = apprint.DateValiditeAgenceCodeDeviseNumeroCompte;
 
             if (string.IsNullOrWhiteSpace(valeur) || valeur.Length < 4)
                 throw new Exception("Date validité carte invalide");
 
-
             var annee = 2000 + int.Parse(valeur.Substring(0, 2));
             var mois = int.Parse(valeur.Substring(2, 2));
 
+            var dernierJour = DateTime.DaysInMonth(annee, mois);
 
-            var dernierJour =
-                DateTime.DaysInMonth(annee, mois);
+            var dateValiditeCarte = new DateTimeOffset(
+                annee,
+                mois,
+                dernierJour,
+                23,
+                59,
+                59,
+                TimeSpan.Zero
+            );
 
-
-            var dateValiditeCarte =
-                new DateTimeOffset(annee, mois, dernierJour,
-                    23, 59, 59, TimeSpan.Zero);
-
-
-            _logger.LogInformation(
-                "Date validité carte calculée : {Date}",
-                dateValiditeCarte);
-
+            //_logger.LogInformation("Date validité carte calculée : {Date}", dateValiditeCarte);
 
             return dateValiditeCarte;
         }
@@ -1526,16 +1636,17 @@ namespace SYSGES_MAGs.Helpers
 
                     NomPrenom = Get(197, 26),
 
-                    LastProp = Get(229, 29)
+                    LastProp = Get(229, 29),
                 };
 
                 bool ligneInvalide =
-                     string.IsNullOrWhiteSpace(apprint.DateValiditeAgenceCodeDeviseNumeroCompte)
-                     || apprint.DateValiditeAgenceCodeDeviseNumeroCompte.Length < 20;
+                    string.IsNullOrWhiteSpace(apprint.DateValiditeAgenceCodeDeviseNumeroCompte)
+                    || apprint.DateValiditeAgenceCodeDeviseNumeroCompte.Length < 20;
 
                 if (ligneInvalide)
                 {
-                    _logger.LogWarning($@"
+                    _logger.LogWarning(
+                        $@"
                     ================ LIGNE APPRINT INVALIDE ================
                     Numéro ligne : {numLigne}
 
@@ -1548,13 +1659,11 @@ namespace SYSGES_MAGs.Helpers
                     Longueur :
                     {apprint.DateValiditeAgenceCodeDeviseNumeroCompte?.Length}
                     ========================================================
-                    ");
+                    "
+                    );
 
                     // Recherche MMYY + espaces + compte 19 chiffres
-                    var match = Regex.Match(
-                        ligneApprint,
-                        @"(?<date>\d{4})\s+(?<compte>\d{19})"
-                    );
+                    var match = Regex.Match(ligneApprint, @"(?<date>\d{4})\s+(?<compte>\d{19})");
 
                     if (match.Success)
                     {
@@ -1564,9 +1673,9 @@ namespace SYSGES_MAGs.Helpers
                         apprint.DateValiditeAgenceCodeDeviseNumeroCompte =
                             $"{dateValidite}{compte}";
 
-                        _logger.LogInformation(
-                            $"Correction automatique appliquée ligne {numLigne} : {apprint.DateValiditeAgenceCodeDeviseNumeroCompte}"
-                        );
+                        // _logger.LogInformation(
+                        //     $"Correction automatique appliquée ligne {numLigne} : {apprint.DateValiditeAgenceCodeDeviseNumeroCompte}"
+                        // );
                     }
                     else
                     {
@@ -1580,7 +1689,8 @@ namespace SYSGES_MAGs.Helpers
             }
             catch (Exception ex)
             {
-                _logger.LogError($@"
+                _logger.LogError(
+                    $@"
                     Erreur parsing ligne APPRINT
 
                     Ligne numéro : {numLigne}
@@ -1590,12 +1700,12 @@ namespace SYSGES_MAGs.Helpers
 
                     Erreur :
                     {ex.Message}
-                    ");
+                    "
+                );
 
                 throw;
             }
         }
-
 
         /// <summary>
         /// Génère le fichier comptable final au format texte à partir
@@ -1639,68 +1749,65 @@ namespace SYSGES_MAGs.Helpers
 
             var compteOuvert = await _comptesOuvertService.GetAllComptesOuvertsAsync();
 
-            var comptesDict = compteOuvert
-                .ToDictionary(
-                    c => (c.Ncp, c.Age),
-                    c => c
-                );
+            var comptesDict = compteOuvert.ToDictionary(c => (c.Ncp, c.Age), c => c);
 
-            // LIGNES DEBIT CLIENTS 
+            // LIGNES DEBIT CLIENTS
 
             foreach (var item in bkmvtis)
             {
                 var line = BuildDebitLine(item, comptesDict);
                 if (!string.IsNullOrEmpty(line))
-                    _logger.LogInformation(line);
+                    //_logger.LogInformation(line);
 
-                lignes.Add(line);
+                    lignes.Add(line);
             }
 
-            // GROUP BY UNIQUEMENT PAR AGENCE 
+            // GROUP BY UNIQUEMENT PAR AGENCE
 
-            var groupesAgence = bkmvtis
-                .GroupBy(x => x.CodeAgence);
+            var groupesAgence = bkmvtis.GroupBy(x => x.CodeAgence);
 
             foreach (var agenceGroup in groupesAgence)
             {
-
                 var tvaAndCommission = await _comptesOuvertService.GetByAgeAsync(agenceGroup.Key!);
 
                 var codeAgence = agenceGroup.Key!;
 
-                var totalAgence =
-                    agenceGroup.Sum(x => x.Montant ?? 0);
+                var totalAgence = agenceGroup.Sum(x => x.Montant ?? 0);
 
                 var montantTva = Math.Round(totalAgence * AccountingConstants.TvaRate);
 
-                var montantCommission =
-                    totalAgence - montantTva;
+                var montantCommission = totalAgence - montantTva;
 
                 var datePrelevement = DateTime.Now;
 
                 // TVA
-                lignes.Add(BuildCreditLine(
-                    codeAgence,
-                    tvaAndCommission[1].Ncp,
-                    montantTva,
-                    "Regul Redev " + tvaAndCommission[1].Inti.Substring(0, 13),
-                    tvaAndCommission[1].Cha,
-                    tvaAndCommission[1].Clc,
-                    datePrelevement));
+                lignes.Add(
+                    BuildCreditLine(
+                        codeAgence,
+                        tvaAndCommission[1].Ncp,
+                        montantTva,
+                        "Regul Redev " + tvaAndCommission[1].Inti.Substring(0, 13),
+                        tvaAndCommission[1].Cha,
+                        tvaAndCommission[1].Clc,
+                        datePrelevement
+                    )
+                );
 
                 // COMMISSION
-                lignes.Add(BuildCreditLine(
-                    codeAgence,
-                    tvaAndCommission[0].Ncp,
-                    montantCommission,
-                    "Regul Redev " + tvaAndCommission[0].Inti.Substring(0, 17),
-                    tvaAndCommission[0].Cha,
-                    tvaAndCommission[0].Clc,
-                    datePrelevement));
+                lignes.Add(
+                    BuildCreditLine(
+                        codeAgence,
+                        tvaAndCommission[0].Ncp,
+                        montantCommission,
+                        "Regul Redev " + tvaAndCommission[0].Inti.Substring(0, 17),
+                        tvaAndCommission[0].Cha,
+                        tvaAndCommission[0].Clc,
+                        datePrelevement
+                    )
+                );
             }
 
-            var contenu =
-                string.Join(Environment.NewLine, lignes);
+            var contenu = string.Join(Environment.NewLine, lignes);
 
             return Encoding.UTF8.GetBytes(contenu);
         }
@@ -1730,7 +1837,7 @@ namespace SYSGES_MAGs.Helpers
         /// - le libellé de l’opération,
         /// - le numéro d'evenement,
         /// - ...
-        /// 
+        ///
         ///
         /// </summary>
         /// <param name="bkmvtis">
@@ -1744,7 +1851,8 @@ namespace SYSGES_MAGs.Helpers
         /// </returns>
         public string? BuildDebitLine(
             BkmvtiResult bkmvtis,
-            Dictionary<(string Ncp, string Age), ComptesOuvert> comptesDict)
+            Dictionary<(string Ncp, string Age), ComptesOuvert> comptesDict
+        )
         {
             // Recherche rapide dans le dictionnaire
             if (!comptesDict.TryGetValue((bkmvtis.NumeroCompte, bkmvtis.CodeAgence), out var cpt))
@@ -1752,109 +1860,85 @@ namespace SYSGES_MAGs.Helpers
                 return null;
             }
 
-
             var bkmvti = new List<string>
-                {
-                    bkmvtis.CodeAgence,
+            {
+                bkmvtis.CodeAgence,
+                AccountingConstants.CurrencyCode,
+                cpt!.Cha,
+                bkmvtis.NumeroCompte,
+                " ",
+                AccountingConstants.CodeIn,
+                " ",
+                " ",
+                AccountingConstants.BeneficiaryType,
+                GetNextSequence(),
+                cpt.Clc,
+                "04/10/2025",
+                //DateTime.Now.ToString("dd/MM/yyyy"),
 
-                    AccountingConstants.CurrencyCode,
+                " ",
+                "04/10/2025",
+                //DateTime.Now.ToString("dd/MM/yyyy"),
 
-                    cpt!.Cha,
-
-                    bkmvtis.NumeroCompte,
-
-                    " ",
-
-                    AccountingConstants.CodeIn,
-
-                    " ",
-
-                    " ",
-
-                    AccountingConstants.BeneficiaryType,
-
-                    GetNextSequence(),
-
-                     cpt.Clc,
-
-                    "04/10/2025",
-                    //DateTime.Now.ToString("dd/MM/yyyy"),
-
-                    " ",
-
-                    "04/10/2025",
-                    //DateTime.Now.ToString("dd/MM/yyyy"),
-
-                    bkmvtis.Montant.ToString()!,
-
-                    AccountingConstants.DebitOperation,
-
-                    bkmvtis.LibelleCarte!,
-
-                    "N",
-
-                    $"RVSA20251004",
-
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-
-                    bkmvtis.CodeAgence,
-
-                    " ",
-                    " ",
-
-                    AccountingConstants.CurrencyCode,
-
-                    " ",
-                    " ",
-
-                    bkmvtis.CodeAgence + AccountingConstants.DebitOperation,
-
-                    " ",
-
-                    AccountingConstants.CurrencyCode,
-
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-
-                    AccountingConstants.EmitterCode,
-
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                    " ",
-                };
+                bkmvtis.Montant.ToString()!,
+                AccountingConstants.DebitOperation,
+                bkmvtis.LibelleCarte!,
+                "N",
+                $"RVSA20251004",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                bkmvtis.CodeAgence,
+                " ",
+                " ",
+                AccountingConstants.CurrencyCode,
+                " ",
+                " ",
+                bkmvtis.CodeAgence + AccountingConstants.DebitOperation,
+                " ",
+                AccountingConstants.CurrencyCode,
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+                AccountingConstants.EmitterCode,
+                " ",
+                " ",
+                " ",
+                " ",
+                " ",
+            };
 
             return string.Join("|", bkmvti);
         }
 
         public string BuildCreditLine(
-            string codeAgence, string numeroCompte,
-            decimal montant, string libelle, string cha, string clc,
-            DateTime datePrelevement)
+            string codeAgence,
+            string numeroCompte,
+            decimal montant,
+            string libelle,
+            string cha,
+            string clc,
+            DateTime datePrelevement
+        )
         {
-
             var bkmvti = new List<string>
             {
                 codeAgence,
@@ -1868,25 +1952,18 @@ namespace SYSGES_MAGs.Helpers
                 AccountingConstants.BeneficiaryType,
                 GetNextSequence(),
                 clc,
-
                 "04/10/2025",
                 //DateTime.Now.ToString("dd/MM/yyyy"),
 
                 " ",
-
                 "04/10/2025",
                 //DateTime.Now.ToString("dd/MM/yyyy"),
 
                 montant.ToString(),
-
                 AccountingConstants.CreditOperation,
-
                 libelle,
-
                 "N",
-
                 $"RVSA20251004",
-
                 " ",
                 " ",
                 " ",
@@ -1906,31 +1983,21 @@ namespace SYSGES_MAGs.Helpers
                 " ",
                 " ",
                 " ",
-
                 codeAgence,
-
                 " ",
                 " ",
-
                 AccountingConstants.CurrencyCode,
-
                 " ",
                 " ",
-
                 codeAgence + AccountingConstants.CreditOperation,
-
                 " ",
-
                 AccountingConstants.CurrencyCode,
-
                 " ",
                 " ",
                 " ",
                 " ",
                 " ",
-
                 AccountingConstants.EmitterCode,
-
                 " ",
                 " ",
                 " ",
@@ -1971,7 +2038,6 @@ namespace SYSGES_MAGs.Helpers
             // commencer par la ligne 2 si la ligne 1 est l'en-tête
             try
             {
-
                 // VALIDATION HEADER
                 string headerNcp = worksheetCompteActif.Cells[1, 1].Text.Trim();
 
@@ -2034,9 +2100,7 @@ namespace SYSGES_MAGs.Helpers
             }
         }
 
-        public List<ComptesOuvert> GetComptesOuvert(
-            ExcelWorksheet worksheetCompteOuvert
-        )
+        public List<ComptesOuvert> GetComptesOuvert(ExcelWorksheet worksheetCompteOuvert)
         {
             var comptesOuvert = new List<ComptesOuvert>();
             try
@@ -2049,7 +2113,14 @@ namespace SYSGES_MAGs.Helpers
                 string headerAGE = worksheetCompteOuvert.Cells[1, 5].Text.Trim();
                 string headerINTI = worksheetCompteOuvert.Cells[1, 6].Text.Trim();
 
-                if (headerNcp != "NCP" || headerAGE != "AGE" || headerCFE != "CFE" || headerCHA != "CHA" || headerCLC != "CLC" || headerINTI != "INTI")
+                if (
+                    headerNcp != "NCP"
+                    || headerAGE != "AGE"
+                    || headerCFE != "CFE"
+                    || headerCHA != "CHA"
+                    || headerCLC != "CLC"
+                    || headerINTI != "INTI"
+                )
                 {
                     throw new Exception(
                         "Le fichier chargé n'est pas un fichier Compte Ouvert valide."
@@ -2061,15 +2132,17 @@ namespace SYSGES_MAGs.Helpers
                     string ncp = worksheetCompteOuvert.Cells[row, 1].Text.Trim();
                     if (!string.IsNullOrEmpty(ncp))
                     {
-                        comptesOuvert.Add(new ComptesOuvert
-                        {
-                            Ncp = ncp,
-                            Cfe = worksheetCompteOuvert.Cells[row, 4].Text.Trim(),
-                            Clc = worksheetCompteOuvert.Cells[row, 2].Text.Trim(),
-                            Cha = worksheetCompteOuvert.Cells[row, 3].Text.Trim(),
-                            Age = worksheetCompteOuvert.Cells[row, 5].Text.Trim(),
-                            Inti = worksheetCompteOuvert.Cells[row, 6].Text.Trim()
-                        });
+                        comptesOuvert.Add(
+                            new ComptesOuvert
+                            {
+                                Ncp = ncp,
+                                Cfe = worksheetCompteOuvert.Cells[row, 4].Text.Trim(),
+                                Clc = worksheetCompteOuvert.Cells[row, 2].Text.Trim(),
+                                Cha = worksheetCompteOuvert.Cells[row, 3].Text.Trim(),
+                                Age = worksheetCompteOuvert.Cells[row, 5].Text.Trim(),
+                                Inti = worksheetCompteOuvert.Cells[row, 6].Text.Trim(),
+                            }
+                        );
                     }
                 }
                 return comptesOuvert;
@@ -2080,6 +2153,7 @@ namespace SYSGES_MAGs.Helpers
                 throw new Exception("Fichier de Comptes Ouvert invalide" + ex.Message);
             }
         }
+
         public Dictionary<string, DateDsouPackEchuResponse> GetDsouPackEchu(
             ExcelWorksheet worksheetDsouPackEchu
         )
@@ -2094,7 +2168,12 @@ namespace SYSGES_MAGs.Helpers
                 string headerDdsou = worksheetDsouPackEchu.Cells[1, 3].Text.Trim();
                 string headerDfsou = worksheetDsouPackEchu.Cells[1, 4].Text.Trim();
 
-                if (headerNcpf != "NCPF" || headerCpack != "CPACK" || headerDdsou != "DDSOU" || headerDfsou != "DFSOU")
+                if (
+                    headerNcpf != "NCPF"
+                    || headerCpack != "CPACK"
+                    || headerDdsou != "DDSOU"
+                    || headerDfsou != "DFSOU"
+                )
                 {
                     throw new Exception(
                         "Le fichier chargé n'est pas un fichier Package Echu valide."
@@ -2105,9 +2184,7 @@ namespace SYSGES_MAGs.Helpers
                 {
                     string ncpf = worksheetDsouPackEchu.Cells[row, 1].Text.Trim();
 
-                    if (
-                        !string.IsNullOrEmpty(ncpf)
-                    )
+                    if (!string.IsNullOrEmpty(ncpf))
                     {
                         var cellDdsou = worksheetDsouPackEchu.Cells[row, 3];
                         var cellDfsou = worksheetDsouPackEchu.Cells[row, 4];
@@ -2119,7 +2196,7 @@ namespace SYSGES_MAGs.Helpers
                             Ncpf = ncpf,
                             Cpack = worksheetDsouPackEchu.Cells[row, 2].Text.Trim(),
                             Ddsou = ddsou ?? DateTime.MinValue,
-                            Dfsou = dfsou ?? DateTime.MinValue
+                            Dfsou = dfsou ?? DateTime.MinValue,
                         };
                     }
                 }
@@ -2131,8 +2208,10 @@ namespace SYSGES_MAGs.Helpers
                 throw new Exception("Fichier de Comptes Ouvert invalide" + ex.Message);
             }
         }
+
         public Dictionary<string, List<CompteDebiteRedevCarte>> GetHistCptDebiteRedevCarte(
-        ExcelWorksheet worksheetHistCptDebiteRedev)
+            ExcelWorksheet worksheetHistCptDebiteRedev
+        )
         {
             var result = new Dictionary<string, List<CompteDebiteRedevCarte>>();
 
@@ -2151,33 +2230,31 @@ namespace SYSGES_MAGs.Helpers
                 }
                 for (int row = 2; row <= worksheetHistCptDebiteRedev.Dimension.End.Row; row++)
                 {
-                    string ncp =
-                        worksheetHistCptDebiteRedev.Cells[row, 1].Text.Trim();
+                    string ncp = worksheetHistCptDebiteRedev.Cells[row, 1].Text.Trim();
 
                     if (string.IsNullOrWhiteSpace(ncp))
                         continue;
 
-                    long montant =
-                        long.Parse(
-                            worksheetHistCptDebiteRedev.Cells[row, 2].Text.Trim());
+                    long montant = long.Parse(
+                        worksheetHistCptDebiteRedev.Cells[row, 2].Text.Trim()
+                    );
 
                     // IMPORTANT :
                     // lire directement la vraie date Excel
-                    DateTime datePrelevement =
-                        worksheetHistCptDebiteRedev.Cells[row, 3]
-                            .GetValue<DateTime>();
+                    DateTime datePrelevement = worksheetHistCptDebiteRedev
+                        .Cells[row, 3]
+                        .GetValue<DateTime>();
 
                     string lib = worksheetHistCptDebiteRedev.Cells[row, 4].Text.Trim();
 
-                    string mois =
-                        datePrelevement.ToString("yyyy-dd");
+                    string mois = datePrelevement.ToString("yyyy-dd");
 
                     var item = new CompteDebiteRedevCarte
                     {
                         Ncp = ncp,
                         Mon = montant,
                         Dco = mois,
-                        Lib = lib
+                        Lib = lib,
                     };
 
                     if (!result.ContainsKey(ncp))
@@ -2197,24 +2274,29 @@ namespace SYSGES_MAGs.Helpers
             }
         }
 
-        public Dictionary<string, PackagesActifsResponse> GetPackagesActifs(ExcelWorksheet worksheetPackActif)
+        public Dictionary<string, PackagesActifsResponse> GetPackagesActifs(
+            ExcelWorksheet worksheetPackActif
+        )
         {
             var packActif = new Dictionary<string, PackagesActifsResponse>();
 
             try
             {
-
                 string headerNcpf = worksheetPackActif.Cells[1, 1].Text.Trim();
                 string headerCpack = worksheetPackActif.Cells[1, 2].Text.Trim();
                 string headerLib = worksheetPackActif.Cells[1, 3].Text.Trim();
                 string headerDdsou = worksheetPackActif.Cells[1, 4].Text.Trim();
 
-                if (headerNcpf != "NCPF" || headerCpack != "CPACK" || headerLib != "LIB" || headerDdsou != "DDSOU")
+                if (
+                    headerNcpf != "NCPF"
+                    || headerCpack != "CPACK"
+                    || headerLib != "LIB"
+                    || headerDdsou != "DDSOU"
+                )
                 {
                     throw new Exception(
                         "Le fichier chargé n'est pas un fichier de Packages Actifs valide."
                     );
-
                 }
                 for (int row = 2; row <= worksheetPackActif.Dimension!.End.Row; row++)
                 {
@@ -2232,7 +2314,7 @@ namespace SYSGES_MAGs.Helpers
                         Ncpf = ncpf,
                         Cpack = worksheetPackActif.Cells[row, 2].Text!.Trim(),
                         Lib = worksheetPackActif.Cells[row, 3].Text!.Trim(),
-                        Ddsou = ddsou ?? DateTime.MinValue
+                        Ddsou = ddsou ?? DateTime.MinValue,
                     };
                 }
 
@@ -2249,7 +2331,7 @@ namespace SYSGES_MAGs.Helpers
         /// Convertit une cellule Excel contenant une date en objet
         /// <see cref="DateTime"/>.
         ///
-        /// Cette méthode permet de gérer plusieurs formats de dates
+        /// /// Cette méthode permet de gérer plusieurs formats de dates
         /// provenant des fichiers Excel métiers, notamment :
         /// - dd/MM/yyyy
         /// - MM/dd/yyyy
@@ -2279,7 +2361,6 @@ namespace SYSGES_MAGs.Helpers
 
             try
             {
-
                 var text = cell.Text!.Trim();
                 if (string.IsNullOrEmpty(text))
                     return null;
@@ -2287,10 +2368,12 @@ namespace SYSGES_MAGs.Helpers
                 // formats: dd/MM/yyyy, MM-dd-yyyy, etc.
                 var parts = text.Split('/', '-', '.');
 
-                if (parts.Length == 3 &&
-                    int.TryParse(parts[1], out int p1) &&
-                    int.TryParse(parts[0], out int p2) &&
-                    int.TryParse(parts[2], out int p3))
+                if (
+                    parts.Length == 3
+                    && int.TryParse(parts[1], out int p1)
+                    && int.TryParse(parts[0], out int p2)
+                    && int.TryParse(parts[2], out int p3)
+                )
                 {
                     // on normalise en dd/MM/yyyy (plus logique métier)
                     int jour = p1;
@@ -2311,6 +2394,7 @@ namespace SYSGES_MAGs.Helpers
 
             return null;
         }
+
         public async Task<IEnumerable<TypeMag>> GetAllTypeMagsAsync()
         {
             return await _typeMagRepository.getAllMag();
@@ -2325,7 +2409,6 @@ namespace SYSGES_MAGs.Helpers
         {
             return new ExcelPackage(file.OpenReadStream());
         }
-
 
         public byte[] TxtToExcel(List<CarteARegulerDto> carteAReguler)
         {
@@ -2345,7 +2428,6 @@ namespace SYSGES_MAGs.Helpers
                 int row = 2;
                 foreach (CarteARegulerDto carte in carteAReguler)
                 {
-
                     worksheet.Cells[row, 1].Value = carte.Carte;
                     worksheet.Cells[row, 2].Value = carte.NumeroCompte;
                     worksheet.Cells[row, 3].Value = carte.CodeAgence;
@@ -2354,7 +2436,6 @@ namespace SYSGES_MAGs.Helpers
                     worksheet.Cells[row, 6].Value = carte.CodeCarte;
 
                     row++;
-
                 }
 
                 worksheet.Cells[worksheet.Dimension.Address].AutoFitColumns();
@@ -2371,7 +2452,6 @@ namespace SYSGES_MAGs.Helpers
                 // Texte en blanc
                 headerRange.Style.Font.Color.SetColor(System.Drawing.Color.White);
 
-
                 return package.GetAsByteArray();
             }
             catch (Exception ex)
@@ -2380,6 +2460,5 @@ namespace SYSGES_MAGs.Helpers
                 throw new NotImplementedException();
             }
         }
-
     }
 }

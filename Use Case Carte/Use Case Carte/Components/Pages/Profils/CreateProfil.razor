@@ -1,5 +1,4 @@
 @page "/MAG/creation-profil"
-@using Use_Case_Carte.Components.Shared
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
 <div>
     <SharedHeader PreviousPage="Liste des Profils" CurrentPage="Creation Profil" OnCancel="OnCancel" />
@@ -8,7 +7,7 @@
     <div class="col-xxl-10 col-xl-12">
         <div class="card custom-card">
             <div class="card-header">
-                <div class="card-title">Create NFT</div>
+                <div class="card-title">Nouveau Utilisateur</div>
             </div>
             <div class="card-body">
                 <EditForm Model="@profilModel" FormName="OnSaveProfil">

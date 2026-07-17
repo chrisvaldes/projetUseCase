@@ -1,11 +1,13 @@
-﻿using Authorization.Application.Interfaces;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Authorization.Application.Interfaces;
+using Authorization.Domain.Entities;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using OfficeOpenXml;
 
 namespace Authorization.Controllers
 {
@@ -28,6 +30,22 @@ namespace Authorization.Controllers
         {
             var response = await _permissionService.GetAllAsync();
 
+            return Ok(response);
+        }
+
+        // GET ALL 
+        [HttpPost]
+        //[Authorize(Policy = "VOIR_ROLE")]
+        public async Task<IActionResult> SavePermission(Permission permission)
+        {
+            var response = await _permissionService.PostAsync(permission);
+
+            Console.WriteLine($"response : {response.Data!.Code}");
+
+            if (!response.Success)
+            {
+                return NotFound(response);
+            }
             return Ok(response);
         }
     }

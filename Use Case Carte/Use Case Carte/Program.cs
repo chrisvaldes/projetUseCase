@@ -20,7 +20,8 @@ builder.Services.AddScoped<ToastService>();
 builder.Services.AddScoped<NouveauMagService>();
 builder.Services.AddScoped<DetailReclamationService>();
 builder.Services.AddScoped<TypeMagService>();
-builder.Services.AddScoped<DashboardService>();
+builder.Services.AddScoped<DashboardService>(); 
+builder.Services.AddScoped<PermissionService>();
 builder.Services.AddMudServices();
 builder.Services.AddScoped(sp => new HttpClient
 {

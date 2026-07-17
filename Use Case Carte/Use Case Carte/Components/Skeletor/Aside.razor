@@ -89,7 +89,7 @@
 
                                 <li class="slide__category">
                                     <span class="category-name">
-                                        Gestion Profil Utilisateur
+                                        Gestion Profils 
                                     </span>
                                 </li>
 
@@ -102,7 +102,7 @@
 
                                         <span class="side-menu__label">
 
-                                            Profil Utilisateur
+                                            Profil Utilisateurs
 
                                         </span>
 
@@ -117,6 +117,53 @@
                                             <NavLink href="@Route.Profils" class="side-menu__item" ActiveClass="active">
 
                                                 Liste des Profils
+
+                                            </NavLink>
+
+                                        </li>
+
+                                    </ul>
+
+                                </li>
+                                <li class="slide__category">
+                                    <span class="category-name">
+                                        Gestion Rôles & Permissions 
+                                    </span>
+                                </li>
+
+ 
+                                <li class="slide has-sub @(RolePermissionOpen ? "active open" : "")">
+
+                                    <a href="javascript:void(0);" class="side-menu__item @(RolePermissionOpen ? "active" : "")">
+
+                                        <i class="ri-user-line side-menu__icon"></i>
+
+                                        <span class="side-menu__label">
+
+                                            Rôles & Permissions
+
+                                        </span>
+
+                                        <i class="ri-arrow-down-s-line side-menu__angle"></i>
+
+                                    </a>
+
+                                    <ul class="slide-menu child1" style="display:@(RolePermissionOpen ? "block" : "none")">
+
+                                        <li class="slide">
+
+                                            <NavLink href="@Route.Roles" class="side-menu__item" ActiveClass="active">
+
+                                                Liste des rôles
+
+                                            </NavLink>
+
+                                        </li>
+                                        <li class="slide">
+
+                                            <NavLink href="@Route.Permissions" class="side-menu__item" ActiveClass="active">
+
+                                                Liste des Permission
 
                                             </NavLink>
 
@@ -239,6 +286,10 @@
         || IsActive("MAG/creation-profil")
         || IsActive("MAG/modification-profil")
         || IsActive("MAG/suppression-profil");
+    private bool RolePermissionOpen => 
+        IsActive("MAG/roles")
+        || IsActive("MAG/permissions")
+        || IsActive("MAG/nouvelle-permission");
 
     private bool MagOpen =>
         IsActive("MAG/gestion-mag")
