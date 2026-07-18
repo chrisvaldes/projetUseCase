@@ -21,6 +21,10 @@ public class NavigationService
     {
         _navigation.NavigateTo(Route.Profil);
     }
+    public void GoCreerRole()
+    {
+        _navigation.NavigateTo(Route.CreateRoles);
+    }
 
     public void GoCreerProfil()
     {

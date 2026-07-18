@@ -39,13 +39,13 @@ namespace Use_Case_Carte.Components.Permissions
                 await JS.InvokeVoidAsync("toggleOnLoaderAndToast");
 
                 await LoadProfils();
-                             // On construit l'arbre après le premier render, une fois les données chargées
+                // On construit l'arbre après le premier render, une fois les données chargées
                 await RenderPermissionTreeAsync();
 
                 await JS.InvokeVoidAsync("toggleOffLoaderAndToast");
             }
         }
- 
+
 
         private async Task LoadProfils()
         {
@@ -68,13 +68,13 @@ namespace Use_Case_Carte.Components.Permissions
 
 
 
- 
+
         [Inject]
         protected PermissionService PermissionService { get; set; } = default!;
- 
+
         [Inject]
         public ToastService ToastService { get; set; } = default!;
-         protected List<PermissionTreeDto> permissionsTree = new();
+        protected List<PermissionTreeDto> permissionsTree = new();
 
         protected override async Task OnInitializedAsync()
         {
@@ -82,7 +82,7 @@ namespace Use_Case_Carte.Components.Permissions
             await LoadPermissionsAsync();
         }
 
-       
+
 
         private async Task LoadProfilsAsync()
         {
@@ -100,13 +100,27 @@ namespace Use_Case_Carte.Components.Permissions
             }
         }
 
+        private DotNetObjectReference<ListePermission>? _dotNetRef;
+
         private async Task RenderPermissionTreeAsync()
         {
             if (permissionsTree.Any())
             {
-                // Envoie les données au JS pour construire le jsTree
-                await JS.InvokeVoidAsync("initPermissionTree", "permissionTreeContainer", permissionsTree);
+                _dotNetRef = DotNetObjectReference.Create(this);
+                await JS.InvokeVoidAsync("initPermissionTree", "permissionTreeContainer", permissionsTree, _dotNetRef);
             }
+        }
+
+        [JSInvokable]
+        public void OnPermissionsChecked(string[] selectedIds)
+        {
+            Console.WriteLine($"Permissions cochées : {string.Join(", ", selectedIds)}");
+            // Traite les IDs cochés ici, ex: stocker dans une liste, appeler un service, etc.
+        }
+
+        public void Dispose()
+        {
+            _dotNetRef?.Dispose();
         }
 
     }

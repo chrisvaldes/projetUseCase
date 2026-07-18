@@ -62,7 +62,10 @@ namespace Use_Case_Carte.Services
 
         public async Task<List<PermissionTreeDto>> GetAllAsync()
         {
-            await AddAuthHeader();
+            await AddAuthHeader(); // si AddAuthHeader retourne le token, sinon adapte
+
+            Console.WriteLine($"---------->> Token utilisé pour GetAllAsync (Permission): ");
+
             try
             {
                 var result = await _http.GetFromJsonAsync<List<PermissionTreeDto>>("api/permission");

@@ -22,6 +22,8 @@ builder.Services.AddScoped<DetailReclamationService>();
 builder.Services.AddScoped<TypeMagService>();
 builder.Services.AddScoped<DashboardService>(); 
 builder.Services.AddScoped<PermissionService>();
+builder.Services.AddScoped<PermissionService>();
+builder.Services.AddScoped<RoleService>();
 builder.Services.AddMudServices();
 builder.Services.AddScoped(sp => new HttpClient
 {
