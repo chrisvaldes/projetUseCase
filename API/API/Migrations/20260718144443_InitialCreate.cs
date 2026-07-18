@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace API.Migrations
 {
     /// <inheritdoc />
-    public partial class initialMigration : Migration
+    public partial class InitialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -60,7 +60,96 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Permission",
+                name: "Bkmvtis",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TypeMag = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CodeAgence = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Sequence = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodeIN = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodeDevise = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    EstActif = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    NumeroCompte = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    TypeBeneficiaire = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ReferenceBeneficiaire = table.Column<int>(type: "int", nullable: false),
+                    CleBeneficiaire = table.Column<int>(type: "int", nullable: false),
+                    DatePrelevement = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    PrixUnitCarte = table.Column<long>(type: "bigint", nullable: true),
+                    ReferenceOperation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodeOperation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodeEmetteur = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IndicateurDomiciliation = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    LibelleCarte = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DesignationCarte = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Carte = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DateValiditeCarte = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    DateCreationCarte = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CodeTarif = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Basculer = table.Column<bool>(type: "bit", nullable: false),
+                    NomClient = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    CodeCarte = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    StartPeriod = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    EndPeriod = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Bkmvtis", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ComptesDebiteRedevCartes",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Ncp = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Mon = table.Column<long>(type: "bigint", nullable: false),
+                    Dco = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Lib = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ComptesDebiteRedevCartes", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "ComptesOuvert",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    Ncp = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Cfe = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Clc = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Cha = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Age = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Inti = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ComptesOuvert", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "LoginHistories",
+                columns: table => new
+                {
+                    Id = table.Column<long>(type: "bigint", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: true),
+                    Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    LoginDate = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsSuccess = table.Column<bool>(type: "bit", nullable: false),
+                    IpAddress = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UserAgent = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    FailureReason = table.Column<string>(type: "nvarchar(max)", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_LoginHistories", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Permissions",
                 columns: table => new
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
@@ -71,12 +160,35 @@ namespace API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Permission", x => x.Id);
+                    table.PrimaryKey("PK_Permissions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Permission_Permission_ParentId",
+                        name: "FK_Permissions_Permissions_ParentId",
                         column: x => x.ParentId,
-                        principalTable: "Permission",
+                        principalTable: "Permissions",
                         principalColumn: "Id");
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Profils",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    UserName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Userag = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    TypeProfile = table.Column<int>(type: "int", nullable: false),
+                    Status = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    IsDeleted = table.Column<bool>(type: "bit", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    Uid = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    CreatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    UpdatedAt = table.Column<DateTime>(type: "datetime2", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    DeletedAt = table.Column<DateTime>(type: "datetime2", nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Profils", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -97,6 +209,25 @@ namespace API.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Settings", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "TypeMags",
+                columns: table => new
+                {
+                    Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
+                    TypeMags = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsAlreadyDownload = table.Column<bool>(type: "bit", nullable: false),
+                    PeriodeDebut = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    PeriodeFin = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_TypeMags", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -231,7 +362,7 @@ namespace API.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "RolePermission",
+                name: "RolePermissions",
                 columns: table => new
                 {
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
@@ -240,17 +371,17 @@ namespace API.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_RolePermission", x => x.Id);
+                    table.PrimaryKey("PK_RolePermissions", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_RolePermission_AspNetRoles_RoleId",
+                        name: "FK_RolePermissions_AspNetRoles_RoleId",
                         column: x => x.RoleId,
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_RolePermission_Permission_PermissionId",
+                        name: "FK_RolePermissions_Permissions_PermissionId",
                         column: x => x.PermissionId,
-                        principalTable: "Permission",
+                        principalTable: "Permissions",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
@@ -350,18 +481,18 @@ namespace API.Migrations
                 column: "TypeId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Permission_ParentId",
-                table: "Permission",
+                name: "IX_Permissions_ParentId",
+                table: "Permissions",
                 column: "ParentId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePermission_PermissionId",
-                table: "RolePermission",
+                name: "IX_RolePermissions_PermissionId",
+                table: "RolePermissions",
                 column: "PermissionId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_RolePermission_RoleId",
-                table: "RolePermission",
+                name: "IX_RolePermissions_RoleId",
+                table: "RolePermissions",
                 column: "RoleId");
 
             migrationBuilder.CreateIndex(
@@ -389,13 +520,31 @@ namespace API.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
+                name: "Bkmvtis");
+
+            migrationBuilder.DropTable(
+                name: "ComptesDebiteRedevCartes");
+
+            migrationBuilder.DropTable(
+                name: "ComptesOuvert");
+
+            migrationBuilder.DropTable(
+                name: "LoginHistories");
+
+            migrationBuilder.DropTable(
                 name: "Organisations");
 
             migrationBuilder.DropTable(
-                name: "RolePermission");
+                name: "Profils");
+
+            migrationBuilder.DropTable(
+                name: "RolePermissions");
 
             migrationBuilder.DropTable(
                 name: "Settings");
+
+            migrationBuilder.DropTable(
+                name: "TypeMags");
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
@@ -407,7 +556,7 @@ namespace API.Migrations
                 name: "AspNetRoles");
 
             migrationBuilder.DropTable(
-                name: "Permission");
+                name: "Permissions");
         }
     }
 }
