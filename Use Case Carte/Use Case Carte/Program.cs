@@ -1,4 +1,5 @@
 using Blazored.LocalStorage;
+using Microsoft.AspNetCore.Components.Authorization;
 using MudBlazor.Services;
 using Use_Case_Carte.Components;
 using Use_Case_Carte.Components.Layout;
@@ -9,6 +10,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents().AddInteractiveServerComponents();
+
+builder.Services.AddScoped<JwtAuthenticationStateProvider>();
+builder.Services.AddScoped<AuthenticationStateProvider>(
+    sp => sp.GetRequiredService<JwtAuthenticationStateProvider>());
+builder.Services.AddAuthorizationCore();
 
 // Enregistrer les services
 builder.Services.AddScoped<AuthService>();
@@ -24,6 +30,7 @@ builder.Services.AddScoped<DashboardService>();
 builder.Services.AddScoped<PermissionService>();
 builder.Services.AddScoped<PermissionService>();
 builder.Services.AddScoped<RoleService>();
+builder.Services.AddScoped<UserService>(); 
 builder.Services.AddMudServices();
 builder.Services.AddScoped(sp => new HttpClient
 {

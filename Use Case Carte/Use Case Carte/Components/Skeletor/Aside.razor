@@ -121,6 +121,15 @@
                                             </NavLink>
 
                                         </li>
+                                        <li class="slide">
+
+                                            <NavLink href="@Route.Utilisateurs" class="side-menu__item" ActiveClass="active">
+
+                                                Liste des Utilisateurs
+
+                                            </NavLink>
+
+                                        </li>
 
                                     </ul>
 
@@ -285,7 +294,8 @@
         IsActive("MAG/profil")
         || IsActive("MAG/creation-profil")
         || IsActive("MAG/modification-profil")
-        || IsActive("MAG/suppression-profil");
+        || IsActive("MAG/suppression-profil")
+        || IsActive("MAG/utilisateurs");
     private bool RolePermissionOpen => 
         IsActive("MAG/roles")
         || IsActive("MAG/permissions")

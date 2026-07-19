@@ -7,14 +7,18 @@ namespace Use_Case_Carte.Services
     {
         private readonly ILogger<RoleService> _logger;
 
+        private readonly IJSRuntime _js;
+
         public RoleService(
             HttpClient http,
             ILocalStorageService storage,
-            ILogger<RoleService> logger
+            ILogger<RoleService> logger,
+            IJSRuntime js
         )
             : base(http, storage)
         {
             _logger = logger;
+            _js = js;
         }
 
         public async Task<ApiResponse<string>> CreateAsync(CreateRoleDto dto)
@@ -143,5 +147,32 @@ namespace Use_Case_Carte.Services
                 throw new Exception($"Erreur : {ex.Message}");
             }
         }
+
+        public async Task<IEnumerable<RoleDto>> GetAllRoles()
+        {
+            await AddAuthHeader();
+
+            await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
+
+            var response = await _http.GetAsync("api/roles");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<
+                    ApiResponse<IEnumerable<RoleDto>>
+                >();
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
+                return result?.Data ?? new List<RoleDto>();
+            }
+            else
+            {
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+
+                throw new Exception("Erreur lors de la récupération des profils.");
+            }
+        }
+
+
     }
 }

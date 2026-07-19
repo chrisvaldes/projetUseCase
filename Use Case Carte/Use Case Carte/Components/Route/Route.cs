@@ -16,4 +16,6 @@ public static class Route
     public const string Login = "/";
     public const string Permissions = "MAG/permissions";
     public const string NouvellePermission = "MAG/nouvelle-permission";
+    public const string Utilisateurs = "MAG/utilisateurs";
+    public const string NouveauUtilisateur = "MAG/nouveau-utilisateur";
 }

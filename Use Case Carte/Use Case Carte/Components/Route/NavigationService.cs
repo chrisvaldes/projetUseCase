@@ -26,6 +26,15 @@ public class NavigationService
         _navigation.NavigateTo(Route.CreateRoles);
     }
 
+    public void GoListeUtilisateur()
+    {
+        _navigation.NavigateTo(Route.Utilisateurs);
+    }
+    public void GoNouveauUtilisateur()
+    {
+        _navigation.NavigateTo(Route.NouveauUtilisateur);
+    }
+
     public void GoCreerProfil()
     {
         _navigation.NavigateTo(Route.CreateProfil);

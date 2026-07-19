@@ -94,6 +94,14 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xUb2FzdFxUb2FzdE5vdGlmaWNhdGlvbi5yYXpvcg==
 build_metadata.AdditionalFiles.CssScope = 
 
+[C:/Users/Valdes FEUTSEU/Desktop/js/cartes/projetUseCase/Use Case Carte/Use Case Carte/Components/Pages/Utilisateur/ListeUtilisateur.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xVdGlsaXNhdGV1clxMaXN0ZVV0aWxpc2F0ZXVyLnJhem9y
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/Valdes FEUTSEU/Desktop/js/cartes/projetUseCase/Use Case Carte/Use Case Carte/Components/Pages/Utilisateur/NouveauUtilisateur.razor]
+build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQYWdlc1xVdGlsaXNhdGV1clxOb3V2ZWF1VXRpbGlzYXRldXIucmF6b3I=
+build_metadata.AdditionalFiles.CssScope = 
+
 [C:/Users/Valdes FEUTSEU/Desktop/js/cartes/projetUseCase/Use Case Carte/Use Case Carte/Components/Permissions/ListePermission.razor]
 build_metadata.AdditionalFiles.TargetPath = Q29tcG9uZW50c1xQZXJtaXNzaW9uc1xMaXN0ZVBlcm1pc3Npb24ucmF6b3I=
 build_metadata.AdditionalFiles.CssScope = 

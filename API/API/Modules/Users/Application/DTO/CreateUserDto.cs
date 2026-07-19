@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Users.Application.DTO
 {
-    public class CreateUserDto
+    public class  CreateUserDto
     {
         public string Matricule { get; set; } = null!;
         public string Nom { get; set; } = null!;
