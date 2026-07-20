@@ -34,54 +34,58 @@
                             </div>
                             <ul class="main-menu"
                                 style="display: block; margin-left: 0px; margin-right: 0px; margin-top : 1rem">
-                                <li class="slide__category">
-                                    <span class="category-name">
-                                        Dashboard
-                                    </span>
-                                </li>
-
- 
-
-                                <li class="slide has-sub @(DashboardOpen ? "active open" : "")">
-
-                                    <a href="javascript:void(0);"
-                                       class="side-menu__item @(DashboardOpen ? "active" : "")">
-
-                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 side-menu__icon"
-                                             fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-
-                                            <path stroke-linecap="round" stroke-linejoin="round"
-                                                  d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25">
-                                            </path>
-
-                                        </svg>
-
-                                        <span class="side-menu__label">
-
+                                @if (HasPermission("ADMIN"))
+                                {
+                                    <li class="slide__category">
+                                        <span class="category-name">
                                             Dashboard
-
                                         </span>
+                                    </li>
 
-                                        <i class="ri-arrow-down-s-line side-menu__angle"></i>
+                                    <li class="slide has-sub @(DashboardOpen ? "active open" : "")">
 
-                                    </a>
+                                        <a href="javascript:void(0);"
+                                           class="side-menu__item @(DashboardOpen ? "active" : "")">
 
-                                    <ul class="slide-menu child1" style="display:@(DashboardOpen ? "block" : "none")">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-6 h-6 side-menu__icon"
+                                                 fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
 
-                                        <li class="slide">
+                                                <path stroke-linecap="round" stroke-linejoin="round"
+                                                      d="m2.25 12 8.954-8.955c.44-.439 1.152-.439 1.591 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25">
+                                                </path>
 
-                                            <NavLink href="@Route.Dashboard" class="side-menu__item"
-                                                     ActiveClass="active" Match="NavLinkMatch.All">
+                                            </svg>
+
+                                            <span class="side-menu__label">
 
                                                 Dashboard
 
-                                            </NavLink>
+                                            </span>
 
-                                        </li>
+                                            <i class="ri-arrow-down-s-line side-menu__angle"></i>
 
-                                    </ul>
+                                        </a>
 
-                                </li>
+                                        <ul class="slide-menu child1" style="display:@(DashboardOpen ? "block" : "none")">
+
+                                            <li class="slide">
+
+                                                <NavLink href="@Route.Dashboard" class="side-menu__item"
+                                                         ActiveClass="active" Match="NavLinkMatch.All">
+
+                                                    Dashboard
+
+                                                </NavLink>
+
+                                            </li>
+
+                                        </ul>
+
+                                    </li>
+
+                                }
+
+
 
                                 <!-- ========================= -->
                                 <!-- GESTION PROFIL -->
@@ -89,7 +93,7 @@
 
                                 <li class="slide__category">
                                     <span class="category-name">
-                                        Gestion Profils 
+                                        Gestion Profils
                                     </span>
                                 </li>
 
@@ -123,7 +127,8 @@
                                         </li>
                                         <li class="slide">
 
-                                            <NavLink href="@Route.Utilisateurs" class="side-menu__item" ActiveClass="active">
+                                            <NavLink href="@Route.Utilisateurs" class="side-menu__item"
+                                                     ActiveClass="active">
 
                                                 Liste des Utilisateurs
 
@@ -136,14 +141,15 @@
                                 </li>
                                 <li class="slide__category">
                                     <span class="category-name">
-                                        Gestion Rôles & Permissions 
+                                        Gestion Rôles & Permissions
                                     </span>
                                 </li>
 
  
                                 <li class="slide has-sub @(RolePermissionOpen ? "active open" : "")">
 
-                                    <a href="javascript:void(0);" class="side-menu__item @(RolePermissionOpen ? "active" : "")">
+                                    <a href="javascript:void(0);"
+                                       class="side-menu__item @(RolePermissionOpen ? "active" : "")">
 
                                         <i class="ri-user-line side-menu__icon"></i>
 
@@ -157,11 +163,13 @@
 
                                     </a>
 
-                                    <ul class="slide-menu child1" style="display:@(RolePermissionOpen ? "block" : "none")">
+                                    <ul class="slide-menu child1"
+                                        style="display:@(RolePermissionOpen ? "block" : "none")">
 
                                         <li class="slide">
 
-                                            <NavLink href="@Route.CreateRoles" class="side-menu__item" ActiveClass="active">
+                                            <NavLink href="@Route.CreateRoles" class="side-menu__item"
+                                                     ActiveClass="active">
 
                                                 Liste des rôles
 
@@ -170,7 +178,8 @@
                                         </li>
                                         <li class="slide">
 
-                                            <NavLink href="@Route.Permissions" class="side-menu__item" ActiveClass="active">
+                                            <NavLink href="@Route.Permissions" class="side-menu__item"
+                                                     ActiveClass="active">
 
                                                 Liste des Permission
 
@@ -272,6 +281,7 @@
 </div>
 
  
+@using Microsoft.AspNetCore.Components.Authorization
 @using Use_Case_Carte.Components.Route
 @inject NavigationManager Navigation
 
@@ -295,8 +305,9 @@
         || IsActive("MAG/creation-profil")
         || IsActive("MAG/modification-profil")
         || IsActive("MAG/suppression-profil")
-        || IsActive("MAG/utilisateurs");
-    private bool RolePermissionOpen => 
+        || IsActive("MAG/utilisateurs")
+        || IsActive("MAG/nouveau-utilisateur");
+    private bool RolePermissionOpen =>
         IsActive("MAG/roles")
         || IsActive("MAG/permissions")
         || IsActive("MAG/nouvelle-permission");
@@ -308,4 +319,5 @@
         || IsActive("MAG/Synthese");
 
 }
+
  

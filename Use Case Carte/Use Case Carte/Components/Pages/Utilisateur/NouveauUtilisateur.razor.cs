@@ -31,19 +31,25 @@ public partial class NouveauUtilisateur : ComponentBase
     [Inject]
     public ToastService ToastService { get; set; } = default!;
 
+    private DotNetObjectReference<NouveauUtilisateur>? dotnetHelper { get; set; } = default!;
+
     [Inject]
     private IJSRuntime JS { get; set; } = default!;
 
+    public IEnumerable<RoleDto> RoleDto = new List<RoleDto>();
 
-    public IEnumerable<RoleDto> RoleDto =  new List<RoleDto>();
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoles();
+    }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
+            dotnetHelper = DotNetObjectReference.Create(this);
 
-            await LoadRoles();
-            // await JS.InvokeVoidAsync("initProfileModals");
+            await JS.InvokeVoidAsync("initRolesSelect", dotnetHelper);
         }
     }
 
@@ -53,6 +59,22 @@ public partial class NouveauUtilisateur : ComponentBase
 
         StateHasChanged();
     }
+
+    [JSInvokable]
+    public Task UpdateRoles(string[] values)
+    {
+        UserDto.RoleIds = values.ToList();
+
+        Console.WriteLine("====== ROLES RECUS ======");
+
+        foreach (var role in UserDto.RoleIds)
+        {
+            Console.WriteLine(role);
+        }
+
+        return Task.CompletedTask;
+    }
+
     private async Task OnSaveUser()
     {
         var resp = await UserService.Save(UserDto);
@@ -60,21 +82,13 @@ public partial class NouveauUtilisateur : ComponentBase
         if (resp?.Success == true)
         {
             UserDto = new UserDto();
-
-            // 1. Afficher le toast AVANT toute navigation
             ToastService.ShowSuccess(resp.Message);
-
-            // 2. Laisser le temps au toast de s'afficher/être visible
             await Task.Delay(1500);
-
-            // 3. Naviguer seulement après
-            NavigationService.GoProfil();
-
             StateHasChanged();
         }
         else
         {
-            await JS.InvokeVoidAsync("showToast", "message", "warning");
+            await JS.InvokeVoidAsync("showToast", $"{resp!.Message}", "warning");
             ToastService.ShowError(resp!.Message);
             // 2. Laisser le temps au toast de s'afficher/être visible
             await Task.Delay(2000);
@@ -83,13 +97,11 @@ public partial class NouveauUtilisateur : ComponentBase
 
     private async Task OnCancel()
     {
-        NavigationService.GoProfil();
         await Task.CompletedTask;
     }
 
     private async Task OnSaveUtilisateur()
     {
-        NavigationService.GoProfil();
         await Task.CompletedTask;
     }
 }

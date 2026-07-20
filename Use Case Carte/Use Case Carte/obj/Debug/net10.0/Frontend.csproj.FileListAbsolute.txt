@@ -789,14 +789,11 @@ C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUse
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\3tgakdhi9a-{0}-3r8b2a0bt1-3r8b2a0bt1.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\x0xzxdgwib-{0}-3r8b2a0bt1-3r8b2a0bt1.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\70ijon4mfs-{0}-5f1brsny5h-5f1brsny5h.gz
-C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\do3qv9e14j-{0}-7n6nxbg2lc-7n6nxbg2lc.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\a20t73kqyy-{0}-i9tej9b6t9-i9tej9b6t9.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\25c4030kra-{0}-losmy2hny0-losmy2hny0.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\vllche1ft6-{0}-r0nv66rn9w-r0nv66rn9w.gz
-C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\0l0n98dt4p-{0}-57gm3x9tel-57gm3x9tel.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\m89qgr7krp-{0}-uyb2ecqz00-uyb2ecqz00.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\47k20k72j1-{0}-c16apbjj0x-c16apbjj0x.gz
-C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\lkvzsgykq2-{0}-xtxxf3hu2r-xtxxf3hu2r.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\2udygsde9t-{0}-jui6pbpmo6-jui6pbpmo6.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\e3f8csnzwj-{0}-1exm7fupjl-1exm7fupjl.gz
 C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\jbqob2bj85-{0}-irw5qbzcyu-irw5qbzcyu.gz
@@ -1083,4 +1080,12 @@ C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case 
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\Frontend.pdb
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\Frontend.genruntimeconfig.cache
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\ref\Frontend.dll
-C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\lkvzsgykq2-{0}-13av1nk367-13av1nk367.gz
+C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\do3qv9e14j-{0}-dibjs7swbq-dibjs7swbq.gz
+C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\345byfw1h5-{0}-g0k0d3oo6f-g0k0d3oo6f.gz
+C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\8jh60rqvkv-{0}-wiixqf1hpn-wiixqf1hpn.gz
+C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\y1i3dz01pn-{0}-4xfrsz8f9o-4xfrsz8f9o.gz
+C:\Users\Admin_dev\source\repos\projet\projetCarteusecase\source\repos\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\lkvzsgykq2-{0}-bn7genwslm-bn7genwslm.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\345byfw1h5-{0}-g0k0d3oo6f-g0k0d3oo6f.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\y1i3dz01pn-{0}-4xfrsz8f9o-4xfrsz8f9o.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\8jh60rqvkv-{0}-wiixqf1hpn-wiixqf1hpn.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\lkvzsgykq2-{0}-bn7genwslm-bn7genwslm.gz

@@ -77,3 +77,33 @@ window.getCheckedPermissions = (containerId) => {
     if (!instance) return [];
     return instance.get_checked(null, false);
 };
+window.initRolesSelect = function (dotnetHelper) {
+
+    let select = $('#rolesSelect');
+
+    if (select.hasClass('select2-hidden-accessible')) {
+        select.off('change');
+        select.select2('destroy');
+    }
+
+    select.select2({
+        width: '100%',
+        placeholder: 'Sélectionner les rôles',
+        allowClear: true,
+        closeOnSelect: false
+    });
+
+    select.on('change', function () {
+
+        let values = $(this).val() || [];
+
+        console.log("Roles sélectionnés :", values);
+
+        dotnetHelper.invokeMethodAsync(
+            "UpdateRoles",
+            values
+        );
+
+    });
+
+};

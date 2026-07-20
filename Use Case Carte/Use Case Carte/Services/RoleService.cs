@@ -1,6 +1,8 @@
+using System.Text.Json;
 using Blazored.LocalStorage;
 using Microsoft.JSInterop;
 using Use_Case_Carte.Models;
+
 namespace Use_Case_Carte.Services
 {
     public class RoleService : BaseApiService
@@ -51,21 +53,24 @@ namespace Use_Case_Carte.Services
                         Success = false,
                         Message = string.IsNullOrWhiteSpace(content)
                             ? $"Erreur serveur (HTTP {(int)response.StatusCode})"
-                            : content
+                            : content,
                     };
                 }
 
                 var options = new System.Text.Json.JsonSerializerOptions
                 {
-                    PropertyNameCaseInsensitive = true
+                    PropertyNameCaseInsensitive = true,
                 };
 
                 if (!response.IsSuccessStatusCode)
                 {
                     try
                     {
-                        var errorResult = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<string>>(content, options);
-                        if (errorResult is not null) return errorResult;
+                        var errorResult = System.Text.Json.JsonSerializer.Deserialize<
+                            ApiResponse<string>
+                        >(content, options);
+                        if (errorResult is not null)
+                            return errorResult;
                     }
                     catch (System.Text.Json.JsonException)
                     {
@@ -82,10 +87,12 @@ namespace Use_Case_Carte.Services
                             if (errorsElement.ValueKind == System.Text.Json.JsonValueKind.Object)
                             {
                                 foreach (var field in errorsElement.EnumerateObject())
-                                    foreach (var msg in field.Value.EnumerateArray())
-                                        messages.Add(msg.GetString() ?? "");
+                                foreach (var msg in field.Value.EnumerateArray())
+                                    messages.Add(msg.GetString() ?? "");
                             }
-                            else if (errorsElement.ValueKind == System.Text.Json.JsonValueKind.Array)
+                            else if (
+                                errorsElement.ValueKind == System.Text.Json.JsonValueKind.Array
+                            )
                             {
                                 foreach (var msg in errorsElement.EnumerateArray())
                                     messages.Add(msg.GetString() ?? "");
@@ -98,7 +105,7 @@ namespace Use_Case_Carte.Services
                             Message = doc.RootElement.TryGetProperty("title", out var t)
                                 ? (t.GetString() ?? "Erreur de validation")
                                 : "Erreur de validation",
-                            Errors = messages
+                            Errors = messages,
                         };
                     }
                     catch (Exception parseEx)
@@ -108,7 +115,10 @@ namespace Use_Case_Carte.Services
                     }
                 }
 
-                var result = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<string>>(content, options);
+                var result = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<string>>(
+                    content,
+                    options
+                );
                 return result!;
             }
             catch (Exception ex)
@@ -117,7 +127,7 @@ namespace Use_Case_Carte.Services
                 return new ApiResponse<string>
                 {
                     Success = false,
-                    Message = $"Erreur technique : {ex.Message}"
+                    Message = $"Erreur technique : {ex.Message}",
                 };
             }
         }
@@ -151,28 +161,35 @@ namespace Use_Case_Carte.Services
         public async Task<IEnumerable<RoleDto>> GetAllRoles()
         {
             await AddAuthHeader();
-
             await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
 
-            var response = await _http.GetAsync("api/roles");
-
-            if (response.IsSuccessStatusCode)
+            try
             {
-                var result = await response.Content.ReadFromJsonAsync<
-                    ApiResponse<IEnumerable<RoleDto>>
-                >();
-                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
+                var response = await _http.GetAsync("api/role");
+                var content = await response.Content.ReadAsStringAsync();
 
-                return result?.Data ?? new List<RoleDto>();
+                _logger.LogInformation(
+                    "StatusCode={StatusCode} | Body={Content}",
+                    response.StatusCode,
+                    content
+                );
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    throw new Exception("Erreur lors de la récupération des roles.");
+                }
+
+                var result = JsonSerializer.Deserialize<IEnumerable<RoleDto>>(
+                    content,
+                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
+                );
+
+                return result ?? new List<RoleDto>();
             }
-            else
+            finally
             {
                 await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
-
-                throw new Exception("Erreur lors de la récupération des profils.");
             }
         }
-
-
     }
 }
