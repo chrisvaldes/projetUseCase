@@ -23,20 +23,20 @@ namespace Use_Case_Carte.Services
             _safeJs = safeJs;
         }
 
-        // Retour standardisé : ApiResponse<ProfilModel>
-        public async Task<ApiResponse<Guid>> Save(UserDto request)
+        public async Task<ApiResponse<UserDto>> Save(UserDto request)
         {
             try
             {
                 await AddAuthHeader();
                 await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
 
+ 
                 var response = await _http.PostAsJsonAsync("api/users", request);
                 var content = await response.Content.ReadAsStringAsync();
 
                 Console.WriteLine($"StatusCode={response.StatusCode} | Body={content}");
 
-                var result = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<Guid>>(
+                var result = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<string>>(
                     content,
                     new System.Text.Json.JsonSerializerOptions
                     {
@@ -47,7 +47,38 @@ namespace Use_Case_Carte.Services
                 if (result == null)
                     throw new Exception("Réponse invalide du serveur.");
 
-                return result;
+                if (!result.Success)
+                {
+                    // Échec (ex: "Matricule déjà utilisé") — pas de data à récupérer
+                    return new ApiResponse<UserDto>
+                    {
+                        Success = false,
+                        Message = result.Message,
+                        Errors = result.Errors,
+                        Data = null,
+                    };
+                }
+
+                // Succès : result.Data contient l'ID (string) du nouvel utilisateur.
+                // On va chercher l'utilisateur complet, avec ses rôles inclus.
+                if (!Guid.TryParse(result.Data, out var newUserId))
+                {
+                    return new ApiResponse<UserDto>
+                    {
+                        Success = true,
+                        Message = result.Message,
+                        Data = null, // ID invalide/inattendu, on ne peut pas recharger
+                    };
+                }
+
+                var createdUser = await GetById(newUserId);
+
+                return new ApiResponse<UserDto>
+                {
+                    Success = true,
+                    Message = result.Message,
+                    Data = createdUser,
+                };
             }
             finally
             {

@@ -38,12 +38,15 @@ public partial class NouveauUtilisateur : ComponentBase
 
     public IEnumerable<RoleDto> RoleDto = new List<RoleDto>();
 
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadRoles();
+    }
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender)
         {
-            await LoadRoles();
-
             dotnetHelper = DotNetObjectReference.Create(this);
 
             await JS.InvokeVoidAsync("initRolesSelect", dotnetHelper);
@@ -55,6 +58,21 @@ public partial class NouveauUtilisateur : ComponentBase
         RoleDto = await RoleService.GetAllRoles();
 
         StateHasChanged();
+    }
+
+    [JSInvokable]
+    public Task UpdateRoles(string[] values)
+    {
+        UserDto.RoleIds = values.ToList();
+
+        Console.WriteLine("====== ROLES RECUS ======");
+
+        foreach (var role in UserDto.RoleIds)
+        {
+            Console.WriteLine(role);
+        }
+
+        return Task.CompletedTask;
     }
 
     private async Task OnSaveUser()

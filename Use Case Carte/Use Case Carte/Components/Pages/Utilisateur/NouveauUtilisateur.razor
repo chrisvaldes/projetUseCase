@@ -74,8 +74,8 @@
                                 multiple>
                                 @foreach (var role in RoleDto)
                                 {
-                                    <option value="@role.Id" selected="@UserDto.RoleIds.Contains(role.Id)">
-                                        @role.Name
+                                    <option value="@role.Id">
+                                    @role.Name
                                     </option>
                                 }
                             </select>
