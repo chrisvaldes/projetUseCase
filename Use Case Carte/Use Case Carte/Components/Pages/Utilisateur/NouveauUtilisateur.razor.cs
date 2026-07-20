@@ -64,18 +64,13 @@ public partial class NouveauUtilisateur : ComponentBase
         if (resp?.Success == true)
         {
             UserDto = new UserDto();
-
-            // 1. Afficher le toast AVANT toute navigation
             ToastService.ShowSuccess(resp.Message);
-
-            // 2. Laisser le temps au toast de s'afficher/être visible
             await Task.Delay(1500);
-
             StateHasChanged();
         }
         else
         {
-            await JS.InvokeVoidAsync("showToast", "message", "warning");
+            await JS.InvokeVoidAsync("showToast", $"{resp!.Message}", "warning");
             ToastService.ShowError(resp!.Message);
             // 2. Laisser le temps au toast de s'afficher/être visible
             await Task.Delay(2000);
@@ -91,6 +86,4 @@ public partial class NouveauUtilisateur : ComponentBase
     {
         await Task.CompletedTask;
     }
-
- 
 }

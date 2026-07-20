@@ -18,7 +18,7 @@ namespace Use_Case_Carte.Models
         [Required(ErrorMessage = "Le matricule est obligatoire")]
         public string? Matricule { get; set; }
         public string FullName { get; set; } = null!;
-        public string Type { get; set; } = null!;
+        public string Type { get; set; } = "DEFAULT";
         public bool IsActive { get; set; }
         public List<string> Roles { get; set; } = new();
         public List<string> RoleIds { get; set; } = new();

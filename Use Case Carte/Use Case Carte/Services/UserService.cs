@@ -5,7 +5,6 @@ using Use_Case_Carte.Models;
 
 namespace Use_Case_Carte.Services
 {
-
     public class UserService : BaseApiService
     {
         private readonly IJSRuntime _js;
@@ -25,35 +24,34 @@ namespace Use_Case_Carte.Services
         }
 
         // Retour standardisé : ApiResponse<ProfilModel>
-        public async Task<ApiResponse<UserDto>> Save(UserDto request)
+        public async Task<ApiResponse<Guid>> Save(UserDto request)
         {
             try
             {
                 await AddAuthHeader();
-
                 await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
 
                 var response = await _http.PostAsJsonAsync("api/users", request);
+                var content = await response.Content.ReadAsStringAsync();
 
-                var result = await response.Content.ReadFromJsonAsync<ApiResponse<UserDto>>();
+                Console.WriteLine($"StatusCode={response.StatusCode} | Body={content}");
+
+                var result = System.Text.Json.JsonSerializer.Deserialize<ApiResponse<Guid>>(
+                    content,
+                    new System.Text.Json.JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = true,
+                    }
+                );
 
                 if (result == null)
                     throw new Exception("Réponse invalide du serveur.");
 
-                if (result.Success)
-                {
-                    await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
-                    return result;
-                }
-                else
-                {
-                    await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
-                    return result;
-                }
-
+                return result;
             }
             finally
             {
+                await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
                 await _safeJs.SafeJsUtilities("toggleOffLoaderAndToast");
             }
         }
@@ -157,5 +155,4 @@ namespace Use_Case_Carte.Services
             return await _storage.GetItemAsync<string>("authToken");
         }
     }
-
 }
