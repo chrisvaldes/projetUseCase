@@ -1,13 +1,13 @@
-﻿using Authorization.Domain.Entities;
-using Infrastructure.Persistence;
-using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Authorization.Domain.Entities;
+using Infrastructure.Persistence;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Users.Application.DTO;
 using Users.Application.Interfaces;
 using Users.Domain.Entities;
@@ -20,7 +20,11 @@ namespace Infrastructure.Application.Services
         private readonly RoleManager<Role> _roleManager;
         private readonly ApplicationDbContext _context;
 
-        public UserService(UserManager<ApplicationUser> userManager, ApplicationDbContext context, RoleManager<Role> roleManager)
+        public UserService(
+            UserManager<ApplicationUser> userManager,
+            ApplicationDbContext context,
+            RoleManager<Role> roleManager
+        )
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -48,7 +52,7 @@ namespace Infrastructure.Application.Services
             if (existingUserMatricule)
                 return ApiResponse<string>.Fail("Matricule déjà utilisé");
 
-            using(var transaction = await _context.Database.BeginTransactionAsync())
+            using (var transaction = await _context.Database.BeginTransactionAsync())
             {
                 var user = new ApplicationUser
                 {
@@ -60,12 +64,14 @@ namespace Infrastructure.Application.Services
                     Prenom = dto.Prenom,
                     Type = dto.Type,
                     CreatedAt = DateTime.UtcNow,
-                    IsActive = true
+                    IsActive = true,
                 };
 
                 var result = await _userManager.CreateAsync(user, dto.Password);
 
-                user = await _userManager.Users.FirstOrDefaultAsync(u => u.Matricule == dto.Matricule && u.Email == dto.Email);
+                user = await _userManager.Users.FirstOrDefaultAsync(u =>
+                    u.Matricule == dto.Matricule && u.Email == dto.Email
+                );
 
                 if (!result.Succeeded)
                     return ApiResponse<string>.Fail(
@@ -73,11 +79,15 @@ namespace Infrastructure.Application.Services
                         result.Errors.Select(e => e.Description).ToList()
                     );
 
+                foreach (var role in dto.RoleIds)
+                {
+                    Console.WriteLine($"=======>>>>>>>>>>différents role : {role}");
+                }
                 // Assign roles
                 if (dto.RoleIds.Any())
                 {
-                    var roles = _roleManager.Roles
-                        .Where(r => dto.RoleIds.Contains(r.Id.ToString()))
+                    var roles = _roleManager
+                        .Roles.Where(r => dto.RoleIds.Contains(r.Id.ToString()))
                         .Select(r => r.Name)
                         .ToList();
 
@@ -116,14 +126,17 @@ namespace Infrastructure.Application.Services
             var currentRoles = await _userManager.GetRolesAsync(user);
             await _userManager.RemoveFromRolesAsync(user, currentRoles);
 
-            var newRoles = _roleManager.Roles
-                .Where(r => dto.Roles.Contains(r.Id.ToString()))
+            var newRoles = _roleManager
+                .Roles.Where(r => dto.Roles.Contains(r.Id.ToString()))
                 .Select(r => r.Name)
                 .ToList();
 
             await _userManager.AddToRolesAsync(user, newRoles!);
 
-            return ApiResponse<string>.SuccessResponse(user.Id.ToString(), "Utilisateur mis à jour");
+            return ApiResponse<string>.SuccessResponse(
+                user.Id.ToString(),
+                "Utilisateur mis à jour"
+            );
         }
 
         public async Task<ApiResponse<UserDto>> GetByIdAsync(Guid id)
@@ -135,22 +148,22 @@ namespace Infrastructure.Application.Services
 
             var roleNames = await _userManager.GetRolesAsync(user);
 
-            var roles = _roleManager.Roles
-                .Where(r => roleNames.Contains(r.Name))
-                .ToList();
+            var roles = _roleManager.Roles.Where(r => roleNames.Contains(r.Name)).ToList();
 
-            return ApiResponse<UserDto>.SuccessResponse(new UserDto
-            {
-                Id = user.Id,
-                Matricule = user.Matricule,
-                Nom = user.Nom,
-                Prenom = user.Prenom,
-                Email = user.Email,
-                Type = user.Type,
-                IsActive = user.IsActive,
-                Roles = roles.Select(r => r.Name).ToList(),
-                RoleIds = roles.Select(r => r.Id.ToString()).ToList()
-            });
+            return ApiResponse<UserDto>.SuccessResponse(
+                new UserDto
+                {
+                    Id = user.Id,
+                    Matricule = user.Matricule,
+                    Nom = user.Nom,
+                    Prenom = user.Prenom,
+                    Email = user.Email,
+                    Type = user.Type,
+                    IsActive = user.IsActive,
+                    Roles = roles.Select(r => r.Name).ToList(),
+                    RoleIds = roles.Select(r => r.Id.ToString()).ToList(),
+                }
+            );
         }
 
         public async Task<ApiResponse<List<UserDto>>> GetAllAsync()
@@ -163,18 +176,20 @@ namespace Infrastructure.Application.Services
             {
                 var roles = await _userManager.GetRolesAsync(user);
 
-                result.Add(new UserDto
-                {
-                    Id = user.Id,
-                    Matricule = user.Matricule,
-                    Nom = user.Nom,
-                    Prenom = user.Prenom,
-                    Email = user.Email,
-                    Type = user.Type,
-                    IsActive = user.IsActive,
-                    CreatedAt = user.CreatedAt,
-                    Roles = roles.ToList()
-                });
+                result.Add(
+                    new UserDto
+                    {
+                        Id = user.Id,
+                        Matricule = user.Matricule,
+                        Nom = user.Nom,
+                        Prenom = user.Prenom,
+                        Email = user.Email,
+                        Type = user.Type,
+                        IsActive = user.IsActive,
+                        CreatedAt = user.CreatedAt,
+                        Roles = roles.ToList(),
+                    }
+                );
             }
 
             return ApiResponse<List<UserDto>>.SuccessResponse(result);
@@ -195,12 +210,18 @@ namespace Infrastructure.Application.Services
             return ApiResponse<string>.SuccessResponse(user.Id.ToString(), "Utilisateur désactivé");
         }
 
-        public async Task<ApiResponse<PagedResult<UserDto>>> GetUsersPagedAsync(string search, int page, int size)
+        public async Task<ApiResponse<PagedResult<UserDto>>> GetUsersPagedAsync(
+            string search,
+            int page,
+            int size
+        )
         {
             try
             {
-                if (page <= 0) page = 1;
-                if (size <= 0) size = 10;
+                if (page <= 0)
+                    page = 1;
+                if (size <= 0)
+                    size = 10;
 
                 var query = _userManager.Users.AsQueryable();
 
@@ -210,10 +231,10 @@ namespace Infrastructure.Application.Services
                     search = search.ToLower();
 
                     query = query.Where(u =>
-                        u.Nom.ToLower().Contains(search) ||
-                        u.Prenom!.ToLower().Contains(search) ||
-                        u.Email!.ToLower().Contains(search) ||
-                        u.Matricule.ToLower().Contains(search)
+                        u.Nom.ToLower().Contains(search)
+                        || u.Prenom!.ToLower().Contains(search)
+                        || u.Email!.ToLower().Contains(search)
+                        || u.Matricule.ToLower().Contains(search)
                     );
                 }
 
@@ -231,17 +252,19 @@ namespace Infrastructure.Application.Services
                 {
                     var roles = await _userManager.GetRolesAsync(user);
 
-                    result.Add(new UserDto
-                    {
-                        Id = user.Id,
-                        Matricule = user.Matricule,
-                        Nom = user.Nom,
-                        Prenom = user.Prenom,
-                        Email = user.Email,
-                        Type = user.Type,
-                        IsActive = user.IsActive,
-                        Roles = roles.ToList()
-                    });
+                    result.Add(
+                        new UserDto
+                        {
+                            Id = user.Id,
+                            Matricule = user.Matricule,
+                            Nom = user.Nom,
+                            Prenom = user.Prenom,
+                            Email = user.Email,
+                            Type = user.Type,
+                            IsActive = user.IsActive,
+                            Roles = roles.ToList(),
+                        }
+                    );
                 }
 
                 var paged = new PagedResult<UserDto>
@@ -249,7 +272,7 @@ namespace Infrastructure.Application.Services
                     Items = result,
                     TotalCount = totalCount,
                     Page = page,
-                    Size = size
+                    Size = size,
                 };
 
                 return ApiResponse<PagedResult<UserDto>>.SuccessResponse(
@@ -268,18 +291,19 @@ namespace Infrastructure.Application.Services
 
         public async Task<ApiResponse<List<SearchUserDto>>> Search(string term)
         {
-            var result = await _context.Users
-                    .Where(user =>
-                        EF.Functions.ILike(user.Nom, $"%{term}%") ||
-                        EF.Functions.ILike(user.Prenom, $"%{term}%") ||
-                        EF.Functions.ILike(user.Matricule, $"%{term}%"))
-                    .Select(user => new SearchUserDto
-                    {
-                        id = user.Id,
-                        text = user.Nom + " " + user.Prenom
-                    })
-                    .Take(20)
-                    .ToListAsync();
+            var result = await _context
+                .Users.Where(user =>
+                    EF.Functions.ILike(user.Nom, $"%{term}%")
+                    || EF.Functions.ILike(user.Prenom, $"%{term}%")
+                    || EF.Functions.ILike(user.Matricule, $"%{term}%")
+                )
+                .Select(user => new SearchUserDto
+                {
+                    id = user.Id,
+                    text = user.Nom + " " + user.Prenom,
+                })
+                .Take(20)
+                .ToListAsync();
 
             return ApiResponse<List<SearchUserDto>>.SuccessResponse(result);
         }

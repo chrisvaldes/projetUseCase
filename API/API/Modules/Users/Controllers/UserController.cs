@@ -1,11 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading.Tasks;
 using Users.Application.DTO;
 using Users.Application.Interfaces;
 
@@ -31,11 +25,32 @@ namespace Users.Controllers
         //[Authorize(Policy = "VOIR_USER")]
         public async Task<IActionResult> GetById(Guid id) => Ok(await _service.GetByIdAsync(id));
 
+        // [HttpPost]
+        // //[Authorize(Policy = "CREER_USER")]
+        // public async Task<IActionResult> Create(CreateUserDto dto)
+        // {
+        //     var response = await _service.CreateAsync(dto);
+        //     if (!response.Success)
+        //         return BadRequest(response);
+
+        //     return Ok(response);
+        // }
+
         [HttpPost]
-        //[Authorize(Policy = "CREER_USER")]
         public async Task<IActionResult> Create(CreateUserDto dto)
         {
+            Console.WriteLine($"Nombre de rôles : {dto.RoleIds?.Count}");
+
+            if (dto.RoleIds != null)
+            {
+                foreach (var role in dto.RoleIds)
+                {
+                    Console.WriteLine(role);
+                }
+            }
+
             var response = await _service.CreateAsync(dto);
+
             if (!response.Success)
                 return BadRequest(response);
 
