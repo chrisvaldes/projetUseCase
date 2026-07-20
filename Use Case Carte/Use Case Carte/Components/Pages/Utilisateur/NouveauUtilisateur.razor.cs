@@ -7,7 +7,7 @@ using Use_Case_Carte.Services;
 
 namespace Use_Case_Carte.Components.Pages.Utilisateur;
 
-public partial class NouveauUtilisateur : ComponentBase, IDisposable
+public partial class NouveauUtilisateur : ComponentBase
 {
     [Inject]
     private NavigationService NavigationService { get; set; } = default!;
@@ -92,8 +92,5 @@ public partial class NouveauUtilisateur : ComponentBase, IDisposable
         await Task.CompletedTask;
     }
 
-    public void Dispose()
-    {
-        throw new NotImplementedException();
-    }
+ 
 }
