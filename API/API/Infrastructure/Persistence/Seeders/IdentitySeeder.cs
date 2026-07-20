@@ -14,12 +14,12 @@ namespace Infrastructure.Persistence.Seeders
     public class IdentitySeeder
     {
         private readonly UserManager<ApplicationUser> _userManager;
-        private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+        private readonly RoleManager<Role> _roleManager;
         private readonly ApplicationDbContext _context;
         public IdentitySeeder(
             UserManager<ApplicationUser> userManager,
             ApplicationDbContext context,
-            RoleManager<IdentityRole<Guid>> roleManager)
+            RoleManager<Role> roleManager)
         {
             _userManager = userManager;
             _roleManager = roleManager;
@@ -41,7 +41,7 @@ namespace Infrastructure.Persistence.Seeders
 
             if (role == null)
             {
-                role = new IdentityRole<Guid>
+                role = new Role
                 {
                     Name = adminRoleName,
                     NormalizedName = adminRoleName.ToUpper()
@@ -100,7 +100,7 @@ namespace Infrastructure.Persistence.Seeders
             }
         }
 
-        private async Task AssignAllPermissionsToRole(IdentityRole<Guid> role)
+        private async Task AssignAllPermissionsToRole(Role role)
         {
             var permissions = await _context.Set<Permission>()
                 .Select(p => p.Code)

@@ -11,5 +11,15 @@
     "C:\\Users\\Admin_dev\\.nuget\\packages\\microsoft.aspnetcore.components.webassembly.authentication\\6.0.5\\microsoft.aspnetcore.components.webassembly.authentication.6.0.5.nupkg.sha512",
     "C:\\Users\\Admin_dev\\.nuget\\packages\\mudblazor\\9.7.0\\mudblazor.9.7.0.nupkg.sha512"
   ],
-  "logs": []
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "message": "Une erreur s’est produite lors de l’obtention des données de vulnérabilité du package\u00A0: Impossible de charger l'index de service pour la source https://api.nuget.org/v3/index.json.",
+      "projectPath": "C:\\Users\\Admin_dev\\source\\repos\\projet\\projetCarteusecase\\source\\repos\\projetUseCase\\Use Case Carte\\Use Case Carte\\Frontend.csproj",
+      "warningLevel": 1,
+      "filePath": "C:\\Users\\Admin_dev\\source\\repos\\projet\\projetCarteusecase\\source\\repos\\projetUseCase\\Use Case Carte\\Use Case Carte\\Frontend.csproj",
+      "targetGraphs": []
+    }
+  ]
 }

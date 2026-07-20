@@ -12,6 +12,10 @@ public static class Route
     public const string DetailFacturation = "MAG/detail-facturation";
     public const string SyntheseMag = "MAG/Synthese";
     public const string Roles = "MAG/roles";
+    public const string CreateRoles = "/MAG/roles/creer";
+    public const string Login = "/";
     public const string Permissions = "MAG/permissions";
     public const string NouvellePermission = "MAG/nouvelle-permission";
+    public const string Utilisateurs = "MAG/utilisateurs";
+    public const string NouveauUtilisateur = "MAG/nouveau-utilisateur";
 }

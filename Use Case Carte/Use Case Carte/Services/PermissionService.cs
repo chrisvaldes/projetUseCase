@@ -59,5 +59,23 @@ namespace Use_Case_Carte.Services
                 await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
             }
         }
+
+        public async Task<List<PermissionTreeDto>> GetAllAsync()
+        {
+            await AddAuthHeader(); // si AddAuthHeader retourne le token, sinon adapte
+
+            Console.WriteLine($"---------->> Token utilisé pour GetAllAsync (Permission): ");
+
+            try
+            {
+                var result = await _http.GetFromJsonAsync<List<PermissionTreeDto>>("api/permission");
+                return result ?? new List<PermissionTreeDto>();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"---------->> Erreur GetAllAsync (Permission): {ex.Message}");
+                return new List<PermissionTreeDto>();
+            }
+        }
     }
 }

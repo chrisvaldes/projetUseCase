@@ -1,5 +1,7 @@
 @page "/MAG/creation-profil"
+
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
+<Toast />
 <div>
     <SharedHeader PreviousPage="Liste des Profils" CurrentPage="Creation Profil" OnCancel="OnCancel" />
 </div>
@@ -10,7 +12,7 @@
                 <div class="card-title">Nouveau Utilisateur</div>
             </div>
             <div class="card-body">
-                <EditForm Model="@profilModel" FormName="OnSaveProfil">
+                <EditForm Model="@profilModel" FormName="OnSaveProfil" >
                     <DataAnnotationsValidator />
                     <ValidationSummary />
                     <div class="row gy-3">

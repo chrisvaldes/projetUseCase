@@ -1,3 +1,4 @@
+
 namespace API.Constantes
 {
     public static class CardConstants
