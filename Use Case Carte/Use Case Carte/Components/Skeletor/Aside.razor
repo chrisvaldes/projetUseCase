@@ -1,4 +1,4 @@
-﻿ 
+﻿
 
 <!-- Start::main-sidebar-header -->
 <div class="main-sidebar-header">
@@ -34,7 +34,26 @@
                             </div>
                             <ul class="main-menu"
                                 style="display: block; margin-left: 0px; margin-right: 0px; margin-top : 1rem">
-                                @if (HasPermission("ADMIN"))
+                                @if (Permissions.Any())
+                                {
+                                    <div class="alert alert-info">
+                                        <strong>Permissions :</strong>
+
+                                        <ul>
+                                            @foreach (var permission in Permissions)
+                                            {
+                                                <li>@permission</li>
+                                            }
+                                        </ul>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="alert alert-warning">
+                                        Aucune permission trouvée.
+                                    </div>
+                                }
+                                @if (HasPermission("Create"))
                                 {
                                     <li class="slide__category">
                                         <span class="category-name">

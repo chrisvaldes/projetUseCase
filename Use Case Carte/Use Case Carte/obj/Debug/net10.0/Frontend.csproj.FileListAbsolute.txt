@@ -957,7 +957,6 @@ C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case 
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\i7g7hxkjoi-{0}-5ipweew5fc-5ipweew5fc.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\020zruk11b-{0}-lqokgtcwjg-lqokgtcwjg.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\qtzj7zwvgd-{0}-amr35g8q49-amr35g8q49.gz
-C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\q8gte061rh-{0}-quzonsrnjk-quzonsrnjk.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\rrv9fyvn3f-{0}-2t8wa0wkhj-2t8wa0wkhj.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\x1cxd8yeqt-{0}-l8931volm9-l8931volm9.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\wtzu1sndnj-{0}-q6kq9srefm-q6kq9srefm.gz
@@ -1089,3 +1088,4 @@ C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case 
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\y1i3dz01pn-{0}-4xfrsz8f9o-4xfrsz8f9o.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\8jh60rqvkv-{0}-wiixqf1hpn-wiixqf1hpn.gz
 C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\lkvzsgykq2-{0}-bn7genwslm-bn7genwslm.gz
+C:\Users\Valdes FEUTSEU\Desktop\js\cartes\projetUseCase\Use Case Carte\Use Case Carte\obj\Debug\net10.0\compressed\q8gte061rh-{0}-92mjpc7j9g-92mjpc7j9g.gz
