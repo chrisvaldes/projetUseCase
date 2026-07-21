@@ -58,18 +58,8 @@ public class PermissionServiceAuth
 
 
     public async Task<HashSet<string>> GetPermissions()
-{
-    Console.WriteLine("========== CLAIMS JWT 1==========");
-
+{ 
     var state = await _auth.GetAuthenticationStateAsync();
-
-    Console.WriteLine("========== CLAIMS JWT ==========");
-
-    foreach(var claim in state.User.Claims)
-    {
-        Console.WriteLine($"{claim.Type} => {claim.Value}");
-    }
-
 
     var permissions = state.User.Claims
         .Where(c => c.Type == "permission")

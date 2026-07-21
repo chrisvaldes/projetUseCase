@@ -48,16 +48,8 @@ public partial class TraiterMag : ComponentBase
 
             if (!resultRequest.Success)
             {
-                // Afficher le message principal
-                var message = resultRequest.Message ?? "Erreur de validation";
-
-                // Ajouter les erreurs détaillées champ par champ
-                if (resultRequest.Errors != null && resultRequest.Errors.Count > 0)
-                {
-                    message += "\n" + string.Join("\n", resultRequest.Errors);
-                }
-
-                ToastService.ShowError(message);
+                 
+                ToastService.ShowError(resultRequest.Message);
 
                 // Rester sur la page pour que l'utilisateur corrige
                 return;

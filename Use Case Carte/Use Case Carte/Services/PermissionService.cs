@@ -33,8 +33,7 @@ namespace Use_Case_Carte.Services
 
             try
             {
-                _logger.LogInformation($"==========>>>>>>>>>>>>> data : {permission.Code}");
-
+       
                 await _js.InvokeVoidAsync("toggleOnLoaderAndToast");
 
                 var response = await _http.PostAsJsonAsync("api/Permission", permission);
@@ -62,9 +61,7 @@ namespace Use_Case_Carte.Services
 
         public async Task<List<PermissionTreeDto>> GetAllAsync()
         {
-            await AddAuthHeader(); // si AddAuthHeader retourne le token, sinon adapte
-
-            Console.WriteLine($"---------->> Token utilisé pour GetAllAsync (Permission): ");
+            await AddAuthHeader(); // si AddAuthHeader retourne le token, sinon adapte 
 
             try
             {
@@ -72,8 +69,7 @@ namespace Use_Case_Carte.Services
                 return result ?? new List<PermissionTreeDto>();
             }
             catch (Exception ex)
-            {
-                Console.WriteLine($"---------->> Erreur GetAllAsync (Permission): {ex.Message}");
+            { 
                 return new List<PermissionTreeDto>();
             }
         }
