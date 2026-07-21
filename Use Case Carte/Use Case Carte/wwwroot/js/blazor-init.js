@@ -86,12 +86,12 @@ window.reinitUi = function () {
         });
 
         // ==========================================
-        // 4. RÉ-APPLIQUER les classes actives
-        //    et restaurer l'état du menu
+        // 4. NE PAS appeler setNavActive() ici !
+        //    Blazor gère déjà les classes 'active'
+        //    via NavLink.ActiveClass. setNavActive()
+        //    écrase ces classes et les onglets actifs
+        //    disparaissent.
         // ==========================================
-        if (typeof setNavActive === 'function') {
-            setNavActive();
-        }
 
         console.log('[reinitUi] Sidebar réinitialisée avec succès');
     } catch (e) {

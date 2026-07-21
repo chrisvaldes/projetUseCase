@@ -1,4 +1,6 @@
 using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 using Blazored.LocalStorage;
 using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.JSInterop;
@@ -7,10 +9,27 @@ using Use_Case_Carte.Models;
 
 namespace Use_Case_Carte.Services
 {
+    /// <summary>
+    /// Modèle pour désérialiser la réponse d'erreur de validation ASP.NET (ValidationProblemDetails)
+    /// </summary>
+    public class ValidationErrorResponse
+    {
+        public string Type { get; set; } = "";
+        public string Title { get; set; } = "";
+        public int Status { get; set; }
+        public Dictionary<string, string[]> Errors { get; set; } = new();
+        public string TraceId { get; set; } = "";
+    }
+
     public class NouveauMagService : BaseApiService
     {
         private SafeJs _safeJs;
         private readonly IJSRuntime _js;
+
+        private static readonly JsonSerializerOptions _jsonOptions = new()
+        {
+            PropertyNameCaseInsensitive = true
+        };
 
         public NouveauMagService(
             SafeJs safeJs,
@@ -95,7 +114,46 @@ namespace Use_Case_Carte.Services
                 if (!response.IsSuccessStatusCode)
                 {
                     await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
-                    return null;
+
+                    // Essayer de désérialiser la réponse d'erreur de validation ASP.NET
+                    try
+                    {
+                        var validationError = JsonSerializer.Deserialize<ValidationErrorResponse>(
+                            content,
+                            _jsonOptions
+                        );
+
+                        if (validationError?.Errors != null && validationError.Errors.Count > 0)
+                        {
+                            var messages = new List<string>();
+                            foreach (var kvp in validationError.Errors)
+                            {
+                                foreach (var err in kvp.Value)
+                                {
+                                    messages.Add($"{kvp.Key} : {err}");
+                                }
+                            }
+
+                            return new ApiResponse<InputModel>
+                            {
+                                Success = false,
+                                Message = validationError.Title
+                                    ?? "Erreur de validation",
+                                Errors = messages
+                            };
+                        }
+                    }
+                    catch
+                    {
+                        // Si la désérialisation échoue, on retourne une erreur générique
+                    }
+
+                    return new ApiResponse<InputModel>
+                    {
+                        Success = false,
+                        Message = $"Erreur HTTP {(int)response.StatusCode} : {response.ReasonPhrase}",
+                        Errors = new List<string> { content }
+                    };
                 }
 
                 var result = await response.Content.ReadFromJsonAsync<ApiResponse<InputModel>>();
@@ -106,7 +164,12 @@ namespace Use_Case_Carte.Services
             {
                 Console.WriteLine(ex.Message);
                 await _js.InvokeVoidAsync("toggleOffLoaderAndToast");
-                return null;
+                return new ApiResponse<InputModel>
+                {
+                    Success = false,
+                    Message = "Erreur inattendue : " + ex.Message,
+                    Errors = new List<string> { ex.ToString() }
+                };
             }
         }
     }
