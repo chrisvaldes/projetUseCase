@@ -39,32 +39,41 @@ public partial class TraiterMag : ComponentBase
         try
         {
             var resultRequest = await NouveauMagService.NouveauMag(InputModel);
-            if (resultRequest == null || !resultRequest.Success)
+
+            if (resultRequest == null)
             {
-                // TODO: afficher un toast d'erreur avec resultRequest?.Message
-                ToastService.ShowError(resultRequest!.Message);
-
-                // 2. Laisser le temps au toast de s'afficher/être visible
-                await Task.Delay(1500);
-
-                NavigationService.GoGestionMAG();
-
+                ToastService.ShowError("Aucune réponse du serveur");
                 return;
             }
-            else
-            {
-                // TODO: afficher un toast d'erreur avec resultRequest?.Message
-                ToastService.ShowSuccess(resultRequest!.Message);
 
-                // 2. Laisser le temps au toast de s'afficher/être visible
-                await Task.Delay(1500);
-                // succès -> navigation ou notification
+            if (!resultRequest.Success)
+            {
+                // Afficher le message principal
+                var message = resultRequest.Message ?? "Erreur de validation";
+
+                // Ajouter les erreurs détaillées champ par champ
+                if (resultRequest.Errors != null && resultRequest.Errors.Count > 0)
+                {
+                    message += "\n" + string.Join("\n", resultRequest.Errors);
+                }
+
+                ToastService.ShowError(message);
+
+                // Rester sur la page pour que l'utilisateur corrige
+                return;
             }
 
+            // Succès
+            ToastService.ShowSuccess(resultRequest.Message ?? "Traitement lancé avec succès");
+
+            await Task.Delay(1500);
+
+            NavigationService.GoGestionMAG();
         }
         catch (Exception ex)
         {
             Console.WriteLine("Erreur inattendue : " + ex.Message);
+            ToastService.ShowError("Erreur inattendue : " + ex.Message);
         }
     }
 

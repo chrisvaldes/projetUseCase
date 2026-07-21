@@ -36,9 +36,7 @@ namespace API.Controllers
         [RequestSizeLimit(500 * 1024 * 1024)]
         [RequestFormLimits(MultipartBodyLengthLimit = 500 * 1024 * 1024)]
         public async Task<IActionResult> Nouveau([FromForm] InputModel inputModel)
-        {
-            _logger.LogInformation($"========>>>>>>>>type mag : {inputModel.TypeMag} ");
-            _logger.LogInformation($"========>>>>>>>>type mag : {inputModel.StartPeriod} ");
+        { 
             //Vérification des paramètres obligatoires
             if (
                 inputModel.Apprint == null

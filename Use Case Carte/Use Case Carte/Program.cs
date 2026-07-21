@@ -31,6 +31,7 @@ builder.Services.AddScoped<PermissionService>();
 builder.Services.AddScoped<PermissionService>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<UserService>(); 
+builder.Services.AddScoped<PermissionServiceAuth>(); 
 builder.Services.AddMudServices();
 builder.Services.AddScoped(sp => new HttpClient
 {

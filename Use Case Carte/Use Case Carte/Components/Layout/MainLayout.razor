@@ -21,7 +21,7 @@
 
     <!-- Start::app-sidebar -->
     <aside class="app-sidebar sticky sticky-pin" id="sidebar">
-        <Aside />
+        <Aside @rendermode="@(new InteractiveServerRenderMode(prerender:false))"/>
     </aside>
     <!-- End::app-sidebar -->
 

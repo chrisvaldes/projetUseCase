@@ -90,20 +90,5 @@ public class NavigationService
         _navigation.NavigateTo(Route.NouvellePermission);
     }
 
-    //public void GoCreateCustomer()
-    //{
-    //    _navigation.NavigateTo(Route.CreateCustomer);
-    //}
-
-    //public void GoCustomer(int id)
-    //{
-    //    _navigation.NavigateTo(
-    //        string.Format(Route.CustomerDetails, id));
-    //}
-
-    //public void GoEditCustomer(int id)
-    //{
-    //    _navigation.NavigateTo(
-    //        string.Format(Route.EditCustomer, id));
-    //}
+    
 }
