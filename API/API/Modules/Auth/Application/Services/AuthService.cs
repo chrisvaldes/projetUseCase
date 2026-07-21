@@ -53,10 +53,6 @@ namespace Auth.Application.Services
         {
             var user = _userManager.Users.FirstOrDefault(u => u.Matricule == request.Username);
 
-            Console.WriteLine(
-                $"============>>>>>>>>>>>> USER: {user.UserName}, Email: {user.Email}, Matricule: {user.Matricule}"
-            );
-
             var httpContext = _httpContextAccessor.HttpContext;
 
             var ip = httpContext?.Connection?.RemoteIpAddress?.ToString();
@@ -65,10 +61,7 @@ namespace Auth.Application.Services
             // Si aucun utilisateur n'existe
             if (user == null)
             {
-                Console.WriteLine(
-                    $"============>>>>>>>>>>>> USER (null) : {user.UserName}, Email: {user.Email}, Matricule: {user.Matricule}"
-                );
-
+    
                 // On sauvegarde les tentatives de connexions
                 await _trackingService.TrackAsync(
                     new LoginHistory
@@ -92,10 +85,7 @@ namespace Auth.Application.Services
             // Si le compte de l'utilisateur est désactivé
             if (!user.IsActive)
             {
-                Console.WriteLine(
-                    $"============>>>>>>>>>>>> USER (inactif) : {user.UserName}, Email: {user.Email}, Matricule: {user.Matricule}"
-                );
-
+      
                 // On sauvegarde la tentative de connexion
                 await _trackingService.TrackAsync(
                     new LoginHistory
@@ -144,10 +134,7 @@ namespace Auth.Application.Services
                 expires: expiration,
                 signingCredentials: creds
             );
-
-            Console.WriteLine(
-                $"============>>>>>>>>>>>> USER (ldap) : {user.UserName}, Email: {user.Email}, Matricule: {user.Matricule}"
-            );
+ 
 
             // On récupère le mode d'authentification
             var authMode = await _settingService.GetValueAsync(SettingKeys.AUTH_MODE);

@@ -78,11 +78,7 @@ namespace Infrastructure.Application.Services
                         "Erreur création utilisateur",
                         result.Errors.Select(e => e.Description).ToList()
                     );
-
-                foreach (var role in dto.RoleIds)
-                {
-                    Console.WriteLine($"=======>>>>>>>>>>différents role : {role}");
-                }
+ 
                 // Assign roles
                 if (dto.RoleIds.Any())
                 {

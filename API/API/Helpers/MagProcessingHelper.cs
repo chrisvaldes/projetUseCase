@@ -174,7 +174,7 @@ namespace SYSGES_MAGs.Helpers
                     _logger.LogError(ex, "Erreur ligne APPRINT {ligne}", ligne);
 
                     throw new Exception(
-                        $"Erreur lecture fichier APPRINT ligne {ligne}: {ex.Message}"
+                        $"Erreur lecture fichier APPRINT ligne "
                     );
                 }
             }
@@ -2093,10 +2093,10 @@ namespace SYSGES_MAGs.Helpers
                 }
                 return comptesCtx;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _logger.LogError("Fichier de Comptes en comptentieux invalide");
-                throw new Exception("Fichier de Comptes en comptentieux invalide" + ex.Message);
+                throw new Exception("Fichier de Comptes en comptentieux invalide" );
             }
         }
 
@@ -2147,10 +2147,10 @@ namespace SYSGES_MAGs.Helpers
                 }
                 return comptesOuvert;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _logger.LogError("Fichier de Comptes Ouvert invalide");
-                throw new Exception("Fichier de Comptes Ouvert invalide" + ex.Message);
+                throw new Exception("Fichier de Comptes Ouvert invalide");
             }
         }
 
@@ -2202,10 +2202,10 @@ namespace SYSGES_MAGs.Helpers
                 }
                 return dateDsouPackEchu;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _logger.LogError("Fichier de Comptes Ouvert invalide");
-                throw new Exception("Fichier de Comptes Ouvert invalide" + ex.Message);
+                throw new Exception("Fichier de Comptes Ouvert invalide" );
             }
         }
 
@@ -2267,10 +2267,9 @@ namespace SYSGES_MAGs.Helpers
 
                 return result;
             }
-            catch (Exception ex)
-            {
-                _logger.LogError("Fichier de Comptes redevance invalide");
-                throw new Exception("Fichier de Comptes redevance invalide" + ex.Message);
+            catch (Exception)
+            { 
+                throw new Exception("Fichier de Comptes redevance invalide" );
             }
         }
 
@@ -2320,10 +2319,10 @@ namespace SYSGES_MAGs.Helpers
 
                 return packActif;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 _logger.LogError("Fichier de Packages Actifs invalide");
-                throw new Exception("Fichier de Packages Actifs invalide" + ex.Message);
+                throw new Exception("Fichier de Packages Actifs invalide" );
             }
         }
 

@@ -28,12 +28,7 @@ namespace Infrastructure.Persistence.Seeders
 
         public async Task SeedAsync()
         {
-            var adminRoleName = "ADMIN";
-
-
-            Console.WriteLine("============>>>>>>>>>>>>USER CREATED"); 
-
-
+            var adminRoleName = "ADMIN"; 
             // ========================
             // ROLE
             // ========================

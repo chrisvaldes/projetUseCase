@@ -65,18 +65,12 @@ namespace API.Controllers
             try
             {
                 // Appel du service async correctement
-                var result = await _magProcessingService.ProcessTxtExcelFiles(inputModel);
-                _logger.LogInformation($"========>>>>>>>>type mag : {inputModel.TypeMag} ");
+                var result = await _magProcessingService.ProcessTxtExcelFiles(inputModel); 
                 if (!result.Success)
-                {
-                    _logger.LogWarning(
-                        "Erreur lors du traitement des fichiers : " + result.Message
-                    );
+                { 
                     return Ok(result);
                 }
-
-                _logger.LogInformation("Tous les fichiers ont été traités avec succès");
-
+ 
                 return Ok(result);
             }
             catch (Exception ex)

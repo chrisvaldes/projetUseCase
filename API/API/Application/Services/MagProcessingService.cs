@@ -46,33 +46,304 @@ namespace API.Application.Services
             _magProcessingHelper = magProcessingHelper;
         }
 
+        // public async Task<ApiResponse<bool>> ProcessTxtExcelFiles(InputModel inputModel)
+        // {
+        //     Dictionary<string, ComptesActifsResponse> comptesActifs =
+        //         new Dictionary<string, ComptesActifsResponse>();
+        //     //Dictionary<string, ComptesOuvertsResponse> comptesOuverts =
+        //     //    new Dictionary<string, ComptesOuvertsResponse>();
+        //     List<ComptesOuvert> comptesOuverts;
+        //     Dictionary<string, ComptesCtxResponse> comptesCtx =
+        //         new Dictionary<string, ComptesCtxResponse>();
+        //     Dictionary<string, DateDsouPackEchuResponse> dateDersouPackEchus =
+        //         new Dictionary<string, DateDsouPackEchuResponse>();
+        //     Dictionary<string, List<CompteDebiteRedevCarte>> histCptDebiteRedevCartes =
+        //         new Dictionary<string, List<CompteDebiteRedevCarte>>();
+        //     Dictionary<string, PackagesActifsResponse> packActifs =
+        //         new Dictionary<string, PackagesActifsResponse>();
+
+        //     //string numeroCompte = "";
+
+        //     List<Bkmvti> bkmvtis = new List<Bkmvti>();
+
+        //     // Variable "apprints" qui doit contenir chaque ligne du fichier apprint
+        //     List<Apprint> apprints = new List<Apprint>();
+        //     Dictionary<string, List<Apprint>> clientPlusUneCarte = new();
+        //     // Variable qui va contenir la liste des bkmvtis
+        //     DateTimeOffset dateDebutExecution = DateTimeOffset.UtcNow;
+        //     // Variable qui va compter le nombre de ligne de l'apprint.
+        //     long ligne = 0;
+
+        //     try
+        //     {
+        //         // La période d'étude doit être au minimum 1 mois, et la période de fin d'étude doit être > au début d'étude
+        //         var dureePeriode = _magProcessingHelper.NombreMois(
+        //             inputModel.StartPeriod,
+        //             inputModel.EndPeriod
+        //         );
+
+        //         if ((inputModel.StartPeriod > inputModel.EndPeriod) || (dureePeriode < 1))
+        //         {
+        //             return ApiResponse<bool>.Fail(
+        //                 "La période de début doit être inférieur à la période de fin, et la différence >= 1"
+        //             );
+        //         }
+
+        //         if (inputModel.EndPeriod > DateTime.Today)
+        //         {
+        //             return ApiResponse<bool>.Fail(
+        //                 "La date de la période de fin d'étude ne peut être supérieur à la date du jour."
+        //             );
+        //         }
+
+        //         // Vérifier si le manque à gagner n'a pas encore été récupérer sur la période.
+        //         TypeMag? existTypeMag = await _typeMagRepository.IsTypeMagExist(
+        //             inputModel.StartPeriod
+        //         );
+
+        //         // si oui, retourné un message informantif
+        //         if (existTypeMag != null)
+        //         {
+        //             return ApiResponse<bool>.Fail(
+        //                 "Manque à gagner déjà récupérer sur la période."
+        //             );
+        //         }
+
+        //         // si le mag n'a pas encore été récupérer, continuer le traitement.
+
+        //         // lecture du fichier apprint
+        //         using var reader = new StreamReader(inputModel.Apprint.OpenReadStream());
+
+        //         //lecture des différents fichiers excel contenant les requetes des bases de données
+        //         using var compteOuvert = _magProcessingHelper.ReadFile(inputModel.OpenAccount);
+        //         using var compteActif = _magProcessingHelper.ReadFile(inputModel.ActiveAccount);
+        //         using var dateDerniereSouPackEchu = _magProcessingHelper.ReadFile(
+        //             inputModel.DateLastSouPackEchu
+        //         );
+        //         using var packageActif = _magProcessingHelper.ReadFile(inputModel.ActivePackage);
+        //         using var compteCtx = _magProcessingHelper.ReadFile(inputModel.CtxAccount);
+        //         using var histCptDebiteParRedevCarte = _magProcessingHelper.ReadFile(
+        //             inputModel.AccountHisDebiteByRedevCard
+        //         );
+
+        //         //lecture de la première feuille de calcule excel
+        //         var worksheetCompteActif = compteActif.Workbook.Worksheets[0];
+        //         comptesActifs = _magProcessingHelper.GetComptesActifs(worksheetCompteActif);
+
+        //         var worksheetCompteCtx = compteCtx.Workbook.Worksheets[0];
+        //         comptesCtx = _magProcessingHelper.GetComptesCtx(worksheetCompteCtx);
+
+        //         var worksheetCompteOuvert = compteOuvert.Workbook.Worksheets[0];
+        //         comptesOuverts = _magProcessingHelper.GetComptesOuvert(worksheetCompteOuvert);
+
+        //         var worksheetDsouPackEchu = dateDerniereSouPackEchu.Workbook.Worksheets[0];
+        //         dateDersouPackEchus = _magProcessingHelper.GetDsouPackEchu(worksheetDsouPackEchu);
+
+        //         var worksheetHistCptDebiteRedev = histCptDebiteParRedevCarte.Workbook.Worksheets[0];
+        //         histCptDebiteRedevCartes = _magProcessingHelper.GetHistCptDebiteRedevCarte(
+        //             worksheetHistCptDebiteRedev
+        //         );
+
+        //         var worksheetPackActif = packageActif.Workbook.Worksheets[0];
+        //         packActifs = _magProcessingHelper.GetPackagesActifs(worksheetPackActif);
+
+        //         // Conversion des périodes d'étude
+        //         if (
+        //             DateTime.TryParse(inputModel.StartPeriod.ToString(), out DateTime startPer)
+        //             && DateTime.TryParse(inputModel.EndPeriod.ToString(), out DateTime endPer)
+        //         )
+        //         {
+        //             using var transaction = await _dbContext.Database.BeginTransactionAsync();
+
+        //             try
+        //             {
+        //                 //sauvegarde du type de manque à gagner effectué
+        //                 TypeMag typeMagResult = await _typeMagRepository.SaveTypeMagAsync(
+        //                     new TypeMag
+        //                     {
+        //                         Description =
+        //                             "cap_"
+        //                             + startPer.Day.ToString("D2")
+        //                             + "_"
+        //                             + startPer.ToString("MMM", new CultureInfo("fr-FR"))
+        //                             + "_"
+        //                             + startPer.Year
+        //                             + "_"
+        //                             + endPer.Day.ToString("D2")
+        //                             + "_"
+        //                             + endPer.ToString("MMM", new CultureInfo("fr-FR"))
+        //                             + "_"
+        //                             + endPer.Year,
+        //                         TypeMags = inputModel.TypeMag,
+        //                         Email =
+        //                             _httpContextAccessor.HttpContext?.User?.Identity?.Name // l'interface IHttpContextAccessor permet d'avoir l'utilisateur connecter à un instant donné
+        //                             ?? "unknown",
+        //                         PeriodeDebut = inputModel.StartPeriod,
+        //                         PeriodeFin = inputModel.EndPeriod,
+        //                     }
+        //                 );
+
+        //                 // ligne d'en-tête
+        //                 string header = await reader.ReadLineAsync() ?? string.Empty;
+
+        //                 // ligne 1 => en-tête du fichier apprint
+        //                 ligne++;
+
+        //                 // comptes & compteDebite permettent de recupérer la liste des comptes pour faire une sauvegarde en parallèle
+        //                 // pendant le traitement du fichier apprint.
+        //                 List<ComptesOuvert> comptes = new List<ComptesOuvert>();
+
+        //                 foreach (var c in comptesOuverts)
+        //                 {
+        //                     var compte = new ComptesOuvert
+        //                     {
+        //                         Id = c.Id == Guid.Empty ? Guid.NewGuid() : c.Id,
+        //                         Ncp = c.Ncp,
+        //                         Cfe = c.Cfe,
+        //                         Clc = c.Clc,
+        //                         Cha = c.Cha,
+        //                         Age = c.Age,
+        //                         Inti = c.Inti,
+        //                     };
+        //                     comptes.Add(compte);
+        //                 }
+
+        //                 List<CompteDebiteRedevCarte> comptesDebite = new();
+
+        //                 foreach (var item in histCptDebiteRedevCartes)
+        //                 {
+        //                     foreach (var cd in item.Value)
+        //                     {
+        //                         var compteDeb = new CompteDebiteRedevCarte
+        //                         {
+        //                             Id = Guid.NewGuid(),
+        //                             Ncp = cd.Ncp,
+        //                             Mon = cd.Mon,
+        //                             Dco = cd.Dco,
+        //                         };
+
+        //                         comptesDebite.Add(compteDeb);
+        //                     }
+        //                 }
+
+        //                 // appel de la fonction "callFuncAsync" pour un traitement asynchrone.
+        //                 clientPlusUneCarte = await _magProcessingHelper.callFuncAsync(
+        //                     comptes,
+        //                     reader,
+        //                     ligne,
+        //                     comptesCtx,
+        //                     comptesOuverts,
+        //                     clientPlusUneCarte,
+        //                     comptesDebite
+        //                 );
+
+        //                 // Une fois l'ensemble du fichier apprint parcouru, parcourir les clients ayant plus d'une carte.
+        //                 await _magProcessingHelper.MapClientPlusUneCarte(
+        //                     clientPlusUneCarte,
+        //                     dateDersouPackEchus,
+        //                     packActifs,
+        //                     startPer,
+        //                     endPer,
+        //                     typeMagResult,
+        //                     bkmvtis
+        //                 );
+
+        //                 var comptesOuvertsEntities = comptesOuverts
+        //                     .Select(c => new ComptesOuvert
+        //                     {
+        //                         Id = c.Id == Guid.Empty ? Guid.NewGuid() : c.Id,
+        //                         Ncp = c.Ncp,
+        //                         Cfe = c.Cfe,
+        //                         Clc = c.Clc,
+        //                         Cha = c.Cha,
+        //                         Age = c.Age,
+        //                         Inti = c.Inti,
+        //                     })
+        //                     .ToList();
+
+        //                 var comptesDebiteEntities = histCptDebiteRedevCartes
+        //                     .Values.SelectMany(x => x)
+        //                     .Select(c => new CompteDebiteRedevCarte
+        //                     {
+        //                         Id = Guid.NewGuid(),
+        //                         Ncp = c.Ncp,
+        //                         Mon = c.Mon,
+        //                         Dco = c.Dco,
+        //                     })
+        //                     .ToList();
+
+        //                 try
+        //                 {
+        //                     await _bkmvtiRepository.SaveBkmvtiAsync(bkmvtis);
+
+        //                     await transaction.CommitAsync();
+        //                 }
+        //                 catch (Exception ex)
+        //                 {
+        //                     await transaction.RollbackAsync();
+
+        //                     _logger.LogError(ex, "Erreur sauvegarde");
+
+        //                     throw;
+        //                 }
+
+        //                 //await _emailService.SendEmailAsync(
+        //                 //    "valdesfeutseu@gmail.com", //_httpContextAccessor.HttpContext?.User?.Identity?.Name!, // ceci correspond à l'adresse exacte de l'utilisateur connecté
+        //                 //    "Notification MAG",
+        //                 //    "<h3>Votre traitement est terminé</h3>"
+        //                 //);
+        //                 // Si tout a réussi, commit de la transaction
+        //             }
+        //             catch (Exception ex)
+        //             {
+        //                 // Rollback si erreur
+        //                 return ApiResponse<bool>.Fail("Erreur : " + ex.Message);
+        //                 ;
+        //                 // return new ServiceResult<string>
+        //                 // {
+        //                 //     Success = false,
+        //                 //     Message = "Erreur : " + ex.Message,
+        //                 // };
+        //             }
+        //         }
+
+        //         return ApiResponse<bool>.SuccessResponse(
+        //             true,
+        //             "Manque à gagner traité avec succès!!!"
+        //         );
+
+        //         // return new ServiceResult<string>
+        //         // {
+        //         //     Success = true,
+        //         //     Message = "Manque à gagner enregistré avec succès!!!",
+        //         // };
+        //     }
+        //     catch (Exception ex)
+        //     {
+        //         _logger.LogInformation("message erreur de traitement. cause : " + ex.Message);
+        //         return ApiResponse<bool>.Fail(
+        //             "message erreur de traitement. cause : " + ex.Message
+        //         );
+        //     }
+        // }
         public async Task<ApiResponse<bool>> ProcessTxtExcelFiles(InputModel inputModel)
         {
-            Dictionary<string, ComptesActifsResponse> comptesActifs =
-                new Dictionary<string, ComptesActifsResponse>();
-            //Dictionary<string, ComptesOuvertsResponse> comptesOuverts =
-            //    new Dictionary<string, ComptesOuvertsResponse>();
-            List<ComptesOuvert> comptesOuverts;
-            Dictionary<string, ComptesCtxResponse> comptesCtx =
-                new Dictionary<string, ComptesCtxResponse>();
-            Dictionary<string, DateDsouPackEchuResponse> dateDersouPackEchus =
-                new Dictionary<string, DateDsouPackEchuResponse>();
-            Dictionary<string, List<CompteDebiteRedevCarte>> histCptDebiteRedevCartes =
-                new Dictionary<string, List<CompteDebiteRedevCarte>>();
-            Dictionary<string, PackagesActifsResponse> packActifs =
-                new Dictionary<string, PackagesActifsResponse>();
+            Dictionary<string, ComptesActifsResponse> comptesActifs = new();
+            List<ComptesOuvert> comptesOuverts = new();
+            Dictionary<string, ComptesCtxResponse> comptesCtx = new();
+            Dictionary<string, DateDsouPackEchuResponse> dateDersouPackEchus = new();
+            Dictionary<string, List<CompteDebiteRedevCarte>> histCptDebiteRedevCartes = new();
+            Dictionary<string, PackagesActifsResponse> packActifs = new();
 
-            //string numeroCompte = "";
-
-            List<Bkmvti> bkmvtis = new List<Bkmvti>();
-
-            // Variable "apprints" qui doit contenir chaque ligne du fichier apprint
-            List<Apprint> apprints = new List<Apprint>();
+            List<Bkmvti> bkmvtis = new();
+            List<Apprint> apprints = new();
             Dictionary<string, List<Apprint>> clientPlusUneCarte = new();
-            // Variable qui va contenir la liste des bkmvtis
             DateTimeOffset dateDebutExecution = DateTimeOffset.UtcNow;
-            // Variable qui va compter le nombre de ligne de l'apprint.
             long ligne = 0;
+
+            // Déclaré en dehors du bloc de lecture car réutilisé plus loin (callFuncAsync).
+            // Ne PAS mettre en "using var" ici : il doit rester ouvert jusqu'à la fin du traitement.
+            StreamReader? reader = null;
 
             try
             {
@@ -96,59 +367,65 @@ namespace API.Application.Services
                     );
                 }
 
-                // Vérifier si le manque à gagner n'a pas encore été récupérer sur la période.
+                // Vérifier si le manque à gagner n'a pas encore été récupéré sur la période.
                 TypeMag? existTypeMag = await _typeMagRepository.IsTypeMagExist(
                     inputModel.StartPeriod
                 );
 
-                // si oui, retourné un message informantif
                 if (existTypeMag != null)
                 {
-                    return null;
-                    // return new ServiceResult<string>
-                    // {
-                    //     Success = false,
-                    //     Message = "Manque à gagner déjà récupérer sur la période.",
-                    // };
+                    return ApiResponse<bool>.Fail("Manque à gagner déjà récupéré sur la période.");
                 }
 
-                // si le mag n'a pas encore été récupérer, continuer le traitement.
+                try
+                {
+                    // lecture du fichier apprint — PAS de "using", reader doit survivre à ce bloc
+                    reader = new StreamReader(inputModel.Apprint.OpenReadStream());
 
-                // lecture du fichier apprint
-                using var reader = new StreamReader(inputModel.Apprint.OpenReadStream());
+                    // lecture des différents fichiers excel : ceux-ci ne sont utilisés
+                    // que dans ce bloc, donc "using var" reste correct pour eux.
+                    using var compteOuvert = _magProcessingHelper.ReadFile(inputModel.OpenAccount);
+                    using var compteActif = _magProcessingHelper.ReadFile(inputModel.ActiveAccount);
+                    using var dateDerniereSouPackEchu = _magProcessingHelper.ReadFile(
+                        inputModel.DateLastSouPackEchu
+                    );
+                    using var packageActif = _magProcessingHelper.ReadFile(
+                        inputModel.ActivePackage
+                    );
+                    using var compteCtx = _magProcessingHelper.ReadFile(inputModel.CtxAccount);
+                    using var histCptDebiteParRedevCarte = _magProcessingHelper.ReadFile(
+                        inputModel.AccountHisDebiteByRedevCard
+                    );
 
-                //lecture des différents fichiers excel contenant les requetes des bases de données
-                using var compteOuvert = _magProcessingHelper.ReadFile(inputModel.OpenAccount);
-                using var compteActif = _magProcessingHelper.ReadFile(inputModel.ActiveAccount);
-                using var dateDerniereSouPackEchu = _magProcessingHelper.ReadFile(
-                    inputModel.DateLastSouPackEchu
-                );
-                using var packageActif = _magProcessingHelper.ReadFile(inputModel.ActivePackage);
-                using var compteCtx = _magProcessingHelper.ReadFile(inputModel.CtxAccount);
-                using var histCptDebiteParRedevCarte = _magProcessingHelper.ReadFile(
-                    inputModel.AccountHisDebiteByRedevCard
-                );
+                    var worksheetCompteActif = compteActif.Workbook.Worksheets[0];
+                    comptesActifs = _magProcessingHelper.GetComptesActifs(worksheetCompteActif);
 
-                //lecture de la première feuille de calcule excel
-                var worksheetCompteActif = compteActif.Workbook.Worksheets[0];
-                comptesActifs = _magProcessingHelper.GetComptesActifs(worksheetCompteActif);
+                    var worksheetCompteCtx = compteCtx.Workbook.Worksheets[0];
+                    comptesCtx = _magProcessingHelper.GetComptesCtx(worksheetCompteCtx);
 
-                var worksheetCompteCtx = compteCtx.Workbook.Worksheets[0];
-                comptesCtx = _magProcessingHelper.GetComptesCtx(worksheetCompteCtx);
+                    var worksheetCompteOuvert = compteOuvert.Workbook.Worksheets[0];
+                    comptesOuverts = _magProcessingHelper.GetComptesOuvert(worksheetCompteOuvert);
 
-                var worksheetCompteOuvert = compteOuvert.Workbook.Worksheets[0];
-                comptesOuverts = _magProcessingHelper.GetComptesOuvert(worksheetCompteOuvert);
+                    var worksheetDsouPackEchu = dateDerniereSouPackEchu.Workbook.Worksheets[0];
+                    dateDersouPackEchus = _magProcessingHelper.GetDsouPackEchu(
+                        worksheetDsouPackEchu
+                    );
 
-                var worksheetDsouPackEchu = dateDerniereSouPackEchu.Workbook.Worksheets[0];
-                dateDersouPackEchus = _magProcessingHelper.GetDsouPackEchu(worksheetDsouPackEchu);
+                    var worksheetHistCptDebiteRedev = histCptDebiteParRedevCarte
+                        .Workbook
+                        .Worksheets[0];
+                    histCptDebiteRedevCartes = _magProcessingHelper.GetHistCptDebiteRedevCarte(
+                        worksheetHistCptDebiteRedev
+                    );
 
-                var worksheetHistCptDebiteRedev = histCptDebiteParRedevCarte.Workbook.Worksheets[0];
-                histCptDebiteRedevCartes = _magProcessingHelper.GetHistCptDebiteRedevCarte(
-                    worksheetHistCptDebiteRedev
-                );
-
-                var worksheetPackActif = packageActif.Workbook.Worksheets[0];
-                packActifs = _magProcessingHelper.GetPackagesActifs(worksheetPackActif);
+                    var worksheetPackActif = packageActif.Workbook.Worksheets[0];
+                    packActifs = _magProcessingHelper.GetPackagesActifs(worksheetPackActif);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogWarning(ex, "Fichier invalide reçu lors du traitement MAG");
+                    return ApiResponse<bool>.Fail(ex.Message);
+                }
 
                 // Conversion des périodes d'étude
                 if (
@@ -160,7 +437,7 @@ namespace API.Application.Services
 
                     try
                     {
-                        //sauvegarde du type de manque à gagner effectué
+                        // sauvegarde du type de manque à gagner effectué
                         TypeMag typeMagResult = await _typeMagRepository.SaveTypeMagAsync(
                             new TypeMag
                             {
@@ -179,7 +456,7 @@ namespace API.Application.Services
                                     + endPer.Year,
                                 TypeMags = inputModel.TypeMag,
                                 Email =
-                                    _httpContextAccessor.HttpContext?.User?.Identity?.Name // l'interface IHttpContextAccessor permet d'avoir l'utilisateur connecter à un instant donné
+                                    _httpContextAccessor.HttpContext?.User?.Identity?.Name
                                     ?? "unknown",
                                 PeriodeDebut = inputModel.StartPeriod,
                                 PeriodeFin = inputModel.EndPeriod,
@@ -188,12 +465,8 @@ namespace API.Application.Services
 
                         // ligne d'en-tête
                         string header = await reader.ReadLineAsync() ?? string.Empty;
-
-                        // ligne 1 => en-tête du fichier apprint
                         ligne++;
 
-                        // comptes & compteDebite permettent de recupérer la liste des comptes pour faire une sauvegarde en parallèle
-                        // pendant le traitement du fichier apprint.
                         List<ComptesOuvert> comptes = new List<ComptesOuvert>();
 
                         foreach (var c in comptesOuverts)
@@ -229,7 +502,6 @@ namespace API.Application.Services
                             }
                         }
 
-                        // appel de la fonction "callFuncAsync" pour un traitement asynchrone.
                         clientPlusUneCarte = await _magProcessingHelper.callFuncAsync(
                             comptes,
                             reader,
@@ -240,7 +512,6 @@ namespace API.Application.Services
                             comptesDebite
                         );
 
-                        // Une fois l'ensemble du fichier apprint parcouru, parcourir les clients ayant plus d'une carte.
                         await _magProcessingHelper.MapClientPlusUneCarte(
                             clientPlusUneCarte,
                             dateDersouPackEchus,
@@ -278,35 +549,18 @@ namespace API.Application.Services
                         try
                         {
                             await _bkmvtiRepository.SaveBkmvtiAsync(bkmvtis);
-
                             await transaction.CommitAsync();
                         }
                         catch (Exception ex)
                         {
                             await transaction.RollbackAsync();
-
                             _logger.LogError(ex, "Erreur sauvegarde");
-
                             throw;
                         }
-
-                        //await _emailService.SendEmailAsync(
-                        //    "valdesfeutseu@gmail.com", //_httpContextAccessor.HttpContext?.User?.Identity?.Name!, // ceci correspond à l'adresse exacte de l'utilisateur connecté
-                        //    "Notification MAG",
-                        //    "<h3>Votre traitement est terminé</h3>"
-                        //);
-                        // Si tout a réussi, commit de la transaction
                     }
                     catch (Exception ex)
                     {
-                        // Rollback si erreur
                         return ApiResponse<bool>.Fail("Erreur : " + ex.Message);
-                        ;
-                        // return new ServiceResult<string>
-                        // {
-                        //     Success = false,
-                        //     Message = "Erreur : " + ex.Message,
-                        // };
                     }
                 }
 
@@ -314,12 +568,6 @@ namespace API.Application.Services
                     true,
                     "Manque à gagner traité avec succès!!!"
                 );
-
-                // return new ServiceResult<string>
-                // {
-                //     Success = true,
-                //     Message = "Manque à gagner enregistré avec succès!!!",
-                // };
             }
             catch (Exception ex)
             {
@@ -327,6 +575,12 @@ namespace API.Application.Services
                 return ApiResponse<bool>.Fail(
                     "message erreur de traitement. cause : " + ex.Message
                 );
+            }
+            finally
+            {
+                // reader n'était pas en "using" car réutilisé plus bas dans la méthode ;
+                // on le libère explicitement ici, quel que soit le chemin de sortie.
+                reader?.Dispose();
             }
         }
     }
